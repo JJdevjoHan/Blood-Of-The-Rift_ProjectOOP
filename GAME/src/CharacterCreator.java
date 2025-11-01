@@ -141,11 +141,13 @@ public class CharacterCreator {
                     System.out.println("[1]");
                     go.move(45, 13);
                     System.out.println("Info");
-                    go.move(23,15);
-                    System.out.println("a knight who is high in defense and skilled in");
-                    go.move(40,16);
-                    System.out.println("healing magic");
-                    go.move(36,19);
+                    go.move(30,16);
+                    System.out.println("A holy knight devoted to justice and\n");
+                    go.move(23,17);
+                    System.out.println("righteousness, combining martial prowess with");
+                    go.move(30,18);
+                    System.out.println("divine magic to protect and heal");
+                    go.move(36,20);
                     System.out.print( "HP: " + GREEN + "+120" + RESET + "     ");
                     System.out.println( "MP: " + BLUE + "+70" + RESET);
 
