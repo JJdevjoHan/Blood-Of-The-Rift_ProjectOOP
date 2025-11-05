@@ -32,35 +32,37 @@ public boolean start() {
     }
 
     if (player.isAlive()) {
+        box.draw(209, 18);
+        go.move(92, 45);
         System.out.println("You have defeated the " + mob.name + "!");
-        player.decrementDamageBuffDuration(); // Reduce buff duration after battle
+        player.decrementDamageBuffDuration();
         screen.clear(3);
         return true;
-    } else {
+    }
+    else {
         return false;
     }
 }
 
 private void playerTurn() {
     displayBattleStatus();
-    go.move(80, 48);
+    go.move(90, 41);
     System.out.println("Your turn. Choose your skill:");
     player.displaySkills();
-    go.move(106, 50);
+    go.move(106, 48);
 
     int choice = input.nextInt();
     screen.clear(0);
     go.move(0, 37);
     box.draw(209, 18);
+    go.move(80, 48);
     player.useSkill(choice, mob);
     screen.clear(4);
 }
 
 private void mobTurn() {
     displayBattleStatus();
-    go.move(80, 48);
-    System.out.println(mob.name + "'s turn.");
-    screen.clear(2);
+
 
     // Simple AI >> 30% chance to use special skill, otherwise normal attack
     if (Math.random() < 0.3) {
@@ -76,18 +78,28 @@ private void displayBattleStatus() {
     go.move(0, 37);
     box.draw(209, 18);
 
-    // Display Player
-    go.move(40, 18);
-    System.out.printf("%s (%s)", player.name, player.className);
-    go.move(37, 24);
-    System.out.printf("HP: \u001B[1;92m%d/%d\u001B[0m   MP: \u001B[36m%d/%d\u001B[0m", player.hp, player.maxHp, player.mana, player.maxMana);
     switch (player.className) {
-        case "Warrior": CharacterIcon.Warrior(42, 20); break;
-        case "Paladin": CharacterIcon.Paladin(45, 20); break;
-        case "Mage": CharacterIcon.Mage(44, 19); break;
+        case "Warrior" -> {
+            go.move(46, 18);
+            System.out.printf("%s", player.name);
+            CharacterIcon.Warrior(45, 20);
+        }
+        case "Paladin" -> {
+            go.move(46, 18);
+            System.out.printf("%s", player.name);
+            CharacterIcon.Paladin(48, 20);
+        }
+        case "Mage" -> {
+            go.move(46, 17);
+            System.out.printf("%s", player.name);
+            CharacterIcon.Mage(47, 19);
+        }
     }
 
-    // Display Mob
+    go.move(36, 24);
+    System.out.printf("HP: \u001B[1;92m%d/%d\u001B[0m   MP: \u001B[36m%d/%d\u001B[0m", player.hp, player.maxHp, player.mana, player.maxMana);
+
+
     go.move(160, 18);
     System.out.printf("%s", mob.name);
     go.move(157, 24);

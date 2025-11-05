@@ -57,12 +57,16 @@ public class GrassyPlains {
                     if (!player.isAlive()) {
                         inWorld = false; // Player was defeated
                     }
-                } else {
+                }
+
+                else {
                     go.move(98, 45);
                     System.out.println("You wander the plains but find nothing of interest.");
                     screen.clear(3);
                 }
-            } else {
+            }
+
+            else {
                 go.move(87, 45);
                 System.out.println("Invalid direction! Please choose [1] to [4]");
                 screen.clear(3);
@@ -130,15 +134,18 @@ public class GrassyPlains {
         System.out.println("You found a reward chest!");
 
         int rewardType = random.nextInt(3);
+
         if (rewardType == 0) {
             player.hp = player.maxHp; // Full heal
             go.move(94, 46);
             System.out.println("You found a healing potion! HP restored to full!");
-        } else if (rewardType == 1) {
+        }
+        else if (rewardType == 1) {
             player.mana = player.maxMana; // Full mana
             go.move(94, 46);
             System.out.println("You found a mana elixir! Mana restored to full!");
-        } else {
+        }
+        else {
             player.addTemporaryDamage(5); // Damage buff
             go.move(88, 46);
             System.out.println("You found a whetstone! Your attacks will deal +5 damage for 3 battles.");
@@ -151,8 +158,8 @@ public class GrassyPlains {
         final String BLUE = "\u001B[36m";
         final String RESET = "\u001B[0m";
 
-        go.move(103, 18);
-        System.out.printf("%s", player.name);
+//        go.move(103, 18);
+//        System.out.printf("%s", player.name);
 
         go.move(93, 24);
         System.out.print("HP: ");
@@ -160,10 +167,30 @@ public class GrassyPlains {
         System.out.print("   MP: ");
         System.out.println(BLUE + player.mana + "/" + player.maxMana + RESET);
 
+//        switch (player.className) {
+//            case "Warrior": CharacterIcon.Warrior(102, 20); break;
+//            case "Paladin": CharacterIcon.Paladin(105, 20); break;
+//            case "Mage": CharacterIcon.Mage(104, 19); break;
+//        }
+
         switch (player.className) {
-            case "Warrior": CharacterIcon.Warrior(102, 20); break;
-            case "Paladin": CharacterIcon.Paladin(105, 20); break;
-            case "Mage": CharacterIcon.Mage(104, 19); break;
+            case "Warrior" -> {
+                go.move(103, 18);
+                System.out.printf("%s", player.name);
+                CharacterIcon.Warrior(102, 20);
+            }
+            case "Paladin" -> {
+                go.move(103, 18);
+                System.out.printf("%s", player.name);
+                CharacterIcon.Paladin(105, 20);
+            }
+            case "Mage" -> {
+                go.move(103, 17);
+                System.out.printf("%s", player.name);
+                CharacterIcon.Mage(104, 19);
+            }
         }
+
+
     }
 }

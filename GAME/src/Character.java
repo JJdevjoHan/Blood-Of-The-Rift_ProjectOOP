@@ -1,4 +1,5 @@
 public abstract class Character {
+    private GoToXY go;
     public String name;
     public String className;
     public int hp;
@@ -14,6 +15,7 @@ public abstract class Character {
         this.className = className;
         this.hp = this.maxHp = hp;
         this.mana = this.maxMana = mana;
+        this.go = go;
     }
 
     public boolean isAlive() {
@@ -57,6 +59,7 @@ class Warrior extends Character {
 
     @Override
     public void displaySkills() {
+        go.move();
         System.out.println("[1] Stone Slash (0-12 Dmg, +10 Mana)");
         System.out.println("[2] Flame Strike (13-22 Dmg, 20 Mana)");
         System.out.println("[3] Earthquake Blade (23-35 Dmg, 30 Mana)");
