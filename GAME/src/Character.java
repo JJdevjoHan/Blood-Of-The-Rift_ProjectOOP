@@ -59,7 +59,7 @@ class Warrior extends Character {
 
     @Override
     public void displaySkills() {
-        go.move();
+        //go.move();
         System.out.println("[1] Stone Slash (0-12 Dmg, +10 Mana)");
         System.out.println("[2] Flame Strike (13-22 Dmg, 20 Mana)");
         System.out.println("[3] Earthquake Blade (23-35 Dmg, 30 Mana)");
