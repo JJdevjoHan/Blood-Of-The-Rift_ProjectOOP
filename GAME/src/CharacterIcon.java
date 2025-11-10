@@ -128,6 +128,40 @@ public class CharacterIcon {
     
     //-----------------------------------------------------------------------
 
+    //SNOWY ICELAND - faeana (nagkaprob in pushing)
+    
+    public static void GiantFrostWolves(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 3, "\\_\\");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 1, "._/* \\/\\/\\/\\_)");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 0, "VV\\__        |");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 6, "\\|____|/");
+        System.out.printf("\033[%d;%dH%s", y + 4, x + 6, "]]    ]]");
+    }
+    
+    public static void SnowGolem(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 6, "(@_{**}_@)");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 7, "//{  }\\\\");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 6, "//  {}  \\\\");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 8, "//  \\\\");
+    }
+    
+    public static void WitchGnome(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 6, "/\\");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 4, "_/__\\__");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 5, "*  {*)\\");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 4, "\\/| \\ \\");
+        System.out.printf("\033[%d;%dH%s", y + 4, x + 6, "]_]");
+    }
+ 
+    public static void Yeti(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 4, "{*.* )");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 3, "/)|)  )");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 3, "/) |)  )");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 2, "Cc  |) \\)");
+        System.out.printf("\033[%d;%dH%s", y + 4, x + 5, "Cc  Cc");
+    }
+    
+    //---------------------------------------------------------------
 
     //continue the designs here...
     
