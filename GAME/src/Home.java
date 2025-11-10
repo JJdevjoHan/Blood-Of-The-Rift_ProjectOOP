@@ -177,15 +177,69 @@ public class Home {
             int choice = input.nextInt();
 
             if (choice == 1) {
-                leftHome = true;
+
                 screen.clear(0);
+
+                switch (player.className) {
+                    case "Warrior" -> {
+                        go.move(103, 18);
+                        System.out.printf("%s", player.name);
+                        CharacterIcon.Warrior(102, 20);
+                    }
+                    case "Paladin" -> {
+                        go.move(103, 18);
+                        System.out.printf("%s", player.name);
+                        CharacterIcon.Paladin(105, 20);
+                    }
+                    case "Mage" -> {
+                        go.move(103, 17);
+                        System.out.printf("%s", player.name);
+                        CharacterIcon.Mage(104, 19);
+                    }
+                }
+
+                go.move(97, 24);
+                System.out.print("HP: ");
+                System.out.print(GREEN + player.hp + RESET);
+                System.out.print("   MP: ");
+                System.out.println(BLUE + player.mana + RESET);
+
+                leftHome = true;
                 go.move(0, 37);
                 box.draw(209, 18);
                 go.move(87, 45);
                 System.out.println("You step outside, ready for your adventure...");
                 screen.clear(4);
+
             } else {
+
                 screen.clear(0);
+
+                switch (player.className) {
+                    case "Warrior" -> {
+                        go.move(103, 18);
+                        System.out.printf("%s", player.name);
+                        CharacterIcon.Warrior(102, 20);
+                    }
+                    case "Paladin" -> {
+                        go.move(103, 18);
+                        System.out.printf("%s", player.name);
+                        CharacterIcon.Paladin(105, 20);
+                    }
+                    case "Mage" -> {
+                        go.move(103, 17);
+                        System.out.printf("%s", player.name);
+                        CharacterIcon.Mage(104, 19);
+                    }
+                }
+
+                go.move(97, 24);
+                System.out.print("HP: ");
+                System.out.print(GREEN + player.hp + RESET);
+                System.out.print("   MP: ");
+                System.out.println(BLUE + player.mana + RESET);
+
+
                 go.move(0, 37);
                 box.draw(209, 18);
                 go.move(78, 45);

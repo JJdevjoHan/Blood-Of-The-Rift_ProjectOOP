@@ -84,8 +84,54 @@ public class CharacterIcon {
     }
 
     //---------------------------------------------------------------
+    
+    //LAVA WORLDDDDD heheheheh<johan
+    
+    public static void DemonLord(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 15, "(_)");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 9,  "_(\\/\\ <') /\\/)_");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 7,  "_( -- ^^---^^ -- )_");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 6,  "(_____/ /( )\\ \\_____)");
+        System.out.printf("\033[%d;%dH%s", y + 4, x + 13, "|/ \\|");
+    }
+
+    public static void LavaImp(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 8, "^-^");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 6, "<(\"U\")>");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 6, "/(   )\\");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 8, "V V");
+    }
+
+    
+    public static void MagmaBeast(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 3, "(,---,)");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 1, "(_/ ` ` \\_)");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 3, "( v   v )");
+    }
+
+    
+    public static void SkeletonHead(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 4, ",-----,");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 3, "( o   o )");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 2, "~   )_ W _(  ~");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 3, "~   HHH  ~");
+        System.out.printf("\033[%d;%dH%s", y + 4, x + 5, "~  H  ~");
+    }
+
+    
+    public static void Golem(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 6, "(__[\"\"]__)");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 7, "//[  ]\\\\");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 6, "//  []  \\\\");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 9, "//  \\\\");
+    }
+    
+    //-----------------------------------------------------------------------
+
 
     //continue the designs here...
+    
+    
 
 }
 

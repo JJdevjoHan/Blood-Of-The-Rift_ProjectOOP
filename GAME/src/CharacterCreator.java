@@ -1,6 +1,21 @@
 import java.sql.SQLOutput;
 import java.util.Scanner;
 
+//warrior
+// high dmg output
+// normal defense
+// low mana reserves
+
+//paladin
+// low dmg output
+// high defense (less dmg receive)
+// normal mana reserves
+
+//wizard
+// normal dmg output
+// low defense (high dmg receive)
+// high mana reserves
+
 public class CharacterCreator {
 
     public static Character create(Scanner input, ClearScreen screen, GoToXY go, DrawBox box) {
@@ -114,35 +129,58 @@ public class CharacterCreator {
             }
 
             screen.clear(0);
-            go.move(0, 37);
-            box.draw(209, 18);
 
             switch (player.className) {
                 case "Paladin" -> {
+                    box.moveable(52, 18, 20,11);
+                    box.moveable(52, 18, 140,11);
                     CharacterIcon.Paladin(105, 20);
                     go.move(102, 24);
                     System.out.println("Paladin");
                     go.move(104, 25);
                     System.out.println("[1]");
-                    go.move(45, 12);
-                    System.out.println("[1]");
+                    go.move(45, 13);
+                    System.out.println("Info");
+                    go.move(30,16);
+                    System.out.println("A holy knight devoted to justice and\n");
+                    go.move(23,17);
+                    System.out.println("righteousness, combining martial prowess with");
+                    go.move(30,18);
+                    System.out.println("divine magic to protect and heal");
+                    go.move(36,20);
+                    System.out.print( "HP: " + GREEN + "+120" + RESET + "     ");
+                    System.out.println( "MP: " + BLUE + "+70" + RESET);
 
+
+                    go.move(163, 12);
+                    System.out.println("Skills");
                 }
                 case "Mage" -> {
+                    box.moveable(52, 18, 20,11);
+                    box.moveable(52, 18, 140,11);
                     CharacterIcon.Mage(104, 19);
                     go.move(104, 24);
                     System.out.println("Mage");
                     go.move(104, 25);
                     System.out.println("[2]");
+                    go.move(40, 12);
+                    System.out.println("Class Info");
                 }
                 case "Warrior" -> {
+                    box.moveable(52, 18, 20,11);
+                    box.moveable(52, 18, 140,11);
                     CharacterIcon.Warrior(102, 20);
                     go.move(102, 24);
                     System.out.println("Warrior");
                     go.move(104, 25);
                     System.out.println("[3]");
+                    go.move(40, 12);
+                    System.out.println("Class Info");
                 }
             }
+
+            go.move(0, 37);
+            box.draw(209, 18);
 
             go.move(88, 44);
             System.out.printf("Would you like %s to be your class?", className);
@@ -156,7 +194,7 @@ public class CharacterCreator {
 
         screen.clear(0);
         switch (player.className) {
-            case "Paladin" ->{
+            case "Paladin" -> {
                 go.move(103, 18);
                 System.out.printf("%s", player.name);
                 go.move(97, 24);

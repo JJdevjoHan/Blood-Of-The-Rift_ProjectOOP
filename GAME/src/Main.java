@@ -25,7 +25,7 @@ public class Main {
         }
 
         SplashScreen welcome = new SplashScreen(screen, go);
-       welcome.play();
+        welcome.play();
 
         go.move(106, 40);
         int choice2 = input.nextInt();
@@ -37,6 +37,8 @@ public class Main {
             Home home = new Home(input, player, screen, go, box);
             home.enter();
 
+            GrassyPlains grassyPlains = new GrassyPlains(input, player, screen, go, box);
+            grassyPlains.explore();
 
             // continue the game here
         }

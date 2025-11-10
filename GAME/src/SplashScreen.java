@@ -25,7 +25,7 @@ public class SplashScreen {
 
 
         go.move(100,29);
-        System.out.print("version 0.2.8");
+        System.out.print("version 0.4.3");
 
         go.move(92,32);
         System.out.print("[1] - Play        [2] - Exit");
