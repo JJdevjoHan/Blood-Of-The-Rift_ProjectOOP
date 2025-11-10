@@ -85,15 +85,7 @@ public class CharacterIcon {
 
     //---------------------------------------------------------------
     
-    //LAVA WORLDDDDD heheheheh<johan
-    
-    public static void DemonLord(int x, int y) {
-        System.out.printf("\033[%d;%dH%s", y + 0, x + 15, "(_)");
-        System.out.printf("\033[%d;%dH%s", y + 1, x + 9,  "_(\\/\\ <') /\\/)_");
-        System.out.printf("\033[%d;%dH%s", y + 2, x + 7,  "_( -- ^^---^^ -- )_");
-        System.out.printf("\033[%d;%dH%s", y + 3, x + 6,  "(_____/ /( )\\ \\_____)");
-        System.out.printf("\033[%d;%dH%s", y + 4, x + 13, "|/ \\|");
-    }
+    //LAVA WORLDDDDD heheheheh< johan
 
     public static void LavaImp(int x, int y) {
         System.out.printf("\033[%d;%dH%s", y + 0, x + 8, "^-^");
@@ -163,6 +155,16 @@ public class CharacterIcon {
     
     //---------------------------------------------------------------
 
+    //FINAL BOSS <johan ari lang nko ilagay para malahi
+    
+    public static void DemonLord(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 15, "(_)");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 9,  "_(\\/\\ <') /\\/)_");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 7,  "_( -- ^^---^^ -- )_");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 6,  "(_____/ /( )\\ \\_____)");
+        System.out.printf("\033[%d;%dH%s", y + 4, x + 13, "|/ \\|");
+    }
+    
     //continue the designs here...
     
     
