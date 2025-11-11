@@ -1,10 +1,8 @@
 public class Intro {
-    private DrawBox box;
     private ClearScreen screen;
     private GoToXY go;
 
     public Intro(DrawBox box, ClearScreen screen, GoToXY go) {
-        this.box = box;
         this.screen = screen;
         this.go = go;
     }

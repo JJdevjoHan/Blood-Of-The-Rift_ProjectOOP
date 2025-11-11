@@ -1,5 +1,4 @@
 public abstract class Character {
-    private GoToXY go;
     public String name;
     public String className;
     public int hp;
@@ -15,7 +14,6 @@ public abstract class Character {
         this.className = className;
         this.hp = this.maxHp = hp;
         this.mana = this.maxMana = mana;
-        this.go = go;
     }
 
     public boolean isAlive() {
@@ -25,16 +23,15 @@ public abstract class Character {
     public void takeDamage(int damage) {
         this.hp -= damage;
         if (this.hp < 0) this.hp = 0;
-        System.out.println(this.name + " takes " + damage + " damage! HP is now " + this.hp);
     }
 
     public int getDamageWithBuff(int baseDamage) {
         return baseDamage + this.temporaryDamageBuff;
     }
-
+    
     public void addTemporaryDamage(int amount) {
         this.temporaryDamageBuff = amount;
-        this.damageBuffDuration = 3; // Lasts for 3 battles
+        this.damageBuffDuration = 3;
     }
 
     public void decrementDamageBuffDuration() {
@@ -46,10 +43,9 @@ public abstract class Character {
             }
         }
     }
-
-    // Abstract methods to be implemented by each class
-    public abstract void displaySkills();
-    public abstract void useSkill(int choice, World1Mob target);
+    
+    public abstract void displaySkills(GoToXY go, int boxStartX, int boxWidth, int yStart);
+    public abstract String useSkill(int choice, World1Mob target);
 }
 
 class Warrior extends Character {
@@ -58,46 +54,49 @@ class Warrior extends Character {
     }
 
     @Override
-    public void displaySkills() {
-        //go.move();
-        System.out.println("[1] Stone Slash (0-12 Dmg, +10 Mana)");
-        System.out.println("[2] Flame Strike (13-22 Dmg, 20 Mana)");
-        System.out.println("[3] Earthquake Blade (23-35 Dmg, 30 Mana)");
+    public void displaySkills(GoToXY go, int boxStartX, int boxWidth, int yStart) {
+        String[] skills = {
+            "[1] Stone Slash (0-12 Dmg, +10 Mana)",
+            "[2] Flame Strike (13-22 Dmg, 20 Mana)",
+            "[3] Earthquake Blade (23-35 Dmg, 30 Mana)"
+        };
+        for (int i = 0; i < skills.length; i++) {
+            int centerX = boxStartX + (boxWidth - skills[i].length()) / 2;
+            go.move(centerX, yStart + i);
+            System.out.print(skills[i]);
+        }
     }
 
     @Override
-    public void useSkill(int choice, World1Mob target) {
+    public String useSkill(int choice, World1Mob target) {
         int damage;
         switch (choice) {
             case 1:
                 damage = getDamageWithBuff((int)(Math.random() * 13));
                 mana += 10;
-                System.out.println(name + " used Stone Slash! Deals " + damage + " damage.");
+                if (mana > maxMana) mana = maxMana;
                 target.takeDamage(damage);
-                break;
+                return name + " used Stone Slash! Deals " + damage + " damage. ";
             case 2:
                 if (mana >= 20) {
                     damage = getDamageWithBuff(13 + (int)(Math.random() * 10));
                     mana -= 20;
-                    System.out.println(name + " used Flame Strike! Deals " + damage + " damage.");
                     target.takeDamage(damage);
+                    return name + " used Flame Strike! Deals " + damage + " damage. ";
                 } else {
-                    System.out.println("Not enough mana!");
+                    return "Not enough mana!";
                 }
-                break;
             case 3:
                 if (mana >= 30) {
                     damage = getDamageWithBuff(23 + (int)(Math.random() * 13));
                     mana -= 30;
-                    System.out.println(name + " used Earthquake Blade! Deals " + damage + " damage.");
                     target.takeDamage(damage);
+                    return name + " used Earthquake Blade! Deals " + damage + " damage. ";
                 } else {
-                    System.out.println("Not enough mana!");
+                    return "Not enough mana!";
                 }
-                break;
             default:
-                System.out.println("Invalid skill choice.");
-                break;
+                return "Invalid skill choice.";
         }
     }
 }
@@ -108,46 +107,49 @@ class Mage extends Character {
     }
 
     @Override
-    public void displaySkills() {
-        System.out.println("[1] Frost Bolt (0-10 Dmg, +10 Mana)");
-        System.out.println("[2] Rune Burst (11-20 Dmg, 20 Mana)");
-        System.out.println("[3] Lightstorm (21-35 Dmg, 30 Mana)");
+    public void displaySkills(GoToXY go, int boxStartX, int boxWidth, int yStart) {
+        String[] skills = {
+            "[1] Frost Bolt (0-10 Dmg, +10 Mana)",
+            "[2] Rune Burst (11-20 Dmg, 20 Mana)",
+            "[3] Lightstorm (21-35 Dmg, 30 Mana)"
+        };
+        for (int i = 0; i < skills.length; i++) {
+            int centerX = boxStartX + (boxWidth - skills[i].length()) / 2;
+            go.move(centerX, yStart + i);
+            System.out.print(skills[i]);
+        }
     }
 
     @Override
-    public void useSkill(int choice, World1Mob target) {
+    public String useSkill(int choice, World1Mob target) {
         int damage;
         switch (choice) {
             case 1:
-                damage = getDamageWithBuff((int)(Math.random() * 11)); // 0-10 damage
+                damage = getDamageWithBuff((int)(Math.random() * 11));
                 mana += 10;
-                if (mana > maxMana) mana = maxMana; // Prevent mana overflow
-                System.out.println(name + " used Frost Bolt! It deals " + damage + " damage.");
+                if (mana > maxMana) mana = maxMana;
                 target.takeDamage(damage);
-                break;
+                return name + " used Frost Bolt! Deals " + damage + " damage. ";
             case 2:
                 if (mana >= 20) {
-                    damage = getDamageWithBuff(11 + (int)(Math.random() * 10)); // 11-20 damage
+                    damage = getDamageWithBuff(11 + (int)(Math.random() * 10));
                     mana -= 20;
-                    System.out.println(name + " used Rune Burst! It deals " + damage + " damage.");
                     target.takeDamage(damage);
+                    return name + " used Rune Burst! Deals " + damage + " damage. ";
                 } else {
-                    System.out.println("Not enough mana!");
+                    return "Not enough mana!";
                 }
-                break;
             case 3:
                 if (mana >= 30) {
-                    damage = getDamageWithBuff(21 + (int)(Math.random() * 15)); // 21-35 damage
+                    damage = getDamageWithBuff(21 + (int)(Math.random() * 15));
                     mana -= 30;
-                    System.out.println(name + " used Lightstorm! It deals " + damage + " damage.");
                     target.takeDamage(damage);
+                    return name + " used Lightstorm! Deals " + damage + " damage. ";
                 } else {
-                    System.out.println("Not enough mana!");
+                    return "Not enough mana!";
                 }
-                break;
             default:
-                System.out.println("Invalid skill choice. Turn skipped.");
-                break;
+                return "Invalid skill choice. Turn skipped.";
         }
     }
 }
@@ -158,47 +160,48 @@ class Paladin extends Character {
     }
 
     @Override
-    public void displaySkills() {
-        System.out.println("[1] Shield Bash (0-8 Dmg, +10 Mana)");
-        System.out.println("[2] Radiant Guard (Reduces damage taken, 20 Mana)");
-        System.out.println("[3] Holy Renewal (Heal 20-35 HP, 30 Mana)");
+    public void displaySkills(GoToXY go, int boxStartX, int boxWidth, int yStart) {
+        String[] skills = {
+            "[1] Shield Bash (0-8 Dmg, +10 Mana)",
+            "[2] Radiant Guard (Reduces damage taken, 20 Mana)",
+            "[3] Holy Renewal (Heal 20-35 HP, 30 Mana)"
+        };
+        for (int i = 0; i < skills.length; i++) {
+            int centerX = boxStartX + (boxWidth - skills[i].length()) / 2;
+            go.move(centerX, yStart + i);
+            System.out.print(skills[i]);
+        }
     }
 
     @Override
-    public void useSkill(int choice, World1Mob target) {
+    public String useSkill(int choice, World1Mob target) {
         int damage;
         switch (choice) {
             case 1:
-                damage = getDamageWithBuff((int)(Math.random() * 9)); // 0-8 damage
+                damage = getDamageWithBuff((int)(Math.random() * 9));
                 mana += 10;
-                if (mana > maxMana) mana = maxMana; // Prevent mana overflow
-                System.out.println(name + " used Shield Bash! It deals " + damage + " damage.");
+                if (mana > maxMana) mana = maxMana;
                 target.takeDamage(damage);
-                break;
+                return name + " used Shield Bash! Deals " + damage + " damage. ";
             case 2:
                 if (mana >= 20) {
                     mana -= 20;
-                    System.out.println(name + " used Radiant Guard! Damage taken will be reduced.");
+                    return name + " used Radiant Guard! Damage taken will be reduced.";
                 } else {
-                    System.out.println("Not enough mana!");
+                    return "Not enough mana!";
                 }
-                break;
             case 3:
                 if (mana >= 30) {
-                    int healAmount = 20 + (int)(Math.random() * 16); // 20-35 heal
+                    int healAmount = 20 + (int)(Math.random() * 16);
                     mana -= 30;
                     this.hp += healAmount;
-                    if (this.hp > this.maxHp) {
-                        this.hp = this.maxHp; // Prevent overhealing
-                    }
-                    System.out.println(name + " used Holy Renewal! You heal for " + healAmount + " HP.");
+                    if (this.hp > this.maxHp) this.hp = this.maxHp;
+                    return name + " used Holy Renewal! You heal for " + healAmount + " HP. HP: " + this.hp;
                 } else {
-                    System.out.println("Not enough mana!");
+                    return "Not enough mana!";
                 }
-                break;
             default:
-                System.out.println("Invalid skill choice. Turn skipped.");
-                break;
+                return "Invalid skill choice. Turn skipped.";
         }
     }
 }

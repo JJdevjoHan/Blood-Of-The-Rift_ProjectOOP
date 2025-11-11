@@ -11,5 +11,13 @@ public class ClearScreen {
             System.out.println("Failed to clear screen: " + e.getMessage());
         }
     }
+
+    public void clearLine(GoToXY go, int x, int y, int length) {
+        go.move(x, y);
+        for (int i = 0; i < length; i++) {
+            System.out.print(" ");
+        }
+        go.move(x, y); 
+    }
 }
 

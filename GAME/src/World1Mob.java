@@ -1,61 +1,79 @@
-public class World1Mob{
-    protected String name;
-    protected int hp;
-    protected int damage;
+// COPY AND PASTE THIS ENTIRE BLOCK to replace World1Mob.java
 
-    public World1Mob(String name, int hp, int damage){
+public abstract class World1Mob {
+    public String name;
+    public int hp;
+    public int maxHp;
+    public int damage;
+
+    public World1Mob(String name, int hp, int damage) {
         this.name = name;
-        this.hp = hp;
+        this.hp = this.maxHp = hp;
         this.damage = damage;
     }
 
     public boolean isAlive() {
         return hp > 0;
     }
-
-    public void takeDamage(int dmg){
-        hp -= dmg;
-        System.out.println(name + " takes " + dmg + " damage. HP: " + hp);
+ 
+    public void takeDamage(int dmg) {
+        this.hp -= dmg;
+        if(this.hp < 0) this.hp = 0;
     }
 
-    public void attack(Character player){
-        System.out.println(name + " attacks " + player.name + " for " + damage + " damage.");
-        player.hp -= damage;
-        System.out.println(player.name + " HP: " + player.hp);
+    // --- THIS IS THE FIX ---
+    // Method now returns a String and no longer handles printing.
+    public String attack(Character target) {
+        int damage = (int)(Math.random() * this.damage) + 1;
+        target.takeDamage(damage); // Silent
+        
+        // Return the full message string
+        return name + " attacks " + target.name + " for " + damage + " damage. ";
     }
 
-    public void specialSkill(Character player){
-        // Default: no skill
+    // --- THIS IS THE FIX ---
+    // Method now returns a String and no longer handles printing.
+    public String specialSkill(Character target) {
+        int damage = (int)(this.damage * 1.5) + 5; 
+        target.takeDamage(damage); // Silent
+        
+        // Return the full message string
+        return name + " uses a special attack! Deals " + damage + " damage. ";
     }
 }
 
 class Slime extends World1Mob {
     public Slime() {
         super("Slime", 20, 5);
-    }           // lessen hp & dmg -erlo
+    }
 }
 
 class Bull extends World1Mob {
     public Bull() {
         super("Wild Bull", 30, 8);
-    }       // lessen hp & dmg -erlo
+    }
 }
 
 class Wolf extends World1Mob {
     public Wolf() {
         super("Dire Wolf", 40, 10);
-    }       // lessen hp & dmg-erlo
+    }
 }
 
 class Minotaur extends World1Mob {
     public Minotaur() {
         super("Minotaur", 80, 12);
-    }   // lessen hp & dmg-erlo
+    } 
 
+    // --- THIS IS THE FIX ---
+    // Method signature changed to match the parent (no go/screen)
+    // and it now returns a String.
     @Override
-    public void specialSkill(Character player) {
-        System.out.println("Minotaur uses Earth Shatter! Deals 35 damage.");
-        player.hp -= 35;
-        System.out.println(player.name + " HP: " + player.hp);
+    public String specialSkill(Character player) {
+        int specialDamage = 35; 
+        player.takeDamage(specialDamage); // Silent
+        
+        // Return the full message string
+        return "Minotaur uses Earth Shatter! Deals " + specialDamage + " damage. ";
     }
 }
