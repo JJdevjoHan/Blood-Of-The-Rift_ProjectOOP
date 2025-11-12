@@ -12,7 +12,7 @@ public class Main {
         go.move(100, 26);
         System.out.print("Skip the intro?");
         go.move(95, 28);
-        System.out.println("[1] - Yes        [2] - No");
+        System.out.println("[1] - Yes          [2] - No");
 
         go.move(106, 50);
         int choice = input.nextInt();
@@ -36,18 +36,15 @@ public class Main {
             Character player = CharacterCreator.create(input, screen, go, box);
             Home home = new Home(input, player, screen, go, box);
             home.enter();
-
-            GrassyPlains grassyPlains = new GrassyPlains(input, player, screen, go, box);
+            //add world 
+            DesertWorld desertWorld = new DesertWorld(input, player, screen, go, box);
+            GrassyPlains grassyPlains = new GrassyPlains(input, player, screen, go, box, desertWorld);
             grassyPlains.explore();
-
-            // continue the game here
         }
         else {
             screen.clear(0);
             go.move(92,27);
             System.exit(0);
         }
-
-        //screen.clear(3);
     }
 }

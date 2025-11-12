@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public abstract class Character {
     public String name;
     public String className;
@@ -6,6 +8,7 @@ public abstract class Character {
     public int maxHp;
     public int maxMana;
 
+    protected Random random = new Random();
     private int temporaryDamageBuff = 0;
     private int damageBuffDuration = 0;
 
@@ -45,6 +48,7 @@ public abstract class Character {
     }
     
     public abstract void displaySkills(GoToXY go, int boxStartX, int boxWidth, int yStart);
+    
     public abstract String useSkill(int choice, World1Mob target);
 }
 
@@ -70,19 +74,36 @@ class Warrior extends Character {
     @Override
     public String useSkill(int choice, World1Mob target) {
         int damage;
+        String message;
+        String critMessage = "";
+
         switch (choice) {
             case 1:
                 damage = getDamageWithBuff((int)(Math.random() * 13));
                 mana += 10;
                 if (mana > maxMana) mana = maxMana;
+                
+                if (random.nextInt(100) < 20) { // 20% chance
+                    damage = (int)(damage * 1.5); // 1.5x damage
+                    critMessage = " >> CRITICAL HIT! <<";
+                }
+                
                 target.takeDamage(damage);
-                return name + " used Stone Slash! Deals " + damage + " damage. ";
+                message = name + " used Stone Slash!" + critMessage + " Deals " + damage + " damage. ";
+                return message;
             case 2:
                 if (mana >= 20) {
                     damage = getDamageWithBuff(13 + (int)(Math.random() * 10));
                     mana -= 20;
+
+                    if (random.nextInt(100) < 20) {
+                        damage = (int)(damage * 1.5);
+                        critMessage = " >> CRITICAL HIT! <<";
+                    }
+
                     target.takeDamage(damage);
-                    return name + " used Flame Strike! Deals " + damage + " damage. ";
+                    message = name + " used Flame Strike!" + critMessage + " Deals " + damage + " damage. ";
+                    return message;
                 } else {
                     return "Not enough mana!";
                 }
@@ -90,8 +111,15 @@ class Warrior extends Character {
                 if (mana >= 30) {
                     damage = getDamageWithBuff(23 + (int)(Math.random() * 13));
                     mana -= 30;
+
+                    if (random.nextInt(100) < 20) {
+                        damage = (int)(damage * 1.5);
+                        critMessage = " >> CRITICAL HIT! <<";
+                    }
+
                     target.takeDamage(damage);
-                    return name + " used Earthquake Blade! Deals " + damage + " damage. ";
+                    message = name + " used Earthquake Blade!" + critMessage + " Deals " + damage + " damage. ";
+                    return message;
                 } else {
                     return "Not enough mana!";
                 }
@@ -123,19 +151,36 @@ class Mage extends Character {
     @Override
     public String useSkill(int choice, World1Mob target) {
         int damage;
+        String message;
+        String critMessage = "";
+
         switch (choice) {
             case 1:
                 damage = getDamageWithBuff((int)(Math.random() * 11));
                 mana += 10;
                 if (mana > maxMana) mana = maxMana;
+
+                if (random.nextInt(100) < 20) {
+                    damage = (int)(damage * 1.5);
+                    critMessage = " >> CRITICAL HIT! <<";
+                }
+
                 target.takeDamage(damage);
-                return name + " used Frost Bolt! Deals " + damage + " damage. ";
+                message = name + " used Frost Bolt!" + critMessage + " Deals " + damage + " damage. ";
+                return message;
             case 2:
                 if (mana >= 20) {
                     damage = getDamageWithBuff(11 + (int)(Math.random() * 10));
                     mana -= 20;
+
+                    if (random.nextInt(100) < 20) {
+                        damage = (int)(damage * 1.5);
+                        critMessage = " >> CRITICAL HIT! <<";
+                    }
+
                     target.takeDamage(damage);
-                    return name + " used Rune Burst! Deals " + damage + " damage. ";
+                    message = name + " used Rune Burst!" + critMessage + " Deals " + damage + " damage. ";
+                    return message;
                 } else {
                     return "Not enough mana!";
                 }
@@ -143,8 +188,15 @@ class Mage extends Character {
                 if (mana >= 30) {
                     damage = getDamageWithBuff(21 + (int)(Math.random() * 15));
                     mana -= 30;
+
+                    if (random.nextInt(100) < 20) {
+                        damage = (int)(damage * 1.5);
+                        critMessage = " >> CRITICAL HIT! <<";
+                    }
+
                     target.takeDamage(damage);
-                    return name + " used Lightstorm! Deals " + damage + " damage. ";
+                    message = name + " used Lightstorm!" + critMessage + " Deals " + damage + " damage. ";
+                    return message;
                 } else {
                     return "Not enough mana!";
                 }
@@ -176,13 +228,23 @@ class Paladin extends Character {
     @Override
     public String useSkill(int choice, World1Mob target) {
         int damage;
+        String message;
+        String critMessage = "";
+        
         switch (choice) {
             case 1:
                 damage = getDamageWithBuff((int)(Math.random() * 9));
                 mana += 10;
                 if (mana > maxMana) mana = maxMana;
+
+                if (random.nextInt(100) < 20) {
+                    damage = (int)(damage * 1.5);
+                    critMessage = " >> CRITICAL HIT! <<";
+                }
+
                 target.takeDamage(damage);
-                return name + " used Shield Bash! Deals " + damage + " damage. ";
+                message = name + " used Shield Bash!" + critMessage + " Deals " + damage + " damage. ";
+                return message;
             case 2:
                 if (mana >= 20) {
                     mana -= 20;

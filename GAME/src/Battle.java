@@ -142,10 +142,16 @@ public class Battle {
         go.move(160, 18);
         System.out.printf("%s", mob.name);
         switch (mob.name) {
+            //world1
             case "Slime": CharacterIcon.Slime(162, 20); break;
             case "Wild Bull": CharacterIcon.WildBull(162, 20); break;
             case "Dire Wolf": CharacterIcon.Wolf(162, 20); break;
             case "Minotaur": CharacterIcon.Minotaur(162, 20); break;
+            //world2
+            case "Spider": CharacterIcon.Spider(162, 20); break;
+            case "Snake": CharacterIcon.Snake(162, 20); break;
+            case "Giant Worm": CharacterIcon.GiantWorm(162, 20); break;
+            case "Mummy": CharacterIcon.Mummy(162, 20); break;
         }
 
         go.move(157, 24);

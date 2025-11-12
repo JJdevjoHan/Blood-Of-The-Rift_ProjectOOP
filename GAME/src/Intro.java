@@ -7,6 +7,8 @@ public class Intro {
         this.go = go;
     }
 
+    
+
     public void play() {
 
         screen.clear(0);

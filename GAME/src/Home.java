@@ -37,7 +37,6 @@ public class Home {
             go.move(0, 37);
             box.draw(209, 18);
 
-
             go.move(103, 18);
             System.out.printf("%s", player.name);
             CharacterIcon.Normal(104, 19);
@@ -92,6 +91,7 @@ public class Home {
             }
 
             if (steps == 2) {
+                screen.clear(0); 
                 go.move(0, 37);
                 box.draw(209, 18);
                 go.move(90, 43);
@@ -162,13 +162,13 @@ public class Home {
                     CharacterIcon.Mage(104, 19);
                 }
             }
-
             go.move(97, 24);
             System.out.print("HP: ");
             System.out.print(GREEN + player.hp + RESET);
             System.out.print("   MP: ");
             System.out.println(BLUE + player.mana + RESET);
 
+        
             go.move(101, 44);
             System.out.println("Leave home?");
             go.move(95, 46);
@@ -177,9 +177,8 @@ public class Home {
             int choice = input.nextInt();
 
             if (choice == 1) {
-
+              
                 screen.clear(0);
-
                 switch (player.className) {
                     case "Warrior" -> {
                         go.move(103, 18);
@@ -197,7 +196,6 @@ public class Home {
                         CharacterIcon.Mage(104, 19);
                     }
                 }
-
                 go.move(97, 24);
                 System.out.print("HP: ");
                 System.out.print(GREEN + player.hp + RESET);
@@ -212,9 +210,9 @@ public class Home {
                 screen.clear(4);
 
             } else {
-
+                
                 screen.clear(0);
-
+              
                 switch (player.className) {
                     case "Warrior" -> {
                         go.move(103, 18);
@@ -232,19 +230,28 @@ public class Home {
                         CharacterIcon.Mage(104, 19);
                     }
                 }
-
                 go.move(97, 24);
                 System.out.print("HP: ");
                 System.out.print(GREEN + player.hp + RESET);
                 System.out.print("   MP: ");
                 System.out.println(BLUE + player.mana + RESET);
-
-
+                
+                
                 go.move(0, 37);
                 box.draw(209, 18);
-                go.move(78, 45);
-                System.out.println("You're now equipped and ready. It's time to begin your journey.");
-                screen.clear(5);
+                //added drama- chrisnel
+                String line1 = "You grip your new weapon, the weight of it suddenly feeling all too real.";
+                String line2 = "Is this really the right path? The world outside is dangerous.";
+                String line3 = "You pause, taking another moment to steady your nerves.";
+                
+                go.move(105 - (line1.length() / 2), 43);
+                System.out.println(line1);
+                go.move(105 - (line2.length() / 2), 45);
+                System.out.println(line2);
+                go.move(105 - (line3.length() / 2), 47);
+                System.out.println(line3);
+
+                screen.clear(8); 
             }
         }
     }

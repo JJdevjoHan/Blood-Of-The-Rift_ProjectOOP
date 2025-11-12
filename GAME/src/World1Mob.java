@@ -1,5 +1,3 @@
-// COPY AND PASTE THIS ENTIRE BLOCK to replace World1Mob.java
-
 public abstract class World1Mob {
     public String name;
     public int hp;
@@ -21,8 +19,6 @@ public abstract class World1Mob {
         if(this.hp < 0) this.hp = 0;
     }
 
-    // --- THIS IS THE FIX ---
-    // Method now returns a String and no longer handles printing.
     public String attack(Character target) {
         int damage = (int)(Math.random() * this.damage) + 1;
         target.takeDamage(damage); // Silent
@@ -31,8 +27,6 @@ public abstract class World1Mob {
         return name + " attacks " + target.name + " for " + damage + " damage. ";
     }
 
-    // --- THIS IS THE FIX ---
-    // Method now returns a String and no longer handles printing.
     public String specialSkill(Character target) {
         int damage = (int)(this.damage * 1.5) + 5; 
         target.takeDamage(damage); // Silent
@@ -65,15 +59,11 @@ class Minotaur extends World1Mob {
         super("Minotaur", 80, 12);
     } 
 
-    // --- THIS IS THE FIX ---
-    // Method signature changed to match the parent (no go/screen)
-    // and it now returns a String.
     @Override
     public String specialSkill(Character player) {
         int specialDamage = 35; 
-        player.takeDamage(specialDamage); // Silent
+        player.takeDamage(specialDamage);
         
-        // Return the full message string
         return "Minotaur uses Earth Shatter! Deals " + specialDamage + " damage. ";
     }
 }
