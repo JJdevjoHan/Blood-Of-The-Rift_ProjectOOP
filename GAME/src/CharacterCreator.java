@@ -1,20 +1,5 @@
 import java.util.Scanner;
 
-//warrior
-// high dmg output
-// normal defense
-// low mana reserves
-
-//paladin
-// low dmg output
-// high defense (less dmg receive)
-// normal mana reserves
-
-//wizard
-// normal dmg output
-// low defense (high dmg receive)
-// high mana reserves
-
 public class CharacterCreator {
 
     public static Character create(Scanner input, ClearScreen screen, GoToXY go, DrawBox box) {
@@ -138,21 +123,36 @@ public class CharacterCreator {
                     System.out.println("Paladin");
                     go.move(104, 25);
                     System.out.println("[1]");
-                    go.move(45, 13);
+
+                    go.move(44, 13);
                     System.out.println("Info");
-                    go.move(30,16);
+                    go.move(27,16);
                     System.out.println("A holy knight devoted to justice and\n");
                     go.move(23,17);
                     System.out.println("righteousness, combining martial prowess with");
-                    go.move(30,18);
-                    System.out.println("divine magic to protect and heal");
-                    go.move(36,20);
+                    go.move(23,18);
+                    System.out.println("divine magic to protect and heal. The Paladin ");
+                    go.move(23,19);
+                    System.out.println("is a sworn protector blessed by earth, light,");
+                    go.move(26,20);
+                    System.out.println("and water, He uses his shield to defend ");
+                    go.move(24,21);
+                    System.out.println("allies and divine power to heal and cleanse");
+                    go.move(40,22);
+                    System.out.println("the wounded.");
+                    go.move(36,25);
                     System.out.print( "HP: " + GREEN + "+120" + RESET + "     ");
                     System.out.println( "MP: " + BLUE + "+70" + RESET);
 
-
-                    go.move(163, 12);
+                    go.move(163, 13);
                     System.out.println("Skills");
+                    go.move(147, 16);
+                    System.out.println("[1] - Shield Bash ( 0-8 Dmg, +10 Mana)");
+                    go.move(147, 18);
+                    System.out.println("[2] - Radiant Guard ( -Dmg, -20 Mana)");
+                    go.move(146, 20);
+                    System.out.println("[3] - Holy Renewal ( +20-35 HP, -30 Mana)");
+
                 }
                 case "Mage" -> {
                     box.moveable(52, 18, 20,11);
@@ -162,17 +162,36 @@ public class CharacterCreator {
                     System.out.println("Mage");
                     go.move(104, 25);
                     System.out.println("[2]");
-                    go.move(40, 12);
-                    System.out.println("Class Info");
-                    go.move(30,16);
-                    System.out.println(" ");
-                    go.move(23,17);
-                    System.out.println(" ");
-                    go.move(30,18);
-                    System.out.println(" ");
-                    go.move(36,20);
-                    System.out.print( "HP: " + GREEN + "+n" + RESET + "     ");
-                    System.out.println( "MP: " + BLUE + "+n" + RESET);
+
+                    go.move(44, 13);
+                    System.out.println("Info");
+                    go.move(24,16);
+                    System.out.println("A master of arcane arts who casts powerful");
+                    go.move(24,17);
+                    System.out.println("spells, manipulating elements and reality");
+                    go.move(23,18);
+                    System.out.println("through magical knowledge. He hails from the ");
+                    go.move(24,19);
+                    System.out.println("frozen spires, wielding the winds, ice, and ");
+                    go.move(25,20);
+                    System.out.println("sacred runes. She bends light itself into");
+                    go.move(24,21);
+                    System.out.println("deadly spells, striking foes with precision");
+                    go.move(40,22);
+                    System.out.println("and power.");
+                    go.move(36,25);
+                    System.out.print( "HP: " + GREEN + "+20" + RESET + "     ");
+                    System.out.println( "MP: " + BLUE + "+100" + RESET);
+
+                    go.move(163, 13);
+                    System.out.println("Skills");
+                    go.move(147, 16);
+                    System.out.println("[1] - Frost Bolt (0-8 Dmg, +10 Mana)");
+                    go.move(146, 18);
+                    System.out.println("[2] - Rune Burst ( 11-20 Dmg, -20 Mana)");
+                    go.move(146, 20);
+                    System.out.println("[3] - Lightstorm ( 21-35 Dmg, -30 Mana)");
+
                 }
                 case "Warrior" -> {
                     box.moveable(52, 18, 20,11);
@@ -183,16 +202,34 @@ public class CharacterCreator {
                     go.move(104, 25);
                     System.out.println("[3]");
                     go.move(40, 12);
-                    System.out.println("Class Info");
-                    go.move(30,16);
-                    System.out.println(" ");
+
+                    go.move(44, 13);
+                    System.out.println("Info");
+                    go.move(22,16);
+                    System.out.println("A battle-hardened fighter who excels in physical");
                     go.move(23,17);
-                    System.out.println(" ");
-                    go.move(30,18);
-                    System.out.println(" ");
-                    go.move(36,20);
-                    System.out.print( "HP: " + GREEN + "+n" + RESET + "     ");
-                    System.out.println( "MP: " + BLUE + "+n" + RESET);
+                    System.out.println("combat, relying on strength, armor, and weapon");
+                    go.move(24,18);
+                    System.out.println("mastery. He defends his tribe from monstrous");
+                    go.move(25,19);
+                    System.out.println("beasts. To restore balance, he thirst for");
+                    go.move(25,20);
+                    System.out.println("battle, testing whether his fiery will can");
+                    go.move(29,21);
+                    System.out.println("endure without giving in to wrath.");
+                    go.move(36,25);
+                    System.out.print( "HP: " + GREEN + "+80" + RESET + "     ");
+                    System.out.println( "MP: " + BLUE + "+30" + RESET);
+
+                    go.move(163, 13);
+                    System.out.println("Skills");
+                    go.move(147, 16);
+                    System.out.println("[1] - Stone Slash ( 0-12 Dmg, +10 Mana)");
+                    go.move(146, 18);
+                    System.out.println("[2] - Flame Strike ( 13-22 Dmg, -20 Mana)");
+                    go.move(144, 20);
+                    System.out.println("[3] - Earthquake Blade ( 23-35 Dmg, -30 Mana)");
+
                 }
             }
 
@@ -255,8 +292,7 @@ public class CharacterCreator {
         go.move(95, 48);
         System.out.println("Enter [1] to continue ...");
         go.move(106, 50);
-
-
+        int num = input.nextInt();
         return player;
     }
 }
