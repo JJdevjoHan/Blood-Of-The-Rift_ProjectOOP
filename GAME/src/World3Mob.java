@@ -13,25 +13,25 @@ public class World3Mob extends World1Mob {
 
     public static class GiantFrostWolves extends World3Mob {//boss
         public GiantFrostWolves() {
-            super("GiantFrostWolves", 120, 18);
+            super("GiantFrostWolves", 5, 18); //120
         }
     }
 
     public static class SnowGolem extends World3Mob {
         public SnowGolem() {
-            super("SnowGolem", 50, 25);
+            super("SnowGolem", 5, 25); //50
         }
     }
 
     public static class WitchGnome extends World3Mob {
         public WitchGnome() {
-            super("WitchGnome", 40, 23);
+            super("WitchGnome", 5, 23);//40
         }
     }
 
     public static class Yeti extends World3Mob {
         public Yeti() {
-            super("Yeti", 70, 22);
+            super("Yeti", 5, 22);//70
         }
     }
 }

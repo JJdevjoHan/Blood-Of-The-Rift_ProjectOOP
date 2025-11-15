@@ -22,14 +22,31 @@ public class GrassyPlains {
         this.desertWorld = desertWorld; 
     }
 
-    //fixed explore method-chrisnel
     public void explore() {
+       
         screen.clear(0);
         go.move(0, 37);
         box.draw(209, 18);
-        go.move(87, 45);
-        System.out.println("You enter the vast, windy Grassy Plains.");
-        screen.clear(4);
+        displayPlayerStatus();
+        //added intro 
+        String msg1 = "You step out of your home. The world you once knew is gone.";
+        go.move(105 - (msg1.length() / 2), 44);
+        System.out.println(msg1);
+        screen.clear(3);
+
+        screen.clear(0);
+        go.move(0, 37);
+        box.draw(209, 18);
+        displayPlayerStatus();
+        
+        String msg2 = "The Grassy Plains, once a vibrant field of green, are now a dying yellow.";
+        String msg3 = "A dark energy radiates from a hulking shape in the distance...";
+        go.move(105 - (msg2.length() / 2), 44);
+        System.out.println(msg2);
+        go.move(105 - (msg3.length() / 2), 46);
+        System.out.println(msg3);
+        screen.clear(5);
+        
 
         boolean inWorld = true;
         while (inWorld) {
@@ -40,6 +57,7 @@ public class GrassyPlains {
 
             go.move(95, 43);
             System.out.println("Where will you explore?");
+            
             go.move(102, 47);
             System.out.println("[1]-North");
             go.move(111, 49);
@@ -53,43 +71,42 @@ public class GrassyPlains {
             int direction = input.nextInt();
 
             if (direction >= 1 && direction <= 4) {
-                if (random.nextInt(100) < 75) { // 65% chance of encounter
+                if (random.nextInt(100) < 80) { // 80% chance of encounter
                     triggerEncounter(direction); 
                     if (!player.isAlive()) {
                         inWorld = false; 
                     }
                 } else {
-                
+                    // No encounter logic
                     screen.clear(0);
                     go.move(0, 37);
                     box.draw(209, 18);
                     displayPlayerStatus();
                     
                     String directionString = "";
-                    switch (direction) {
-                        case 1: directionString = "You walk north."; break;
-                        case 2: directionString = "You walk east."; break;
-                        case 3: directionString = "You walk south."; break;
-                        case 4: directionString = "You walk west."; break;
+                    switch (direction) {//added twist
+                        case 1: directionString = "You head north. The trees are twisted and leafless."; break;
+                        case 2: directionString = "You walk east. You hear strange echoes from the cliffs."; break;
+                        case 3: directionString = "You push south, the tall grass rustling around you."; break;
+                        case 4: directionString = "You follow the dried riverbed, but it's just cracked earth."; break;
                     }
                     
                     int centerXDir = 105 - (directionString.length() / 2);
                     go.move(centerXDir, 45); 
                     System.out.println(directionString);
-
-                    screen.clear(2); 
+                    screen.clear(1); // 2
 
                     screen.clear(0);
                     go.move(0, 37);
                     box.draw(209, 18);
                     displayPlayerStatus();
                     
-                    String wanderString = "You wander the plains but find nothing of interest.";
+                    String wanderString = "The air is still... you find nothing of interest.";
                     int centerXWander = 105 - (wanderString.length() / 2);
                     go.move(centerXWander, 45); 
                     System.out.println(wanderString);
 
-                    screen.clear(3); 
+                    screen.clear(1); // 2
                 }
             } else { 
                 screen.clear(0);
@@ -99,7 +116,7 @@ public class GrassyPlains {
 
                 go.move(84, 45);
                 System.out.println("Invalid direction! Please choose [1] to [4]");
-                screen.clear(3);
+                screen.clear(3); // 3
             }
         }
     }
@@ -114,17 +131,17 @@ public class GrassyPlains {
 
         String directionString = "";
         switch (direction) {
-            case 1: directionString = "You walk north."; break;
-            case 2: directionString = "You walk east."; break;
-            case 3: directionString = "You walk south."; break;
-            case 4: directionString = "You walk west."; break;
+            case 1: directionString = "You head north into the dying woods..."; break;
+            case 2: directionString = "You walk east towards the cliffs..."; break;
+            case 3: directionString = "You push south through the tall grass..."; break;
+            case 4: directionString = "You follow the dried riverbed west..."; break;
         }
         
         int centerXDir = 105 - (directionString.length() / 2);
         go.move(centerXDir, 45); 
         System.out.println(directionString);
         
-        screen.clear(2); 
+        screen.clear(1); // 2
 
         screen.clear(0);
         go.move(0, 37);
@@ -133,7 +150,7 @@ public class GrassyPlains {
 
         if (mobsDefeated >= MOBS_UNTIL_BOSS) {
             mob = new Minotaur();
-            String msg = "A hulking Minotaur blocks your path! It's the guardian of these plains!";
+            String msg = "A hulking Minotaur blocks your path! It roars, its eyes glowing with the rift's energy.";
             int centerXMsg = 105 - (msg.length() / 2);
             go.move(centerXMsg, 45);
             System.out.println(msg);
@@ -147,18 +164,18 @@ public class GrassyPlains {
                 mob = new Wolf();
             }
             
-            String msg = "A " + mob.name + " has appeared!";
+            String msg = "A " + mob.name + " leaps from the shadows!";
             int centerXMsg = 105 - (msg.length() / 2);
             go.move(centerXMsg, 45);
             System.out.println(msg);
         }
         
-        screen.clear(3);
+        screen.clear(1); // 3
 
         Battle battle = new Battle(input, player, mob, screen, go, box);
         boolean playerWon = battle.start();
 
-        if (playerWon) {//added drama- chrisnel
+        if (playerWon) {
             if (mob instanceof Minotaur) {
                 
                 playWorld1Outro(); 
@@ -190,15 +207,15 @@ public class GrassyPlains {
                 if (choice == 1) {
                     desertWorld.explore(); 
                 } else {
-                    //added resting feature-chrisnel
                     boolean isResting = true;
                     while (isResting) {
+                        
                         screen.clear(0);
                         go.move(0, 37);
                         box.draw(209, 18);
                         displayPlayerStatus(); 
 
-                        String restMsg1 = "You are resting at home. ";
+                        String restMsg1 = "You are resting at home.";
                         String restMsg2 = "Are you ready for your next adventure?";
                         String restOpt = "[1] Yes, proceed to the Desert World";
 
@@ -223,7 +240,7 @@ public class GrassyPlains {
                             String waitMsg = "You take a little more time to rest...";
                             go.move(105 - (waitMsg.length() / 2), 45);
                             System.out.println(waitMsg);
-                            screen.clear(3);
+                            screen.clear(1); // 3
                         }
                     }
                 }
@@ -235,7 +252,7 @@ public class GrassyPlains {
             screen.clear(0);
             go.move(98, 27);
             System.out.println("You have been defeated...");
-            screen.clear(5);
+            screen.clear(1); // 5
             System.exit(0);
         }
     }
@@ -245,41 +262,55 @@ public class GrassyPlains {
         go.move(0, 37);
         box.draw(209, 18);
         displayPlayerStatus(); 
-        go.move(92, 44);
-        System.out.println("You found a reward chest!");
+        
+        
+        String title = "You defeated the enemy! Choose your reward:";
+        go.move(105 - (title.length() / 2), 43); 
+        System.out.println(title);
 
-        int rewardType = random.nextInt(5); 
+        //instead of random reward, let player choose(if mas nice ang random ingna lang ko)- chrisnel
+        String opt1 = "[1] Healing Potion (Restore all HP)";
+        String opt2 = "[2] Mana Elixir (Restore all Mana)";
+        String opt3 = "[3] Whetstone (Gain +15 Temp. Damage for 3 battles)";
 
-        if (rewardType == 0) {
-            int hpBoost = 30;
-            player.maxHp += hpBoost;
-            player.hp += hpBoost;
-            go.move(89, 46);
-            System.out.println("Your maximum HP increased by " + hpBoost + "!");
-        } 
-        else if (rewardType == 1) {
-            player.addTemporaryDamage(15);
-            go.move(80, 46);
-            System.out.println("Your damage increased by 15 for the next battle!");
-        } 
-        else if (rewardType == 2) {
-            int manaBoost = 20;
-            player.maxMana += manaBoost;
-            player.mana += manaBoost;
-            go.move(88, 46);
-            System.out.println("Your maximum Mana increased by " + manaBoost + "!");
-        } 
-        else if (rewardType == 3) {
-            player.hp = player.maxHp;
-            go.move(80, 46);
-            System.out.println("You found a healing potion! HP restored to full!");
-        } 
-        else {
-            player.mana = player.maxMana;
-            go.move(81, 46);
-            System.out.println("You found a mana elixir! Mana restored to full!");
+        go.move(105 - (opt1.length() / 2), 46);
+        System.out.println(opt1);
+        go.move(105 - (opt2.length() / 2), 47);
+        System.out.println(opt2);
+        go.move(105 - (opt3.length() / 2), 48);
+        System.out.println(opt3);
+
+        go.move(106, 50); // Cursor position
+        int choice = input.nextInt();
+
+        screen.clearLine(go, 70, 43, 80); // Clear title
+        screen.clearLine(go, 70, 46, 80); // Clear opt 1
+        screen.clearLine(go, 70, 47, 80); // Clear opt 2
+        screen.clearLine(go, 70, 48, 80); // Clear opt 3
+
+        String msg = "";
+        switch (choice) {
+            case 1:
+                player.hp = player.maxHp;
+                msg = "You feel invigorated! HP restored to full!";
+                break;
+            case 2:
+                player.mana = player.maxMana;
+                msg = "Your mind clears! Mana restored to full!";
+                break;
+            case 3:
+                player.addTemporaryDamage(15);
+                msg = "Your weapon glows! Damage increased for the next 3 battles!";
+                break;
+            default:
+                player.hp = player.maxHp;
+                msg = "You fumbled but found a Healing Potion! HP restored to full!";
+                break;
         }
-        screen.clear(5);
+
+        go.move(105 - (msg.length() / 2), 45);
+        System.out.println(msg);
+        screen.clear(1); //4
     }
 
     private void displayPlayerStatus() {
@@ -312,32 +343,33 @@ public class GrassyPlains {
         }
     }
 
-    
     private void playWorld1Outro() {
-        // Start with a clean screen
         screen.clear(0);
         go.move(0, 37);
         box.draw(209, 18);
         displayPlayerStatus();
     
-        String msg1 = "With the Minotaur defeated, a calm falls over the Grassy Plains.";
+        String msg1 = "With the Minotaur defeated, its dark energy evaporates.";
+        String msg2 = "A faint, healthy green returns to the grass around you.";
         go.move(105 - (msg1.length() / 2), 44);
         System.out.println(msg1);
-        screen.clear(4); // Pause
+        go.move(105 - (msg2.length() / 2), 46);
+        System.out.println(msg2);
+        screen.clear(5); 
 
         screen.clear(0);
         go.move(0, 37);
         box.draw(209, 18);
         displayPlayerStatus();
         
-        String msg2 = "The ground shakes as the beast's dark energy recedes,";
-        String msg3 = "and a swirling portal of sand and heat tears open before you.";
+        String msg3 = "The ground shakes violently as the beast's power is drawn away...";
+        String msg4 = "...pulled towards a new focal point: a swirling portal of sand and heat.";
         
-        go.move(105 - (msg2.length() / 2), 44);
-        System.out.println(msg2);
-        go.move(105 - (msg3.length() / 2), 46);
+        go.move(105 - (msg3.length() / 2), 44);
         System.out.println(msg3);
+        go.move(105 - (msg4.length() / 2), 46);
+        System.out.println(msg4);
         
-        screen.clear(8);
+        screen.clear(1);//6
     }
 }

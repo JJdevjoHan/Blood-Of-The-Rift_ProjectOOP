@@ -45,6 +45,11 @@ public abstract class Character {
             }
         }
     }
+
+    public void addTemporaryDamage(int amount, int duration) {
+        this.temporaryDamageBuff = amount;
+        this.damageBuffDuration = duration; 
+    }//added for the final boss reward option-chrisnel  
     
     public abstract void displaySkills(GoToXY go, int boxStartX, int boxWidth, int yStart);
     

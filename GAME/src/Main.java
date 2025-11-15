@@ -37,7 +37,9 @@ public class Main {
             Home home = new Home(input, player, screen, go, box);
             home.enter();
             //add world 
-            SnowyIsland snowyIsland = new SnowyIsland(input, player, screen, go, box);
+            FinalWorld finalWorld = new FinalWorld(input, player, screen, go, box);
+            LavaWorld lavaWorld = new LavaWorld(input, player, screen, go, box, finalWorld);
+            SnowyIsland snowyIsland = new SnowyIsland(input, player, screen, go, box, lavaWorld);
             DesertWorld desertWorld = new DesertWorld(input, player, screen, go, box, snowyIsland);
             GrassyPlains grassyPlains = new GrassyPlains(input, player, screen, go, box, desertWorld);
             grassyPlains.explore();

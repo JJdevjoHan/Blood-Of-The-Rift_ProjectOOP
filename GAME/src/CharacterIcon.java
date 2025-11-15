@@ -164,10 +164,16 @@ public class CharacterIcon {
         System.out.printf("\033[%d;%dH%s", y + 3, x + 6,  "(_____/ /( )\\ \\_____)");
         System.out.printf("\033[%d;%dH%s", y + 4, x + 13, "|/ \\|");
     }
-    
-    //continue the designs here...
-    
-    
+
+    //-chrisnel
+    public static void Kyros(int x, int y) {
+        System.out.printf("\033[%d;%dH%s", y + 0, x + 1, "/\\ /\\");
+        System.out.printf("\033[%d;%dH%s", y + 1, x + 0, "( O.O )");
+        System.out.printf("\033[%d;%dH%s", y + 2, x + 1, " \\_V_/ ");
+        System.out.printf("\033[%d;%dH%s", y + 3, x + 0, " /(_)\\\\");
+        System.out.printf("\033[%d;%dH%s", y + 4, x + 0, "/  ||  \\");
+        System.out.printf("\033[%d;%dH%s", y + 5, x + 1, " \\_ _/");
+    }
 
 }
 

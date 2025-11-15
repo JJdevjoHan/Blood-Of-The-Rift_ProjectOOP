@@ -30,7 +30,7 @@ public class Home {
         System.out.println("You wake up from a deep sleep,");
         go.move(84, 46);
         System.out.println("You look around your home for equipment ...");
-        screen.clear(5);
+        screen.clear(1);//5
 
         while (!hasEquipment) {
             screen.clear(0);
@@ -78,7 +78,7 @@ public class Home {
                     go.move(98, 45);
                     System.out.println("You walk " + (direction == 1 ? "north." : direction == 2 ? "east." : direction == 3 ? "south." : "west."));
 
-                    screen.clear(3);
+                    screen.clear(1);//3
                 }
                 default -> {
                     screen.clear(0);
@@ -135,7 +135,7 @@ public class Home {
                 System.out.print(GREEN + player.hp + RESET);
                 System.out.print("   MP: ");
                 System.out.println(BLUE + player.mana + RESET);
-                screen.clear(7);
+                screen.clear(1);//7
                 hasEquipment = true;
             }
         }
@@ -207,7 +207,7 @@ public class Home {
                 box.draw(209, 18);
                 go.move(87, 45);
                 System.out.println("You step outside, ready for your adventure...");
-                screen.clear(4);
+                screen.clear(1);//4
 
             } else {
                 
@@ -251,7 +251,7 @@ public class Home {
                 go.move(105 - (line3.length() / 2), 47);
                 System.out.println(line3);
 
-                screen.clear(8); 
+                screen.clear(1); //8
             }
         }
     }

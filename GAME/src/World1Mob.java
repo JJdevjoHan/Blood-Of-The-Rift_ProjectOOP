@@ -38,25 +38,25 @@ public abstract class World1Mob {
 
 class Slime extends World1Mob {
     public Slime() {
-        super("Slime", 20, 5);
+        super("Slime", 1, 5); //20
     }
 }
 
 class Bull extends World1Mob {
     public Bull() {
-        super("Wild Bull", 30, 8);
+        super("Wild Bull", 1, 8); //30
     }
 }
 
 class Wolf extends World1Mob {
     public Wolf() {
-        super("Dire Wolf", 40, 10);
+        super("Dire Wolf", 1, 10); //40
     }
 }
 
 class Minotaur extends World1Mob {
     public Minotaur() {
-        super("Minotaur", 80, 12);
+        super("Minotaur", 1, 12); //80
     } 
 
     @Override

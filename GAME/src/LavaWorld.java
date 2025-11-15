@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import java.util.Random;
 
-public class DesertWorld {
+public class LavaWorld {
     private Scanner input;
     private Character player;
     private ClearScreen screen;
@@ -9,53 +9,53 @@ public class DesertWorld {
     private DrawBox box;
     private Random random = new Random();
     private int mobsDefeated = 0;
-    private final int MOBS_UNTIL_BOSS = 4;
-    private SnowyIsland snowyIsland;
+    private final int MOBS_UNTIL_BOSS = 3;
+   
+    private FinalWorld finalWorld;
 
-    public DesertWorld(Scanner input, Character player, ClearScreen screen, GoToXY go, DrawBox box, SnowyIsland snowyIsland) {
+    public LavaWorld(Scanner input, Character player, ClearScreen screen, GoToXY go, DrawBox box, FinalWorld finalWorld) {
         this.input = input;
         this.player = player;
         this.screen = screen;
         this.go = go;
         this.box = box;
-        this.snowyIsland = snowyIsland; 
+        this.finalWorld = finalWorld; 
     }
 
-    public void explore() {
-    
+    public void explore(){
+        
         screen.clear(0);
         go.move(0, 37);
         box.draw(209, 18);
         displayPlayerStatus();
         
-        String msg1 = "You step through the portal and are hit by a wave of searing, unnatural heat.";
+        String msg1 = "You step from the freezing cold directly into a furnace.";
         go.move(105 - (msg1.length() / 2), 44);
         System.out.println(msg1);
-        screen.clear(1); // 4
+        screen.clear(1);//3
 
         screen.clear(0);
         go.move(0, 37);
         box.draw(209, 18);
         displayPlayerStatus();
         
-        String msg2 = "This desert is wrong. The sand is gray with ash, and the sun is a hateful red eye.";
-        String msg3 = "Legends speak of a corrupted tomb, a guardian... and a sacred blade lost in the sand.";
+        String msg2 = "This is the heart of the rift's corruption, a land of pure fire and rage.";
+        String msg3 = "The Betrayed Champion's hatred has twisted this place into a monument to his pain.";
         go.move(105 - (msg2.length() / 2), 44);
         System.out.println(msg2);
         go.move(105 - (msg3.length() / 2), 46);
         System.out.println(msg3);
-        screen.clear(1); // 8
+        screen.clear(1);//5
 
         boolean inWorld = true;
-        while (inWorld) {
+        while(inWorld){
             screen.clear(0);
-            go.move(0, 37);
-            box.draw(209, 18);
+            go.move(0, 37); 
+            box.draw(209, 18);   
             displayPlayerStatus();
 
             go.move(95, 43);
             System.out.println("Where will you explore?");
-            
             go.move(102, 47);
             System.out.println("[1]-North");
             go.move(111, 49);
@@ -82,10 +82,10 @@ public class DesertWorld {
 
                     String directionString = "";
                     switch (direction) {
-                        case 1: directionString = "You climb over the buried ruins of an old city."; break;
-                        case 2: directionString = "You walk east, the sun glinting off sharp, black glass."; break;
-                        case 3: directionString = "You trudge south through endless, choking dunes of ash."; break;
-                        case 4: directionString = "You head west into a field of colossal, sun-bleached bones."; break;
+                        case 1: directionString = "You walk north. The heat from the volcano rim is unbearable."; break;
+                        case 2: directionString = "You walk east. A river of molten rock flows nearby."; break;
+                        case 3: directionString = "You walk south, kicking up clouds of hot ash."; break;
+                        case 4: directionString = "You walk west through a forest of burnt, skeletal trees."; break;
                     }
 
                     int centerXDir = 105 - (directionString.length() / 2);
@@ -98,7 +98,7 @@ public class DesertWorld {
                     box.draw(209, 18);
                     displayPlayerStatus();
 
-                    String wanderString = "You wander the desert but find nothing of interest.";
+                    String wanderString = "The air shimmers. You find nothing but rock and fire.";
                     int centerXWander = 105 - (wanderString.length() / 2);
                     go.move(centerXWander, 45);
                     System.out.println(wanderString);
@@ -111,13 +111,13 @@ public class DesertWorld {
                 displayPlayerStatus();
                 go.move(84, 45);
                 System.out.println("Invalid direction. Please choose 1-4.");    
-                screen.clear(1); // 3
+                screen.clear(3);
             }
         }
     }
 
-    private void triggerEncounter(int direction) {
-        World1Mob mob; 
+    private void triggerEncounter(int direction){
+        World1Mob mob;
 
         screen.clear(0);
         go.move(0, 37);
@@ -126,15 +126,15 @@ public class DesertWorld {
 
         String directionString = "";
         switch (direction) {
-            case 1: directionString = "You climb over the buried ruins..."; break;
-            case 2: directionString = "You walk east into the canyons..."; break;
-            case 3: directionString = "You trudge south through the ash..."; break;
-            case 4: directionString = "You head west into the bone fields..."; break;
-        }
-
-        int centerXDir = 105 - (directionString.length() / 2);
-        go.move(centerXDir, 45);
-        System.out.println(directionString);
+            case 1: directionString = "You climb toward the volcano's rim..."; break;
+            case 2: directionString = "You follow the magma river east..."; break;
+            case 3: directionString = "You head south into the ash fields..."; break;
+            case 4: directionString = "You step into the charred forest..."; break;
+        }   
+        
+        int centerXDir = 105 - (directionString.length() / 2);  
+        go.move(centerXDir, 45);    
+        System.out.println(directionString); 
         screen.clear(1); // 2
 
         screen.clear(0);
@@ -142,109 +142,46 @@ public class DesertWorld {
         box.draw(209, 18);
         displayPlayerStatus();
 
-        if (mobsDefeated >= MOBS_UNTIL_BOSS) {
-            mob = new World2Mob.GiantWorm();
-            String msg = "A sarcophagus bursts from the sand! The Desert Boss " + mob.name + " has appeared!";
-            int centerXMsg = 105 - (msg.length() / 2);
-            go.move(centerXMsg, 45);
-            System.out.println(msg);
-        } else {
+        if(mobsDefeated >= MOBS_UNTIL_BOSS){
+            mob = new World4Mob.LavaImp();
+            String msg = "The Lava Boss " + mob.name + " rises from a pool of magma!";
+            int centerXMsgg = 105 - (msg.length() / 2);
+            go.move(centerXMsgg, 45);
+            System.out.println(msg); 
+        }else{
             int mobType = random.nextInt(3);
-            if (mobType == 0) {
-                mob = new World2Mob.Spider();
-            } else if (mobType == 1) {
-                mob = new World2Mob.Snake();
-            } else {
-                mob = new World2Mob.Mummy(); // Changed from Mummy
+            if(mobType == 0){
+                mob = new World4Mob.MagmaBeast();    
+            }else if(mobType == 1){
+                mob = new World4Mob.SkeletonHead();
+            }else{
+                mob = new World4Mob.Golem();
             }
 
-            String msg = "A " + mob.name + " ambushes you from the sand!";
+            String msg = "A " + mob.name + " erupts from the ground!"; 
             int centerXMsg = 105 - (msg.length() / 2);
-            go.move(centerXMsg, 45);
+            go.move(centerXMsg, 45);    
             System.out.println(msg);
         }
 
-        screen.clear(1); // 2
+        screen.clear(1);    // 2    
 
         Battle battle = new Battle(input, player, mob, screen, go, box);
         boolean playerWon = battle.start();
 
-        if (playerWon) {
-            if(mob instanceof World2Mob.GiantWorm) { 
-                playWorld2Outro(); 
-
-                screen.clear(0);
-                go.move(0, 37);
-                box.draw(209, 18);
-                displayPlayerStatus();
-
-                String msg1 = "The portal to the Snowy Island is open.";
-                String msg2 = "What will you do?";
-                String opt1 = "[1] Enter the portal";
-                String opt2 = "[2] Return home to rest";
-                
-                go.move(105 - (msg1.length() / 2), 43);
-                System.out.println(msg1);
-                go.move(105 - (msg2.length() / 2), 45);
-                System.out.println(msg2);
-
-                go.move(105 - (opt1.length() / 2), 48);
-                System.out.println(opt1);
-                go.move(105 - (opt2.length() / 2), 49);
-                System.out.println(opt2);
-
-                go.move(106, 51);
-                int choice = input.nextInt();
-
-                if(choice == 1) {
-                    snowyIsland.explore();
-                } else {
-                    boolean isResting = true;
-                    while(isResting){
-                        
-                        screen.clear(0);
-                        go.move(0, 37);
-                        box.draw(209, 18);
-                        displayPlayerStatus(); 
-
-                        String restMsg1 = "You are resting at home.";
-                        String restMsg2 = "Are you ready for your next adventure?";
-                        String restOpt = "[1] Yes, proceed to the Snowy Island";
-
-                        go.move(105 - (restMsg1.length() / 2), 44);
-                        System.out.println(restMsg1);
-                        go.move(105 - (restMsg2.length() / 2), 46);
-                        System.out.println(restMsg2);
-                        go.move(105 - (restOpt.length() / 2), 49);
-                        System.out.println(restOpt);
-
-                        go.move(106, 51); 
-                        int restChoice = input.nextInt();
-
-                        if (restChoice == 1) {
-                            isResting = false; 
-                            snowyIsland.explore(); 
-                        } else {
-                            screen.clear(0);
-                            go.move(0, 37);
-                            box.draw(209, 18);
-                            displayPlayerStatus();
-                            String waitMsg = "You take a little more time to rest...";
-                            go.move(105 - (waitMsg.length() / 2), 45);
-                            System.out.println(waitMsg);
-                            screen.clear(1); // 3
-                        }
-                    }
-                }
-            } else {
-                mobsDefeated++;
+        if(playerWon){
+            if(mob instanceof World4Mob.LavaImp){
+                playWorld4Outro(); 
+                finalWorld.explore(); 
+            }else{
+                mobsDefeated++; 
                 openRewardChest();
             }
         } else {
             screen.clear(0);
             go.move(98, 27);
             System.out.println("You have been defeated...");
-            screen.clear(1); // 5    
+            screen.clear(5);    
             System.exit(0);
         }
     }
@@ -256,7 +193,7 @@ public class DesertWorld {
         displayPlayerStatus();
         
         String title = "You defeated the enemy! Choose your reward:";
-        go.move(105 - (title.length() / 2), 43);
+        go.move(105 - (title.length() / 2), 43); // Center title
         System.out.println(title);
 
         String opt1 = "[1] Healing Potion (Restore all HP)";
@@ -270,7 +207,7 @@ public class DesertWorld {
         go.move(105 - (opt3.length() / 2), 48);
         System.out.println(opt3);
 
-        go.move(106, 50);
+        go.move(106, 50); 
         int choice = input.nextInt();
 
         screen.clearLine(go, 70, 43, 80); // Clear title
@@ -300,15 +237,15 @@ public class DesertWorld {
 
         go.move(105 - (msg.length() / 2), 45);
         System.out.println(msg);
-        screen.clear(1); // Pause for 4 seconds
+        screen.clear(1); //4
     }
 
-    private void displayPlayerStatus() {
-        final String GREEN = "\u001B[1;92m";
-        final String BLUE = "\u001B[36m";
-        final String RESET = "\u001B[0m";
+    private void displayPlayerStatus(){
+       final String GREEN = "\u001B[1;92m";
+       final String BLUE = "\u001B[36m";
+       final String RESET = "\u001B[0m";
 
-        go.move(93, 24);
+       go.move(93, 24);
         System.out.print("HP: ");
         System.out.print(GREEN + player.hp + "/" + player.maxHp + RESET);
         System.out.print("    MP:"); 
@@ -332,42 +269,65 @@ public class DesertWorld {
                 break;
         }
     }
-
-    private void playWorld2Outro() {
+    
+    private void playWorld4Outro() {
         screen.clear(0);
         go.move(0, 37);
         box.draw(209, 18);
         displayPlayerStatus();
 
-        String msg1 = "The Mummy crumbles to dust, and the red haze over the desert lifts.";
+        String msg1 = "As the Lava Imp dissolves, its fire extinguishes into cold ash.";
+        String msg2 = "The oppressive heat of the volcano suddenly vanishes...";
         go.move(105 - (msg1.length() / 2), 44);
         System.out.println(msg1);
-        screen.clear(1); // 4
-
-        screen.clear(0);
-        go.move(0, 37);
-        box.draw(209, 18);
-        displayPlayerStatus();
-
-        String msg2 = "As the cursed sand settles, you see a glint from the Mummy's tomb.";
-        String msg3 = "It's the Blade of Ashrock... but it's cold, its fire long dead.";
-        go.move(105 - (msg2.length() / 2), 44);
+        go.move(105 - (msg2.length() / 2), 46);
         System.out.println(msg2);
-        go.move(105 - (msg3.length() / 2), 46);
-        System.out.println(msg3);
-        screen.clear(1); // 6
         
+        screen.clear(1); //5
+
         screen.clear(0);
         go.move(0, 37);
         box.draw(209, 18);
         displayPlayerStatus();
 
-        String msg4 = "Suddenly, the air shimmers and freezes. A portal of frost and ice appears.";
-        String msg5 = "You hear a cold, merciless voice echo from it... 'Silence. Stillness. Order.'";
-        go.move(105 - (msg4.length() / 2), 44);
+        String msg3 = "A deep, groaning sound echoes from beneath your feet.";
+        String msg4 = "RRRUUUMMMBBLLLE..."; // Sound effect unta mahimoan plspls
+        
+        go.move(105 - (msg3.length() / 2), 44);
+        System.out.println(msg3);
+        go.move(105 - (msg4.length() / 2), 46);
         System.out.println(msg4);
-        go.move(105 - (msg5.length() / 2), 46);
+
+        screen.clear(1); //4
+
+        screen.clear(0);
+        go.move(0, 37);
+        box.draw(209, 18);
+        displayPlayerStatus();
+
+        String msg5 = "The ground splits open, but not with fire.";
+        String msg6 = "Instead, a portal of pure, terrifying shadow tears a hole in reality.";
+        
+        go.move(105 - (msg5.length() / 2), 44);
         System.out.println(msg5);
-        screen.clear(1); // 7
+        go.move(105 - (msg6.length() / 2), 46);
+        System.out.println(msg6);
+
+        screen.clear(1); //6
+
+        screen.clear(0);
+        go.move(0, 37);
+        box.draw(209, 18);
+        displayPlayerStatus();
+
+        String msg7 = "You feel the echoes of an 800-year-old hatred calling to you from within.";
+        String msg8 = "This is it. The path to the Betrayed Champion.";
+
+        go.move(105 - (msg7.length() / 2), 44);
+        System.out.println(msg7);
+        go.move(105 - (msg8.length() / 2), 46);
+        System.out.println(msg8);
+        
+        screen.clear(1);//7
     }
 }

@@ -36,11 +36,11 @@ public class Battle {
         if (player.isAlive()) {
             System.out.println("You have defeated the " + mob.name + "!");
             player.decrementDamageBuffDuration();
-            try { TimeUnit.SECONDS.sleep(3); } catch (InterruptedException e) {}
+            try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) {}//3
             return true;
         } else {
             System.out.println("You have been defeated by the " + mob.name + "!");
-            try { TimeUnit.SECONDS.sleep(3); } catch (InterruptedException e) {}
+            try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) {}//3
             return false;
         }
     }
@@ -80,7 +80,7 @@ public class Battle {
         System.out.print(actionMessage); 
    
         updateHpDisplay();
-        try { TimeUnit.SECONDS.sleep(2); } catch (InterruptedException e) {}
+        try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) {}//2
     }
 
     private void mobTurn() {
@@ -111,7 +111,7 @@ public class Battle {
         System.out.print(actionMessage); 
         
         updateHpDisplay();
-        try { TimeUnit.SECONDS.sleep(2); } catch (InterruptedException e) {}
+        try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) {}//2
     }
 
     private void displayBattleStatus() {
@@ -157,6 +157,14 @@ public class Battle {
             case "SnowGolem": CharacterIcon.SnowGolem(162, 20); break;
             case "WitchGnome": CharacterIcon.WitchGnome(162, 20); break;
             case "Yeti": CharacterIcon.Yeti(162, 20); break;
+            //World4
+            case "LavaImp": CharacterIcon.LavaImp(162, 20); break;
+            case "SkeletonHead": CharacterIcon.SkeletonHead(162, 20); break;
+            case "Golem": CharacterIcon.Golem(162, 20); break;
+            case "MagmaBeast": CharacterIcon.MagmaBeast(162, 20); break;
+            //World5
+            case "Demon Lord": CharacterIcon.DemonLord(162, 20); break;
+            case "General | Kyros": CharacterIcon.Kyros(162, 20); break;
         }
 
         go.move(157, 24);

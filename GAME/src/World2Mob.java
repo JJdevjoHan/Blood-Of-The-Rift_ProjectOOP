@@ -13,25 +13,25 @@ public class World2Mob extends World1Mob {
 
     public static class Spider extends World2Mob {
         public Spider() {
-            super("Spider", 40, 12);
+            super("Spider", 5, 12);//40
         }
     }
 
     public static class Snake extends World2Mob {
         public Snake() {
-            super("Snake", 30, 15);
+            super("Snake", 5, 15); //30
         }
     }
 
     public static class GiantWorm extends World2Mob {
         public GiantWorm() {
-            super("Giant Worm", 60, 13);
+            super("Giant Worm", 5, 13); //60
         }
     }
 
     public static class Mummy extends World2Mob {
         public Mummy() {
-            super("Mummy", 100, 15);
+            super("Mummy", 5, 15); //100
         }
 
         @Override
