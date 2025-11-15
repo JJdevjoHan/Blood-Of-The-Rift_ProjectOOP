@@ -53,7 +53,7 @@ public class GrassyPlains {
             int direction = input.nextInt();
 
             if (direction >= 1 && direction <= 4) {
-                if (random.nextInt(100) < 75) { // 65% chance of encounter
+                if (random.nextInt(100) < 80) { // 80% chance of encounter
                     triggerEncounter(direction); 
                     if (!player.isAlive()) {
                         inWorld = false; 

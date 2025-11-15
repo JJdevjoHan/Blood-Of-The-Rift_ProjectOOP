@@ -51,7 +51,7 @@ public class DesertWorld {
             int direction = input.nextInt();
 
             if (direction >= 1 && direction <= 4) {
-                if (random.nextInt(100) < 65) { 
+                if (random.nextInt(100) < 75) {  // 75% encounter
                     triggerEncounter(direction); 
                     if (!player.isAlive()) {
                         inWorld = false; 

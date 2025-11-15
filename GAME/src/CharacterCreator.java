@@ -280,7 +280,6 @@ public class CharacterCreator {
             }
         }
 
-
         go.move(0, 37);
         box.draw(209, 18);
 
