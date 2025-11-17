@@ -15,17 +15,18 @@ public class DialogueFrame extends JFrame {
     private int index = 0;
 
     private String[] storyLines = {
-        "A thousand years ago....",
-        "A Mighty Hero was chosen to save the Kingdom of Senthra from the wrath of the gods.",
-        "Betrayed by his own people, he was used as a scapegoat and sacrificed to seal the calamities.",
-        "But the world still fell apart, a great rift tore reality into multiple realms.",
-        "The champion did not die; instead, he was cursed, left less than human, and forgotten in the shadows of the rift.",
-        "Eight hundred years later....",
-        "New heroes rise from the divided worlds.",
-        "Believing the fallen Hero to be the cause of the chaos, they set out to defeat him.",
-        "But as they uncover the truth, they learn he was never the villain, only the first victim.",
-        "In the final battle, the champion accepts his fate.",
-        "With the help of the heroes, he offers himself as the true sacrifice, closing the rift and restoring the world at last."
+        "In sooth, a thousand years ago....",
+        "A mighty hero was chosen to save the Kingdom of Senthra from the ire of the gods.",
+        "Betrayed by his own kin, he was made a scapegoat and sacrificed unto the gods to seal the calamities.",
+        "But...",
+        "The world didst still fall asunder, and a great rift tore reality into multiple realms.",
+        "Thee once mighty hero did not perish; nay, he was cursed, left less than a mortal, and forgotten in the rift's shadows.",
+        "Eight hundred winters anon....",
+        "New heroes arose from the sundered worlds.",
+        "And believing the fallen hero to be the cause of the chaos, they set forth to vanquish him.",
+        "But as they uncover the truth, they learned that he was never the villain, yet only the first victim.",
+        "In the final battle, the fallen hero accepts his fate...",
+        "And with the help of the heroes, he didst offer himself as thee true sacrifice, closing the rift and restoring the world at last."
     };
 
     public static void main(String[] args) {
