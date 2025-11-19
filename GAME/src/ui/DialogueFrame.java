@@ -6,6 +6,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.net.URL;
 
 public class DialogueFrame extends JFrame {
 
@@ -38,8 +39,9 @@ public class DialogueFrame extends JFrame {
         setMinimumSize(new Dimension(600, 400));
         setLocationRelativeTo(null);
         
-        ImageIcon bgIcon = new ImageIcon("C:\\Users\\JOHAN\\Documents\\git\\Blood-Of-The-Rift_ProjectOOP\\GAME\\src\\ui\\images\\backgroundpic\\storyline1.png");
-
+        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/storyline1.png"));
+        URL url = getClass().getResource("/images/backgroundpic/storyline1.png");
+        System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
         
         //sa container
