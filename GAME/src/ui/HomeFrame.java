@@ -10,6 +10,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.net.URL;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -46,8 +48,9 @@ public class HomeFrame extends JFrame {
         setMinimumSize(new Dimension(600, 400));
         setLocationRelativeTo(null);
         
-        ImageIcon bgIcon = new ImageIcon("C:\\Users\\JOHAN\\Documents\\git\\Blood-Of-The-Rift_ProjectOOP\\GAME\\src\\ui\\images\\backgroundpic\\background3.png");
-
+        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/background3.png"));
+        URL url = getClass().getResource("/images/backgroundpic/background3.png");
+        System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
         
         //sa container
@@ -78,9 +81,9 @@ public class HomeFrame extends JFrame {
         String[] columnNames = {"Paladin", "Mage", "Warrior"};
 
         //mga picture
-        ImageIcon paladinIcon = new ImageIcon("C:\\Users\\JOHAN\\eclipse-workspace\\AGAINUI\\src\\ui\\images\\playable\\paladin.png");
-        ImageIcon mageIcon = new ImageIcon("C:\\Users\\JOHAN\\eclipse-workspace\\AGAINUI\\src\\ui\\images\\playable\\mage.png");
-        ImageIcon warriorIcon = new ImageIcon("C:\\Users\\JOHAN\\eclipse-workspace\\AGAINUI\\src\\ui\\images\\playable\\warrior.png");
+        ImageIcon paladinIcon = new ImageIcon(getClass().getResource("/images/playable/paladin.png"));
+        ImageIcon mageIcon = new ImageIcon(getClass().getResource("/images/playable/mage.png"));
+        ImageIcon warriorIcon = new ImageIcon(getClass().getResource("/images/playable/warrior.png"));
 
         Object[][] data = {
             {paladinIcon, mageIcon, warriorIcon}

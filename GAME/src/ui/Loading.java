@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.*;
 import java.awt.*;
+import java.net.URL;
+import javax.swing.ImageIcon;
 
 public class Loading extends JFrame {
 
@@ -31,8 +33,9 @@ public class Loading extends JFrame {
         setMinimumSize(new Dimension(600, 400));
         setLocationRelativeTo(null);
         
-        ImageIcon bgIcon = new ImageIcon("C:\\Users\\JOHAN\\Documents\\git\\Blood-Of-The-Rift_ProjectOOP\\GAME\\src\\ui\\images\\backgroundpic\\storyline1.png");
-
+        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/loading1.png"));
+        URL url = getClass().getResource("/images/backgroundpic/loading1.png");
+        System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
         
         //sa container

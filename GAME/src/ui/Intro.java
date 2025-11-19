@@ -1,8 +1,11 @@
 package ui;
 
 import java.awt.*;
+import java.net.URL;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.ImageIcon;
 
 public class Intro extends JFrame {
 
@@ -17,8 +20,9 @@ public class Intro extends JFrame {
         setUndecorated(true);
         setOpacity(0f);       
 
-        ImageIcon bgIcon = new ImageIcon("C:\\Users\\JOHAN\\Documents\\git\\Blood-Of-The-Rift_ProjectOOP\\GAME\\src\\ui\\images\\backgroundpic\\background2.png");
-
+        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/background2.png"));
+        URL url = getClass().getResource("/images/backgroundpic/background2.png");
+        System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
 
         
