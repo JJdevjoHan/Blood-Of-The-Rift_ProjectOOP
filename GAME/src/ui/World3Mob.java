@@ -1,6 +1,5 @@
 package ui;
 
-import ui.SnowyIsland.World3Mob;
 
 public class World3Mob extends World1Mob {
     public World3Mob(String name, int hp, int damage) {
