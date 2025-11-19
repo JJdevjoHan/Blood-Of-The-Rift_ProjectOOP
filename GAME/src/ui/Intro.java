@@ -6,10 +6,9 @@ import javax.swing.border.EmptyBorder;
 
 public class Intro extends JFrame {
 
-	
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public Intro() {
+    public Intro() {
         setFont(new Font("Tahoma", Font.PLAIN, 12));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 500); 
@@ -18,13 +17,25 @@ public class Intro extends JFrame {
         setUndecorated(true);
         setOpacity(0f);       
 
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.setBackground(Color.BLACK);
+        
+        ImageIcon bgIcon = new ImageIcon("C:\\Users\\JOHAN\\Documents\\git\\Blood-Of-The-Rift_ProjectOOP\\GAME\\src\\ui\\images\\backgroundpic\\intro.jpg");
+
+        Image bgImage = bgIcon.getImage();
+
+        
+        JPanel contentPane = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
         setContentPane(contentPane);
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setOpaque(false);
+        centerPanel.setOpaque(false); // keep transparent so background shows
         contentPane.add(centerPanel, BorderLayout.CENTER);
 
         JLabel lblTitle = new JLabel("Blood Of The Rift", SwingConstants.CENTER);
