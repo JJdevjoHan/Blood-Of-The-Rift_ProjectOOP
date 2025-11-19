@@ -1,7 +1,5 @@
 package ui;
 
-import ui.LavaWorld.World4Mob;
-
 public class World4Mob extends World1Mob {
     public World4Mob(String name, int hp, int damage) {
        super(name, hp, damage); 
