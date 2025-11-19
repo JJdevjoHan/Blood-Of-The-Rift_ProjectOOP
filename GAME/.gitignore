@@ -1,2 +1,10 @@
-GAME/out/
+# Build output
+out/
 *.class
+
+# IDE / project metadata
+.idea/
+*.iml
+.classpath
+.project
+.settings/
