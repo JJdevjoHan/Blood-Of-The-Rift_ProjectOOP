@@ -35,7 +35,7 @@ public class LavaWorld extends JFrame {
     private World4Mob currentMob;
     private boolean inWorld = true;
     private final Random rng = new Random();
-    private String reservedSkeletonHeadDirection;
+    private String reservedGolemDirection;
     private int mobsDefeated = 0;
     private int stepsTaken = 0;
     private boolean chestFound = false;
@@ -195,7 +195,7 @@ public class LavaWorld extends JFrame {
             mobsDefeated++;
             
      
-            if(currentMob instanceof SkeletonHead) {
+            if(currentMob instanceof Golem) {
             	Object[] options = {"Enter Portal", "Return Home"};
             	int ch = JOptionPane.showOptionDialog(
             	        this,
@@ -266,7 +266,7 @@ public class LavaWorld extends JFrame {
             List<World4Mob> mobs = Arrays.asList(
                     new LavaImp(),
                     new MagmaBeast(),
-                    new Golem()
+                    new SkeletonHead()
             );
 
             List<String> dirList = new ArrayList<>(Arrays.asList(directions));
@@ -277,7 +277,7 @@ public class LavaWorld extends JFrame {
                 availableDirections.add(dirList.get(i));
             }
 
-            reservedSkeletonHeadDirection = dirList.get(3);
+            reservedGolemDirection = dirList.get(3);
 
             updateStatus();
             return;
@@ -287,11 +287,11 @@ public class LavaWorld extends JFrame {
 
             currentDirection = direction;
 
-            if (mobsDefeated == 3 && direction.equals(reservedSkeletonHeadDirection)) {
+            if (mobsDefeated == 3 && direction.equals(reservedGolemDirection)) {
                 currentMob = new SkeletonHead();
-                battleLog.append("The Giant Head Skeleton has appeared!\n\n");
-                battleLog.append("The Minancing Aura of the Skeleton....skicles!!\n\n");
-                JOptionPane.showMessageDialog(null,"SKELETON HEAD INCOMING!!!", "WARNING! MINIBOSS", JOptionPane.ERROR_MESSAGE);
+                battleLog.append("The Giant Golem appeared!\n\n");
+                battleLog.append("The Minancing Aura of the Golem....skicles!!\n\n");
+                JOptionPane.showMessageDialog(null,"GOLEM INCOMING!!!", "WARNING! MINIBOSS", JOptionPane.ERROR_MESSAGE);
             }
             else {
                 currentMob = directionMobs.get(direction);
@@ -568,13 +568,13 @@ public class LavaWorld extends JFrame {
 
         public static class SkeletonHead extends World4Mob{
             public SkeletonHead(){
-                super("Skeleton Head", 120, 10);
+                super("Skeleton Head", 19, 10);
             }
         }
 
         public static class Golem extends World4Mob{
             public Golem(){
-                super("Golem", 19, 20);
+                super("Golem", 120, 20);
             }
         }
 

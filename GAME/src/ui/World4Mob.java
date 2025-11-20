@@ -27,13 +27,13 @@ public class World4Mob extends World1Mob {
 
     public static class SkeletonHead extends World4Mob{
         public SkeletonHead(){
-            super("Skeleton Head", 120, 10);
+            super("Skeleton Head", 19, 10);
         }
     }
 
     public static class Golem extends World4Mob{
         public Golem(){
-            super("Golem", 19, 20);
+            super("Golem", 120, 20);
         }
     }  
 }
