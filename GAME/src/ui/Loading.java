@@ -33,8 +33,8 @@ public class Loading extends JFrame {
         setMinimumSize(new Dimension(600, 400));
         setLocationRelativeTo(null);
         
-        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/loading1.png"));
-        URL url = getClass().getResource("/images/backgroundpic/loading1.png");
+        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/loading1.jpg"));
+        URL url = getClass().getResource("/images/backgroundpic/loading1.jpg");
         System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
         
