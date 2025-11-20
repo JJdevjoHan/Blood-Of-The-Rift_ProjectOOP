@@ -36,18 +36,18 @@ public class Battle {
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
                 null, options, options[0]);
 
-        if(choice==0) { // Attack
+        if(choice==0) { 
             int dmg = 5 + rng.nextInt(6);
             mob.hp -= dmg;
             appendLog("You attack " + mob.name + " for " + dmg + " damage!");
-        } else if(choice==1) { // Spell
+        } else if(choice==1) { 
             if(player.mana >= 10) {
                 player.mana -= 10;
                 int dmg = (player.className.equals("Mage") ? 25 : 12) + rng.nextInt(8);
                 mob.hp -= dmg;
                 appendLog("You cast a spell on " + mob.name + " for " + dmg + " damage!");
             } else appendLog("Not enough mana!");
-        } else { // Flee
+        } else {
             if(rng.nextInt(100)<40) { appendLog("You fled!"); player.hp = 0; }
             else appendLog("Failed to flee!");
         }
