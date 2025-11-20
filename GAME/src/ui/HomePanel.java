@@ -3,8 +3,6 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -16,44 +14,41 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.table.JTableHeader;  
+import javax.swing.table.JTableHeader;
 
-public class HomeFrame extends JFrame {
-
+public class HomePanel extends JPanel {
     private static final long serialVersionUID = 1L;
+    private MainFrame mainFrame;
     private JTextField name;
     private JComboBox<String> classbox;
     private JTable table;
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new HomeFrame().setVisible(true));
+    public HomePanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+        initialize();
     }
 
-    public HomeFrame() {
-        setTitle("Home Frame");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 500); 
-        setMinimumSize(new Dimension(600, 400));
-        setLocationRelativeTo(null);
-        
+    private void initialize() {
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        // Background image setup
         ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/background3.png"));
         URL url = getClass().getResource("/images/backgroundpic/background3.png");
         System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
-        
-        //sa container
+
+        // Main content panel with background
         JPanel contentPane = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -61,9 +56,8 @@ public class HomeFrame extends JFrame {
                 g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
             }
         };
-
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        setContentPane(contentPane);
+        contentPane.setOpaque(false);
 
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
@@ -74,13 +68,13 @@ public class HomeFrame extends JFrame {
         JLabel lblTitle = new JLabel("Blood Of The Rift", SwingConstants.CENTER);
         lblTitle.setForeground(Color.WHITE);
         lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblTitle.setFont(new Font("Times New Roman", Font.BOLD, 60));
+        lblTitle.setFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 60));
         topPanel.add(lblTitle);
         topPanel.add(Box.createVerticalStrut(20));
 
         String[] columnNames = {"Paladin", "Mage", "Warrior"};
 
-        //mga picture
+        // Images for classes
         ImageIcon paladinIcon = new ImageIcon(getClass().getResource("/images/playable/paladin.png"));
         ImageIcon mageIcon = new ImageIcon(getClass().getResource("/images/playable/mage.png"));
         ImageIcon warriorIcon = new ImageIcon(getClass().getResource("/images/playable/warrior.png"));
@@ -100,12 +94,10 @@ public class HomeFrame extends JFrame {
         table.setBackground(Color.BLACK);
         table.setForeground(Color.WHITE);
 
-        //styling sa header
+        // Styling for header
         table.getTableHeader().setBackground(Color.BLACK);
         table.getTableHeader().setForeground(Color.WHITE);
-        table.getTableHeader().setFont(new Font("Times New Roman", Font.BOLD, 16));
-        table.setBackground(Color.BLACK);
-        table.setForeground(Color.WHITE);
+        table.getTableHeader().setFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 16));
         table.setBorder(new LineBorder(Color.BLACK));
 
         JTableHeader header = table.getTableHeader();
@@ -114,9 +106,8 @@ public class HomeFrame extends JFrame {
         header.setBorder(new LineBorder(Color.BLACK));
         topPanel.add(header);
         topPanel.add(table);
-        
-        
-        //charactercreation
+
+        // Character creation
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         centerPanel.setBorder(new LineBorder(Color.WHITE, 1, true));
@@ -124,7 +115,7 @@ public class HomeFrame extends JFrame {
 
         GridBagConstraints gbc;
 
-        //labelforname
+        // Label for name
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.gridx = 0;
@@ -134,7 +125,7 @@ public class HomeFrame extends JFrame {
         labelName.setForeground(Color.WHITE);
         centerPanel.add(labelName, gbc);
 
-        //namefield
+        // Name field
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.gridx = 1;
@@ -143,7 +134,7 @@ public class HomeFrame extends JFrame {
         name = new JTextField(15);
         centerPanel.add(name, gbc);
 
-        //labelsaclass
+        // Label for class
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.gridx = 0;
@@ -153,7 +144,7 @@ public class HomeFrame extends JFrame {
         labelClass.setForeground(Color.WHITE);
         centerPanel.add(labelClass, gbc);
 
-        //classbox
+        // Class combo box
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
         gbc.gridx = 1;
@@ -162,7 +153,7 @@ public class HomeFrame extends JFrame {
         classbox = new JComboBox<>(new String[]{"Warrior", "Mage", "Paladin"});
         centerPanel.add(classbox, gbc);
 
-        //for the confirm button
+        // Confirm button
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 8, 8, 8);
         gbc.gridx = 0;
@@ -171,14 +162,13 @@ public class HomeFrame extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         JToggleButton confirmBtn = new JToggleButton("Confirm");
         centerPanel.add(confirmBtn, gbc);
-        
 
-     //^logic sa confirm button
+        // Logic for confirm button
         confirmBtn.addActionListener(e -> {
             String playerName = name.getText().trim();
             String selectedClass = (String) classbox.getSelectedItem();
 
-            //confirmation
+            // Validation
             if (playerName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter a name.", "Error", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -192,9 +182,8 @@ public class HomeFrame extends JFrame {
                 name.setText(playerName.substring(0, 5));
                 return;
             }
-            
-            
-            //confirmation message
+
+            // Show class info
             showClassInfo(selectedClass);
 
             int choice = JOptionPane.showConfirmDialog(
@@ -206,30 +195,26 @@ public class HomeFrame extends JFrame {
             );
 
             if (choice != JOptionPane.YES_OPTION) {
-                return; //mo stop if mo NO
+                return; // Stop if NO
             }
 
-            //otherwise proceed
+            // Proceed
             JOptionPane.showMessageDialog(this,
                     "Character created!\nName: " + playerName + "\nClass: " + selectedClass);
 
             if (confirmBtn.isSelected()) {
-                new Loading(playerName, selectedClass).setVisible(true);
-                dispose();
+                mainFrame.startGame(playerName, selectedClass);
+                mainFrame.showPanel("loadingPanel");
             }
-            
-            new GrassyPlains(playerName, selectedClass);
         });
-        
 
-        
+        add(contentPane, BorderLayout.CENTER); // Add the content to this panel
     }
-    
-    
+
     private void showClassInfo(String className) {
-        Character tempChar = null;  //temp instance sa character
+        Character tempChar = null; // Temp instance for stats
         String description = "";
-        
+
         switch (className) {
             case "Warrior":
                 tempChar = new Warrior("Temp");
@@ -244,23 +229,24 @@ public class HomeFrame extends JFrame {
                 description = "A holy knight devoted to justice and righteousness,\ncombining martial prowess with divine magic to protect and heal.";
                 break;
         }
-        
+
         if (tempChar != null) {
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             panel.setBackground(Color.WHITE);
 
             JLabel classLabel = new JLabel("Class Status: " + className);
-            classLabel.setFont(new Font("Serif", Font.BOLD, 16));
+            classLabel.setFont(new java.awt.Font("Serif", java.awt.Font.BOLD, 16));
             classLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            //instance sa char mp
+            // Instance stats
             JLabel statsLabel = new JLabel("HP: " + tempChar.maxHp + "   Mana: " + tempChar.maxMana);
-            statsLabel.setFont(new Font("Serif", Font.PLAIN, 14));
+            statsLabel.setFont(new java.awt.Font("Serif", java.awt.Font.PLAIN, 14));
             statsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            JTextArea descArea = new JTextArea(description);
-            descArea.setFont(new Font("Serif", Font.ITALIC, 14));
+            JTextPane descArea = new JTextPane();
+            descArea.setText(description);
+            descArea.setFont(new java.awt.Font("Serif", java.awt.Font.ITALIC, 14));
             descArea.setEditable(false);
             descArea.setOpaque(false);
             descArea.setAlignmentX(Component.LEFT_ALIGNMENT);

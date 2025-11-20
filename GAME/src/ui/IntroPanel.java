@@ -1,31 +1,27 @@
 package ui;
 
+import javax.swing.JPanel;
 import java.awt.*;
-import java.net.URL;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.ImageIcon;
 
-public class Intro extends JFrame {
-
+class IntroPanel extends JPanel {
     private static final long serialVersionUID = 1L;
+    private MainFrame mainFrame;
 
-    public Intro() {
-        setFont(new Font("Tahoma", Font.PLAIN, 12));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 500); 
-        setMinimumSize(new Dimension(600, 400));
-        setLocationRelativeTo(null);
-        setUndecorated(true);
-        setOpacity(0f);       
+    public IntroPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+        initialize();
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(20, 20, 20, 20));
 
         ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/background2.png"));
-        URL url = getClass().getResource("/images/backgroundpic/background2.png");
-        System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
 
-        
         JPanel contentPane = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -33,12 +29,11 @@ public class Intro extends JFrame {
                 g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
             }
         };
-
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        setContentPane(contentPane);
+        add(contentPane, BorderLayout.CENTER);
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setOpaque(false); // keep transparent so background shows
+        centerPanel.setOpaque(false);
         contentPane.add(centerPanel, BorderLayout.CENTER);
 
         JLabel lblTitle = new JLabel("Blood Of The Rift", SwingConstants.CENTER);
@@ -67,16 +62,14 @@ public class Intro extends JFrame {
         JToggleButton yesButton = new JToggleButton("Yes");
         yesButton.addActionListener(e -> {
             if (yesButton.isSelected()) {
-                new HomeFrame().setVisible(true);
-                dispose();
+                mainFrame.showPanel("home");
             }
         });
 
         JToggleButton noButton = new JToggleButton("No");
         noButton.addActionListener(e -> {
             if (noButton.isSelected()) {
-                new DialogueFrame().setVisible(true);
-                dispose();
+                mainFrame.showPanel("dialogue");
             }
         });
 
@@ -89,25 +82,21 @@ public class Intro extends JFrame {
         gbcButtons.insets = new Insets(20, 10, 20, 10);
         centerPanel.add(buttonPanel, gbcButtons);
 
-        setTitle("Intro Frame");
         fadeIn();
     }
 
     private void fadeIn() {
+        // Fade-in logic remains the same
         new Thread(() -> {
             try {
                 for (float i = 0f; i <= 1f; i += 0.02f) {
-                    setOpacity(i);
-                    Thread.sleep(30); 
+                    setOpaque(false); // Adjust opacity if needed
+                    Thread.sleep(30);
                 }
-                setOpacity(1f); 
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Intro().setVisible(true));
-    }
 }
+

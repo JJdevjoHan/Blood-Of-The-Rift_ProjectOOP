@@ -4,14 +4,14 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
-
-public class GrassyPlains extends JFrame {
-
+public class DesertWorldPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-
+    private MainFrame mainFrame;
+    private Character player;
     private final JTextArea battleLog = new JTextArea(10, 40);
     private final JLabel playerLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel mobLabel = new JLabel("", SwingConstants.CENTER);
@@ -26,13 +26,12 @@ public class GrassyPlains extends JFrame {
     private final JButton skill1Btn = new JButton();
     private final JButton skill2Btn = new JButton();
     private final JButton skill3Btn = new JButton();
+    
 
-    // Game state
-    private Character player;
-    private World1Mob currentMob;
+    private World2Mob currentMob;
     private boolean inWorld = true;
     private final Random rng = new Random();
-    private String reservedMinotaurDirection;
+    private String reservedGiantWormDirection;
     private int mobsDefeated = 0;
     private int stepsTaken = 0;
     private boolean chestFound = false;
@@ -40,54 +39,51 @@ public class GrassyPlains extends JFrame {
     private final Set<String> clearedDirections = new HashSet<>();
     private final Set<String> availableDirections = new HashSet<>();
     private final String[] directions = {"North","East","South","West"};
-    private final Map<String, World1Mob> directionMobs = new HashMap<>();
-    private String currentDirection; 
+    private final Map<String, World2Mob> directionMobs = new HashMap<>();
+    private String currentDirection;
 
-    public GrassyPlains(String playerName, String selectedClass) {
-        setTitle("Grassy Plains");
-        setSize(800, 500); 
-        setMinimumSize(new Dimension(600, 400));
-        setLocationRelativeTo(null);
-        
-        ImageIcon bgIcon = new ImageIcon("C:\\Users\\JOHAN\\Documents\\git\\Blood-Of-The-Rift_ProjectOOP\\GAME\\src\\ui\\images\\backgroundpic\\grassyplains.png");
 
-        Image bgImage = bgIcon.getImage();
-        
-        //sa container
-        JPanel contentPane = new JPanel(new BorderLayout()) {
+    public DesertWorldPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+        initialize();
+    }
+
+    private void initialize() {
+    	/*
+        // Add background image support (from original GrassyPlains)
+    	ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/grassyplains.png"));
+    	   try {
+    	       URL url = getClass().getResource("/images/backgroundpic/finalworld.png");
+    	       if (url != null) {
+    	           bgIcon = new ImageIcon(url);
+    	       } else {
+    	           // Fallback: Use a solid color or default image
+    	           bgIcon = new ImageIcon(); // Empty icon, or load a default
+    	           System.err.println("Warning: Background image not found. Using fallback.");
+    	       }
+    	   } catch (Exception e) {
+    	       bgIcon = new ImageIcon(); // Fallback
+    	       e.printStackTrace();
+    	   }
+    	   
+    	   
+    	   
+    	Image bgImage = bgIcon.getImage();
+*/
+        JPanel main = new JPanel(new BorderLayout(8, 8)) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+                //g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
             }
         };
-
-        contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        setContentPane(contentPane);
-       
-
-        // Set player class
-        switch (selectedClass) {
-            case "Mage": player = new Mage(playerName); break;
-            case "Paladin": player = new Paladin(playerName); break;
-            default: player = new Warrior(playerName); break;
-        }
-
-        initUI();
-        updateStatus();
-        battleLog.append("You enter the vast, windy Grassy Plains.\n\n");
-    }
-   
-    	
-
-    private void initUI() {
-        JPanel main = new JPanel(new BorderLayout(8,8));
-        main.setBorder(new EmptyBorder(12,12,12,12));
-        main.setBackground(Color.BLACK);
+        main.setBorder(new EmptyBorder(12, 12, 12, 12));
+        main.setOpaque(false); // Allow background to show
 
         // Center panel: player & mob
-        JPanel center = new JPanel(new GridLayout(1,2,10,0));
+        JPanel center = new JPanel(new GridLayout(1, 2, 10, 0));
         center.setBackground(Color.DARK_GRAY);
+        center.setOpaque(false);
 
         playerLabel.setForeground(Color.WHITE);
         playerLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
@@ -107,17 +103,19 @@ public class GrassyPlains extends JFrame {
         battleLog.setBackground(Color.BLACK);
         battleLog.setForeground(Color.WHITE);
 
-        JPanel centerWrapper = new JPanel(new BorderLayout(6,6));
+        JPanel centerWrapper = new JPanel(new BorderLayout(6, 6));
         centerWrapper.setBackground(Color.BLACK);
+        centerWrapper.setOpaque(false);
         centerWrapper.add(center, BorderLayout.CENTER);
         centerWrapper.add(new JScrollPane(battleLog), BorderLayout.SOUTH);
 
         // Status panel
         JPanel left = new JPanel(new BorderLayout());
         left.setBackground(Color.BLACK);
+        left.setOpaque(false);
         statusLabel.setForeground(Color.WHITE);
         statusLabel.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        statusLabel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        statusLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         left.add(statusLabel, BorderLayout.NORTH);
         inspectBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         left.add(inspectBtn, BorderLayout.SOUTH);
@@ -125,26 +123,36 @@ public class GrassyPlains extends JFrame {
         // D-pad setup
         JPanel dpad = new JPanel(new GridBagLayout());
         dpad.setBackground(Color.BLACK);
+        dpad.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
-        gbc.gridx = 1; gbc.gridy = 0; northBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
- dpad.add(northBtn, gbc);
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        northBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        dpad.add(northBtn, gbc);
         gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
-        gbc.gridx = 0; gbc.gridy = 1; westBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
- dpad.add(westBtn, gbc);
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        westBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        dpad.add(westBtn, gbc);
         gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
-        gbc.gridx = 2; gbc.gridy = 1; eastBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
- dpad.add(eastBtn, gbc);
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        eastBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        dpad.add(eastBtn, gbc);
         gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
-        gbc.gridx = 1; gbc.gridy = 2; southBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
- dpad.add(southBtn, gbc);
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        southBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        dpad.add(southBtn, gbc);
 
         // Skill panel
-        JPanel skillPanel = new JPanel(new GridLayout(1,3,8,0));
+        JPanel skillPanel = new JPanel(new GridLayout(1, 3, 8, 0));
         skillPanel.setBackground(Color.BLACK);
+        skillPanel.setOpaque(false);
         skill1Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         skill1Btn.setForeground(Color.BLACK);
         skill2Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
@@ -157,6 +165,7 @@ public class GrassyPlains extends JFrame {
 
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.setBackground(Color.BLACK);
+        southPanel.setOpaque(false);
         southPanel.add(skillPanel, BorderLayout.NORTH);
         southPanel.add(dpad, BorderLayout.SOUTH);
 
@@ -164,14 +173,12 @@ public class GrassyPlains extends JFrame {
         main.add(centerWrapper, BorderLayout.CENTER);
         main.add(southPanel, BorderLayout.SOUTH);
 
-        setContentPane(main);
+        add(main, BorderLayout.CENTER); // Properly add the main panel to this JPanel
 
-        // Setup skill buttons
-        setupSkillButtons();
-
+        // Setup skill buttons (will be called after player is set)
         // Movement actions
         ActionListener moveListener = e -> {
-            if (inWorld) explore(((JButton)e.getSource()).getText());
+            if (inWorld) explore(((JButton) e.getSource()).getText());
         };
         northBtn.addActionListener(moveListener);
         eastBtn.addActionListener(moveListener);
@@ -182,8 +189,25 @@ public class GrassyPlains extends JFrame {
                 "Class: " + player.className + "\nPlayer: " + player.name));
     }
 
+    public void setPlayer(String name, String className) {
+        switch (className) {
+            case "Mage":
+                player = new Mage(name);
+                break;
+            case "Paladin":
+                player = new Paladin(name);
+                break;
+            default:
+                player = new Warrior(name);
+                break;
+        }
+        setupSkillButtons(); // Now that player is set, configure buttons
+        updateStatus();
+        battleLog.append("You enter the scorching Desert World.\n\n");
+    }
+
     private void setupSkillButtons() {
-    	if (player instanceof Warrior) {
+        if (player instanceof Warrior) {
             skill1Btn.setText("Stone Slash (0-12 Dmg, +10 Mana)");
             skill2Btn.setText("Flame Strike (13-22 Dmg, 20 Mana)");
             skill3Btn.setText("Earthquake Blade (23-35 Dmg, 30 Mana)");
@@ -202,6 +226,7 @@ public class GrassyPlains extends JFrame {
         skill3Btn.addActionListener(e -> doSkill(3));
     }
 
+
     private void doSkill(int choice) {
         if (currentMob == null) {
             battleLog.append("No enemy to attack!\n\n");
@@ -215,44 +240,30 @@ public class GrassyPlains extends JFrame {
             battleLog.append("You defeated " + currentMob.name + "!\n\n");
 
             mobsDefeated++; 
-            
-            
+ 
+            if(currentMob instanceof GiantWorm) {
+            	Object[] options = {"Enter Portal", "Return Home"};
+            	int ch = JOptionPane.showOptionDialog(
+            	        this,
+            	        "The portal to the Snowy Island is open.\n\nWhat will you do?",
+            	        "Portal Opened",
+            	        JOptionPane.YES_NO_OPTION,
+            	        JOptionPane.QUESTION_MESSAGE,
+            	        null,
+            	        options,
+            	        options[0]
+            	);
 
-            
-            if (currentMob instanceof Minotaur) {
+            	if (ch == 0) {
+            	    battleLog.append("You step into the portal... The Desert World awaits!\n\n");
+            	    mainFrame.showPanel("snowyIslandPanel");
 
-                String msg1 = "The portal to the Desert World is open.";
-                String msg2 = "What will you do?";
-                String opt1 = "[1] Enter the portal";
-                String opt2 = "[2] Return home to rest";
+            	} else {
+            	    battleLog.append("You decide to return home to rest.\n\n");
+            	    mainFrame.showPanel("introPanel");
+            	}
 
-                battleLog.append(msg1 + "\n" + msg2 + "\n" + opt1 + "\n" + opt2 + "\n\n");
-
-                
-                Object[] options = {"Enter Portal", "Return Home"};
-                int ccc = JOptionPane.showOptionDialog(
-                        this,
-                        msg1 + "\n\n" + msg2,
-                        "Portal Opened",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[0]
-                );
-
-                if (ccc == 0) {
-                    battleLog.append("You step into the portal... The Desert World awaits!\n\n");
-                    
-                    new DesertWorld(player.name, player.className).setVisible(true);
-                       dispose();
-                } else {
-                    battleLog.append("You decide to return home to rest.\n\n");
-                   
-                    new Intro().setVisible(true);
-                }
             }
-
 
             clearedDirections.add(currentDirection);
             availableDirections.remove(currentDirection);
@@ -274,11 +285,12 @@ public class GrassyPlains extends JFrame {
             battleLog.append("You have been defeated...\n");
             disableMovement();
             JOptionPane.showMessageDialog(this, "Game Over", "Defeat", JOptionPane.PLAIN_MESSAGE);
-            dispose();
         }
     }
 
     private void explore(String direction) {
+
+        // Block cleared directions
         if (clearedDirections.contains(direction)) {
             JOptionPane.showMessageDialog(this,
                     "There is nothing in that direction! Try another path.",
@@ -290,26 +302,13 @@ public class GrassyPlains extends JFrame {
         battleLog.append("You walk " + direction.toLowerCase() + ".\n\n");
 
         if (!chestFound && stepsTaken >= STEPS_FOR_CHEST) {
-        	if(player instanceof Warrior)
-            {
-    			battleLog.append("You found a chest with an equipment\n\n You Obtained Dual War Axes\n\n");
-    			JOptionPane.showMessageDialog(null,"You Found a Chest!!!", "Found!", JOptionPane.INFORMATION_MESSAGE);
-            }
-            else if(player instanceof Mage)
-            {
-            	battleLog.append("You found a chest with an equipment\n\n You Obtained A Hat and A Wand\n\n");
-            }else if(player instanceof Paladin)
-            {
-            	battleLog.append("You found a chest with an equipment\n\n You Obtained A Shield and A Sword\n\n");
-            }
+            battleLog.append("You wander to the desert but Found nothing...\n\n");
             chestFound = true;
-            
-            battleLog.append("Resting..........Be ready for the Journey Ahead\n\n");
 
-            List<World1Mob> mobs = Arrays.asList(
-                    new Slime(),
-                    new Bull(),
-                    new Wolf()
+            List<World2Mob> mobs = Arrays.asList(
+                    new Spider(),
+                    new Snake(),
+                    new Mummy()
             );
 
             List<String> dirList = new ArrayList<>(Arrays.asList(directions));
@@ -320,34 +319,39 @@ public class GrassyPlains extends JFrame {
                 availableDirections.add(dirList.get(i));
             }
 
-            reservedMinotaurDirection = dirList.get(3);
+            reservedGiantWormDirection = dirList.get(3);
 
             updateStatus();
             return;
         }
 
+
         if (chestFound && currentMob == null) {
 
             currentDirection = direction;
-            if (mobsDefeated == 3 && direction.equals(reservedMinotaurDirection)) {
-                currentMob = new Minotaur();
-                battleLog.append("A hulking Minotaur blocks your path! It's the guardian of these plains!\n\n");
-                battleLog.append("The ground shakes... The Minotaur emerges!!!\n\n");
-                JOptionPane.showMessageDialog(null,"MINOTAUR INCOMING!!!", "WARNING! MINIBOSS", JOptionPane.ERROR_MESSAGE);
+
+            if (mobsDefeated == 3 && direction.equals(reservedGiantWormDirection)) {
+                currentMob = new GiantWorm();
+                battleLog.append("The sands shift... The Giant Worm emerges!!!\n\n");
+                battleLog.append("The sand is sinking rapidly!!!\n\n");
+                JOptionPane.showMessageDialog(null,"GIANT WORM INCOMING!!!", "WARNING! MINIBOSS", JOptionPane.ERROR_MESSAGE);
             }
             else {
                 currentMob = directionMobs.get(direction);
             }
+
             if (currentMob != null) {
                 battleLog.append("A wild " + currentMob.name + " appears!\n\n");
-            }else {
-                battleLog.append("You wander the tundra but find nothing of interest....\n\n");
+            } else {
+                battleLog.append("You wander the tundra but find nothing of interest...\n\n");
             }
         }
 
         updateStatus();
 
     }
+
+
 
     private void updateStatus() {
         statusLabel.setText("<html><b>Name:</b> " + player.name +
@@ -375,27 +379,6 @@ public class GrassyPlains extends JFrame {
         skill2Btn.setEnabled(false);
         skill3Btn.setEnabled(false);
     }
-
-    //ch og mob
-    static abstract class Character {
-    	int tempDamage = 0;
-        String name, className;
-        int hp, maxHp, mana, maxMana;
-
-        Character(String name, String className, int hp, int mana) 
-        {
-            this.name = name; 
-            this.className = className;
-            this.hp = this.maxHp = hp;
-            this.mana = this.maxMana = mana;
-        }
-
-        boolean isAlive() 
-        { 
-        	return hp > 0; 
-        }
-        abstract String useSkill(int choice, World1Mob target);
-    }
     
     private void openRewardChest() {
         battleLog.append("You found a reward chest!\n\n");
@@ -403,18 +386,18 @@ public class GrassyPlains extends JFrame {
         int rewardType = rng.nextInt(5);
 
         switch (rewardType) {
-            case 0:
-                int hpBoost = 30;
-                player.maxHp += hpBoost;
-                player.hp += hpBoost;
-                if (player.hp > player.maxHp) player.hp = player.maxHp;
-                battleLog.append("Your maximum HP increased by " + hpBoost + "!\n\n");
-                JOptionPane.showMessageDialog(null, "HP INCREASED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
-                break;
-            case 1:
-                int dmgBoost = 15;
-                player.tempDamage += dmgBoost;
-                battleLog.append("Your damage increased by " + dmgBoost + " for the next battle!\n\n");
+        	case 0:
+        		int hpBoost = 30;
+        		player.maxHp += hpBoost;
+        		player.hp += hpBoost;
+        		if (player.hp > player.maxHp) player.hp = player.maxHp;
+        		battleLog.append("Your maximum HP increased by " + hpBoost + "!\n\n");
+        		JOptionPane.showMessageDialog(null, "HP INCREASED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
+        		break;
+        	case 1:
+        	    int dmgBoost = 15;
+        	    player.tempDamage += dmgBoost;
+        	    battleLog.append("Your damage increased by " + dmgBoost + " for the next battle!\n\n");
                 break;
             case 2: 
                 int manaBoost = 20;
@@ -439,12 +422,27 @@ public class GrassyPlains extends JFrame {
         updateStatus();
     }
 
+    static abstract class Character {
+    	int tempDamage = 0;
+        String name, className;
+        int hp, maxHp, mana, maxMana;
+
+        Character(String name, String className, int hp, int mana) {
+            this.name = name; this.className = className;
+            this.hp = this.maxHp = hp;
+            this.mana = this.maxMana = mana;
+        }
+
+        boolean isAlive() { return hp > 0; }
+        abstract String useSkill(int choice, World2Mob target);
+    }
+
     static class Warrior extends Character {
         Warrior(String n) {
             super(n,"Warrior",180,80);
         }
         @Override
-        String useSkill(int choice, World1Mob target) {
+        String useSkill(int choice, World2Mob target) {
             int dmg = 0;
             String msg = "";
             switch (choice) {
@@ -493,7 +491,7 @@ public class GrassyPlains extends JFrame {
             super(n,"Mage",120,150);
         }
         @Override
-        String useSkill(int choice, World1Mob target) {
+        String useSkill(int choice, World2Mob target) {
             int dmg = 0;
             String msg = "";
             switch (choice) {
@@ -541,7 +539,7 @@ public class GrassyPlains extends JFrame {
             super(n,"Paladin",220,120);
         }
         @Override
-        String useSkill(int choice, World1Mob target) {
+        String useSkill(int choice, World2Mob target) {
             int dmg = 0;
             String msg = "";
             switch (choice) {
@@ -582,13 +580,12 @@ public class GrassyPlains extends JFrame {
         }
     }
 
-    public static abstract class World1Mob {
+    public static abstract class World2Mob 
+    {
         String name; int hp, damage;
-        World1Mob(String name, int hp, int dmg)
+        World2Mob(String name, int hp, int dmg)
         { 
-        	this.name=name; 
-        	this.hp=hp; 
-        	this.damage=dmg; 
+        	this.name=name; this.hp=hp; this.damage=dmg; 
         }
         boolean isAlive()
         { 
@@ -596,38 +593,34 @@ public class GrassyPlains extends JFrame {
         }
     }
 
-    public static class Slime extends World1Mob 
-    { 
-    	Slime() 
-    	{ 
-    		super("Slime", 20, 5); 
+    public static class Spider extends World2Mob 
+    {
+    	Spider() 
+    	{
+    		super("Spider", 40, 12); 
     	} 
     }
-    public static class Bull extends World1Mob 
+    public static class Snake extends World2Mob 
     { 
-    	Bull() 
+    	Snake() 
     	{ 
-    		super("Wild Bull", 30, 8); 
+    		super("Snake", 30, 15); 
     	} 
     }
-    public static class Wolf extends World1Mob 
+    public static class Mummy extends World2Mob 
     { 
-    	Wolf() 
+    	Mummy() 
     	{ 
-    		super("Dire Wolf", 40, 10); 
+    		super("Mummy", 100, 15); 
     	} 
     }
-    static class Minotaur extends World1Mob 
+    public static class GiantWorm extends World2Mob 
     { 
-    	Minotaur() 
+    	GiantWorm() 
     	{ 
-    		super("Minotaur",80,12); 
+    		super("Giant Worm", 60, 13); 
     	} 
     }
 
-    public static void main(String[] args) 
-    {
-        SwingUtilities.invokeLater(() -> new GrassyPlains("Hero","Warrior").setVisible(true));
-    }
-    
+  
 }
