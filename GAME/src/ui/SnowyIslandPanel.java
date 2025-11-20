@@ -2,20 +2,16 @@ package ui;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
-import ui.GrassyPlains.Character;
-import ui.GrassyPlains.World1Mob;
-
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
-
-public class SnowyIsland extends JFrame {
-
+public class SnowyIslandPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-
+    private MainFrame mainFrame;
+    private Character player;
     private final JTextArea battleLog = new JTextArea(10, 40);
     private final JLabel playerLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel mobLabel = new JLabel("", SwingConstants.CENTER);
@@ -30,8 +26,7 @@ public class SnowyIsland extends JFrame {
     private final JButton skill1Btn = new JButton();
     private final JButton skill2Btn = new JButton();
     private final JButton skill3Btn = new JButton();
-
-    private Character player;
+    
     private World3Mob currentMob;
     private boolean inWorld = true;
     private final Random rng = new Random();
@@ -46,31 +41,48 @@ public class SnowyIsland extends JFrame {
     private final Map<String, World3Mob> directionMobs = new HashMap<>();
     private String currentDirection;
 
-    public SnowyIsland (String playerName, String selectedClass) {
-        setTitle("Snowy Island");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(900, 600);
-        setLocationRelativeTo(null);
-       
-        switch (selectedClass) {
-            case "Mage": player = new Mage(playerName); break;
-            case "Paladin": player = new Paladin(playerName); break;
-            default: player = new Warrior(playerName); break;
-        }
 
-        initUI();
-        updateStatus();
-        battleLog.append("You enter the icy Snowy Island. Get ready for an Adventure!\n\n");
+    public SnowyIslandPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+        initialize();
     }
-   
-    private void initUI() {
-        JPanel main = new JPanel(new BorderLayout(8,8));
-        main.setBorder(new EmptyBorder(12,12,12,12));
-        main.setBackground(Color.BLACK);
+
+    private void initialize() {
+    	/*
+        // Add background image support (from original GrassyPlains)
+    	ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/grassyplains.png"));
+    	   try {
+    	       URL url = getClass().getResource("/images/backgroundpic/finalworld.png");
+    	       if (url != null) {
+    	           bgIcon = new ImageIcon(url);
+    	       } else {
+    	           // Fallback: Use a solid color or default image
+    	           bgIcon = new ImageIcon(); // Empty icon, or load a default
+    	           System.err.println("Warning: Background image not found. Using fallback.");
+    	       }
+    	   } catch (Exception e) {
+    	       bgIcon = new ImageIcon(); // Fallback
+    	       e.printStackTrace();
+    	   }
+    	   
+    	   
+        Image bgImage = bgIcon.getImage();
+        
+*/
+        JPanel main = new JPanel(new BorderLayout(8, 8)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                //g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        main.setBorder(new EmptyBorder(12, 12, 12, 12));
+        main.setOpaque(false); // Allow background to show
 
         // Center panel: player & mob
-        JPanel center = new JPanel(new GridLayout(1,2,10,0));
+        JPanel center = new JPanel(new GridLayout(1, 2, 10, 0));
         center.setBackground(Color.DARK_GRAY);
+        center.setOpaque(false);
 
         playerLabel.setForeground(Color.WHITE);
         playerLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
@@ -90,42 +102,56 @@ public class SnowyIsland extends JFrame {
         battleLog.setBackground(Color.BLACK);
         battleLog.setForeground(Color.WHITE);
 
-        JPanel centerWrapper = new JPanel(new BorderLayout(6,6));
-        centerWrapper.setBackground(Color.DARK_GRAY);
+        JPanel centerWrapper = new JPanel(new BorderLayout(6, 6));
+        centerWrapper.setBackground(Color.BLACK);
+        centerWrapper.setOpaque(false);
         centerWrapper.add(center, BorderLayout.CENTER);
         centerWrapper.add(new JScrollPane(battleLog), BorderLayout.SOUTH);
 
+        // Status panel
         JPanel left = new JPanel(new BorderLayout());
         left.setBackground(Color.BLACK);
+        left.setOpaque(false);
         statusLabel.setForeground(Color.WHITE);
         statusLabel.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        statusLabel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        statusLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         left.add(statusLabel, BorderLayout.NORTH);
         inspectBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         left.add(inspectBtn, BorderLayout.SOUTH);
 
-
+        // D-pad setup
         JPanel dpad = new JPanel(new GridBagLayout());
         dpad.setBackground(Color.BLACK);
+        dpad.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
-        gbc.gridx = 1; gbc.gridy = 0; northBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
- dpad.add(northBtn, gbc);
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        northBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        dpad.add(northBtn, gbc);
         gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
-        gbc.gridx = 0; gbc.gridy = 1; westBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
- dpad.add(westBtn, gbc);
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        westBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        dpad.add(westBtn, gbc);
         gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
-        gbc.gridx = 2; gbc.gridy = 1; eastBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
- dpad.add(eastBtn, gbc);
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        eastBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        dpad.add(eastBtn, gbc);
         gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
-        gbc.gridx = 1; gbc.gridy = 2; southBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
- dpad.add(southBtn, gbc);
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        southBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        dpad.add(southBtn, gbc);
 
-        JPanel skillPanel = new JPanel(new GridLayout(1,3,8,0));
+        // Skill panel
+        JPanel skillPanel = new JPanel(new GridLayout(1, 3, 8, 0));
         skillPanel.setBackground(Color.BLACK);
+        skillPanel.setOpaque(false);
         skill1Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         skill1Btn.setForeground(Color.BLACK);
         skill2Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
@@ -138,6 +164,7 @@ public class SnowyIsland extends JFrame {
 
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.setBackground(Color.BLACK);
+        southPanel.setOpaque(false);
         southPanel.add(skillPanel, BorderLayout.NORTH);
         southPanel.add(dpad, BorderLayout.SOUTH);
 
@@ -145,12 +172,12 @@ public class SnowyIsland extends JFrame {
         main.add(centerWrapper, BorderLayout.CENTER);
         main.add(southPanel, BorderLayout.SOUTH);
 
-        setContentPane(main);
+        add(main, BorderLayout.CENTER); // Properly add the main panel to this JPanel
 
-        setupSkillButtons();
-
+        // Setup skill buttons (will be called after player is set)
+        // Movement actions
         ActionListener moveListener = e -> {
-            if (inWorld) explore(((JButton)e.getSource()).getText());
+            if (inWorld) explore(((JButton) e.getSource()).getText());
         };
         northBtn.addActionListener(moveListener);
         eastBtn.addActionListener(moveListener);
@@ -159,6 +186,23 @@ public class SnowyIsland extends JFrame {
 
         inspectBtn.addActionListener(e -> JOptionPane.showMessageDialog(this,
                 "Class: " + player.className + "\nPlayer: " + player.name));
+    }
+
+    public void setPlayer(String name, String className) {
+        switch (className) {
+            case "Mage":
+                player = new Mage(name);
+                break;
+            case "Paladin":
+                player = new Paladin(name);
+                break;
+            default:
+                player = new Warrior(name);
+                break;
+        }
+        setupSkillButtons(); // Now that player is set, configure buttons
+        updateStatus();
+        battleLog.append("You enter the icy Snowy Island. Get ready for an Adventure!\\n\\n");
     }
 
     private void setupSkillButtons() {
@@ -180,6 +224,7 @@ public class SnowyIsland extends JFrame {
         skill2Btn.addActionListener(e -> doSkill(2));
         skill3Btn.addActionListener(e -> doSkill(3));
     }
+
 
     private void doSkill(int choice) {
         if (currentMob == null) {
@@ -211,12 +256,10 @@ public class SnowyIsland extends JFrame {
 
             	if (ch == 0) {
             	    battleLog.append("You step into the portal... The Desert World awaits!\n\n");
-            	    new LavaWorld("Hero", "Warrior").setVisible(true);
-            	    dispose();
+            	    mainFrame.showPanel("lavaorldPanel");
             	} else {
             	    battleLog.append("You decide to return home to rest.\n\n");
-            	    new Intro().setVisible(true);
-            	    dispose();
+            	    mainFrame.showPanel("introPanel");
             	}
 
             }
@@ -242,7 +285,6 @@ public class SnowyIsland extends JFrame {
             battleLog.append("You have been defeated...\n");
             disableMovement();
             JOptionPane.showMessageDialog(this, "Game Over", "Defeat", JOptionPane.PLAIN_MESSAGE);
-            dispose();
         }
     }
 
@@ -584,7 +626,4 @@ public class SnowyIsland extends JFrame {
     	} 
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new SnowyIsland("Hero","Warrior").setVisible(true));
-    }
 }
