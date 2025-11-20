@@ -1,16 +1,16 @@
 package ui;
 
+import javax.swing.JPanel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
-import java.net.URL;
 
-public class DialogueFrame extends JFrame {
-
+class DialoguePanel extends JPanel {
     private static final long serialVersionUID = 1L;
+    private MainFrame mainFrame;
     private JTextPane storyPane;
     private int index = 0;
 
@@ -28,23 +28,18 @@ public class DialogueFrame extends JFrame {
         "With the help of the heroes, he offers himself as the true sacrifice, closing the rift and restoring the world at last."
     };
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new DialogueFrame().setVisible(true));
+    public DialoguePanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+        initialize();
     }
 
-    public DialogueFrame() {
-        setTitle("Dialogue Frame");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 500); 
-        setMinimumSize(new Dimension(600, 400));
-        setLocationRelativeTo(null);
-        
+    private void initialize() {
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(20, 20, 20, 20));
+
         ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/storyline1.png"));
-        URL url = getClass().getResource("/images/backgroundpic/storyline1.png");
-        System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
-        
-        //sa container
+
         JPanel contentPane = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -52,11 +47,9 @@ public class DialogueFrame extends JFrame {
                 g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
             }
         };
-
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        setContentPane(contentPane);
+        add(contentPane, BorderLayout.CENTER);
 
-        // Dynamic
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         contentPane.add(centerPanel, BorderLayout.CENTER);
@@ -64,16 +57,15 @@ public class DialogueFrame extends JFrame {
         storyPane = new JTextPane();
         storyPane.setEditable(false);
         storyPane.setFocusable(false);
-        storyPane.setOpaque(false);  // Transparent background
+        storyPane.setOpaque(false);
         storyPane.setForeground(Color.WHITE);
         storyPane.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 22));
 
-        //center allign
         StyledDocument doc = storyPane.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
-        
+
         GridBagConstraints gbcStory = new GridBagConstraints();
         gbcStory.gridx = 0;
         gbcStory.gridy = 0;
@@ -81,10 +73,8 @@ public class DialogueFrame extends JFrame {
         gbcStory.weightx = 1;
         gbcStory.weighty = 1;
         gbcStory.insets = new Insets(20, 20, 20, 20);
-
         centerPanel.add(storyPane, gbcStory);
 
-        // Timer updates
         Timer timer = new Timer(7000, e -> {
             if (index < storyLines.length) {
                 storyPane.setText(storyLines[index]);
@@ -92,13 +82,11 @@ public class DialogueFrame extends JFrame {
             } else {
                 ((Timer) e.getSource()).stop();
                 storyPane.setText("To be Continued...");
-                new HomeFrame().setVisible(true);
-                dispose();
+                mainFrame.showPanel("home");
             }
         });
-
         timer.setInitialDelay(0);
         timer.start();
     }
-    
 }
+
