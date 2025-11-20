@@ -15,11 +15,11 @@ public class DialogueFrame extends JFrame {
     private int index = 0;
 
     private String[] storyLines = {
-        "A thousand years ago....",
-        "A Mighty Hero was chosen to save the Kingdom of Senthra from the wrath of the gods.",
-        "Betrayed by his own people, he was used as a scapegoat and sacrificed to seal the calamities.",
-        "But the world still fell apart, a great rift tore reality into multiple realms.",
-        "The champion did not die; instead, he was cursed, left less than human, and forgotten in the shadows of the rift.",
+        "In sooth, a thousand years ago....",
+        "A mighty hero was chosen to save the Kingdom of Senthra from the ire of the gods.",
+        "Betrayed by his own kin, he was made a scapegoat and sacrificed unto the gods to seal the calamities.",
+        "Yet, the world didst still fall asunder, a great rift tore reality into divers realms.",
+        "The champion didst not perish; nay, he was cursed, left less than a mortal, and forgotten in the shadows of the rift.",
         "Eight hundred years later....",
         "New heroes rise from the divided worlds.",
         "Believing the fallen Hero to be the cause of the chaos, they set out to defeat him.",
