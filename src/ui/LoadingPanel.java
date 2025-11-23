@@ -110,8 +110,9 @@ public class LoadingPanel extends JPanel {
                 // Delay before switching panels
                 Timer delay = new Timer(500, ev -> {
                     mainFrame.showPanel("grassyPlains");
-                    mainFrame.revalidate();
-                    mainFrame.repaint();
+                    
+                    //mainFrame.revalidate();
+                    //mainFrame.repaint();
                 });
                 delay.setRepeats(false);
                 delay.start();

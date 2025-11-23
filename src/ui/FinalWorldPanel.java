@@ -2,18 +2,16 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.net.URL;
-import java.util.Random;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
+import java.awt.Insets;
+
+import java.util.Objects;
+import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -32,22 +30,23 @@ public class FinalWorldPanel extends JPanel {
     private final JLabel mobLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel statusLabel = new JLabel("", SwingConstants.LEFT);
 
+    /*
+    private boolean inWorld = true;
     private final JButton northBtn = new JButton("North");
     private final JButton eastBtn = new JButton("East");
     private final JButton southBtn = new JButton("South");
     private final JButton westBtn = new JButton("West");
     private final JButton inspectBtn = new JButton("Inspect Class");
-
+*/
     private final JButton skill1Btn = new JButton();
     private final JButton skill2Btn = new JButton();
     private final JButton skill3Btn = new JButton();
-
     private World5Boss currentMob;
     private final Random rng = new Random();
     private int mobsDefeated = 0;
 
     public FinalWorldPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+    	this.mainFrame = Objects.requireNonNull(mainFrame, "mainFrame must not be null");
         initialize();
     }
 
@@ -71,119 +70,96 @@ public class FinalWorldPanel extends JPanel {
         
         Image bgImage = bgIcon.getImage();
 */
-        JPanel main = new JPanel(new BorderLayout(8, 8)) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                //g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-        
-         
-        main.setBorder(new EmptyBorder(12, 12, 12, 12));
-        main.setOpaque(false); // Allow background to show
+		setLayout(new BorderLayout());
+        setOpaque(false);
 
-        // Center panel: player & mob
-        JPanel center = new JPanel(new GridLayout(1, 2, 10, 0));
-        center.setBackground(Color.DARK_GRAY);
-        center.setOpaque(false);
+        // Status bar
+        JPanel statusBar = new JPanel(new BorderLayout());
+        statusBar.setOpaque(true);
+        statusBar.setBackground(new Color(30, 30, 30));
+        statusBar.setBorder(new EmptyBorder(10, 10, 10, 10));
+        statusLabel.setForeground(Color.WHITE);
+        statusLabel.setFont(new Font("Times New Roman", Font.BOLD, 18));
+        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        statusBar.add(statusLabel, BorderLayout.CENTER);
+        add(statusBar, BorderLayout.NORTH);
 
-        playerLabel.setForeground(Color.WHITE);
-        playerLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        // Center area: player, log, mob
+        JPanel midPanel = new JPanel(new GridBagLayout());
+        midPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        mobLabel.setForeground(Color.WHITE);
-        mobLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 20));
-        mobLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanel playerIconPanel = new JPanel();
+        playerIconPanel.setPreferredSize(new Dimension(180, 220));
+        playerIconPanel.setBackground(new Color(0, 0, 0, 120));
+        playerIconPanel.add(playerLabel);
+        gbc.gridx = 0; gbc.gridy = 0;
+        midPanel.add(playerIconPanel, gbc);
 
-        center.add(playerLabel);
-        center.add(mobLabel);
-
+        JScrollPane battleScroll = new JScrollPane(battleLog);
+        battleScroll.setPreferredSize(new Dimension(380, 220));
+        battleLog.setBackground(Color.BLACK);
+        battleLog.setForeground(Color.WHITE);
         battleLog.setEditable(false);
         battleLog.setLineWrap(true);
         battleLog.setWrapStyleWord(true);
-        battleLog.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        battleLog.setBackground(Color.BLACK);
-        battleLog.setForeground(Color.WHITE);
-
-        JPanel centerWrapper = new JPanel(new BorderLayout(6, 6));
-        centerWrapper.setBackground(Color.BLACK);
-        centerWrapper.setOpaque(false);
-        centerWrapper.add(center, BorderLayout.CENTER);
-        centerWrapper.add(new JScrollPane(battleLog), BorderLayout.SOUTH);
-
-        // Status panel
-        JPanel left = new JPanel(new BorderLayout());
-        left.setBackground(Color.BLACK);
-        left.setOpaque(false);
-        statusLabel.setForeground(Color.WHITE);
-        statusLabel.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        statusLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        left.add(statusLabel, BorderLayout.NORTH);
-        inspectBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        left.add(inspectBtn, BorderLayout.SOUTH);
-
-        // D-pad setup (disabled since no exploration)
-        JPanel dpad = new JPanel(new GridBagLayout());
-        dpad.setBackground(Color.BLACK);
-        dpad.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
         gbc.gridx = 1;
-        gbc.gridy = 0;
-        northBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        northBtn.setEnabled(false); // Disable unused buttons
-        dpad.add(northBtn, gbc);
-        gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        westBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        westBtn.setEnabled(false);
-        dpad.add(westBtn, gbc);
-        gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
+        midPanel.add(battleScroll, gbc);
+
+        JPanel mobIconPanel = new JPanel();
+        mobIconPanel.setPreferredSize(new Dimension(180, 220));
+        mobIconPanel.setBackground(new Color(0, 0, 0, 120));
+        mobIconPanel.add(mobLabel);
         gbc.gridx = 2;
-        gbc.gridy = 1;
+        midPanel.add(mobIconPanel, gbc);
+
+        add(midPanel, BorderLayout.CENTER);
+
+        // Bottom area: skills + dpad
+        JPanel bottom = new JPanel(new GridLayout(2, 1));
+        bottom.setOpaque(false);
+
+        JPanel skillRow = new JPanel(new GridLayout(1, 3, 20, 0));
+        skillRow.setOpaque(false);
+        skillRow.setBorder(new EmptyBorder(10, 30, 10, 30));
+        skill1Btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        skill2Btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        skill3Btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        skillRow.add(skill1Btn); skillRow.add(skill2Btn); skillRow.add(skill3Btn);
+        bottom.add(skillRow);
+
+        /*
+        JPanel dpad = new JPanel(new GridBagLayout());
+        dpad.setOpaque(false);
+        GridBagConstraints d = new GridBagConstraints();
+        d.insets = new Insets(4, 4, 4, 4);
+
+        // Use action commands to carry the logical direction (safer than name/text)
+        northBtn.setActionCommand("North");
+        eastBtn.setActionCommand("East");
+        southBtn.setActionCommand("South");
+        westBtn.setActionCommand("West");
+        northBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         eastBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        eastBtn.setEnabled(false);
-        dpad.add(eastBtn, gbc);
-        gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
-        gbc.gridx = 1;
-        gbc.gridy = 2;
         southBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        westBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        
+        northBtn.setEnabled(false);
         southBtn.setEnabled(false);
-        dpad.add(southBtn, gbc);
+        eastBtn.setEnabled(false);
+        westBtn.setEnabled(false);
 
-        // Skill panel
-        JPanel skillPanel = new JPanel(new GridLayout(1, 3, 8, 0));
-        skillPanel.setBackground(Color.BLACK);
-        skillPanel.setOpaque(false);
-        skill1Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        skill1Btn.setForeground(Color.BLACK);
-        skill2Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        skill2Btn.setForeground(Color.BLACK);
-        skill3Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        skill3Btn.setForeground(Color.BLACK);
-        skillPanel.add(skill1Btn);
-        skillPanel.add(skill2Btn);
-        skillPanel.add(skill3Btn);
 
-        JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.setBackground(Color.BLACK);
-        southPanel.setOpaque(false);
-        southPanel.add(skillPanel, BorderLayout.NORTH);
-        southPanel.add(dpad, BorderLayout.SOUTH);
+        d.gridx = 1; d.gridy = 0; dpad.add(northBtn, d);
+        d.gridx = 0; d.gridy = 1; dpad.add(westBtn, d);
+        d.gridx = 2; d.gridy = 1; dpad.add(eastBtn, d);
+        d.gridx = 1; d.gridy = 2; dpad.add(southBtn, d);
+        
+        */
 
-        main.add(left, BorderLayout.WEST);
-        main.add(centerWrapper, BorderLayout.CENTER);
-        main.add(southPanel, BorderLayout.SOUTH);
-
-        add(main, BorderLayout.CENTER); // Properly add the main panel to this JPanel
-
-        inspectBtn.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "Class: " + player.className + "\nPlayer: " + player.name));
+        add(bottom, BorderLayout.SOUTH);
+        setSkillButtonsEnabled(false);
     }
 
     public void setPlayer(String name, String className) {
@@ -222,6 +198,12 @@ public class FinalWorldPanel extends JPanel {
         skill1Btn.addActionListener(e -> doSkill(1));
         skill2Btn.addActionListener(e -> doSkill(2));
         skill3Btn.addActionListener(e -> doSkill(3));
+    }
+    
+    private void setSkillButtonsEnabled(boolean enabled) {
+        skill1Btn.setEnabled(enabled);
+        skill2Btn.setEnabled(enabled);
+        skill3Btn.setEnabled(enabled);
     }
 
     private void doSkill(int choice) {

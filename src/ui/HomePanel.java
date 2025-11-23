@@ -89,7 +89,9 @@ public class HomePanel extends JPanel {
                 return ImageIcon.class;
             }
         };
-
+        
+     // Center panel border
+   
         table.setRowHeight(100);
         table.setBackground(Color.BLACK);
         table.setForeground(Color.WHITE);
@@ -99,6 +101,7 @@ public class HomePanel extends JPanel {
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 16));
         table.setBorder(new LineBorder(Color.BLACK));
+        table.getTableHeader().setBorder(new LineBorder(Color.BLACK));
 
         JTableHeader header = table.getTableHeader();
         header.setBackground(Color.BLACK);
@@ -173,30 +176,22 @@ public class HomePanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Please enter a name.", "Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            if (playerName.length() < 5) {
-                JOptionPane.showMessageDialog(this, "Name must be at least 5 letters.", "Error", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            if (playerName.length() > 5) {
-                JOptionPane.showMessageDialog(this, "Name must NOT exceed 5 letters.", "Error", JOptionPane.WARNING_MESSAGE);
-                name.setText(playerName.substring(0, 5));
+            if (playerName.length() != 5) {
+                JOptionPane.showMessageDialog(this, "Name must be exactly 5 letters.", "Error", JOptionPane.WARNING_MESSAGE);
+                if (playerName.length() > 5) name.setText(playerName.substring(0, 5));
                 return;
             }
 
-            // Show class info
             showClassInfo(selectedClass);
 
             int choice = JOptionPane.showConfirmDialog(
                     this,
                     "Are you sure you want to take the " + selectedClass + " class?",
                     "Confirm Class",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE
+                    JOptionPane.YES_NO_OPTION
             );
 
-            if (choice != JOptionPane.YES_OPTION) {
-                return; // Stop if NO
-            }
+            if (choice != JOptionPane.YES_OPTION) return;
 
             // Proceed
             JOptionPane.showMessageDialog(this,
@@ -204,7 +199,7 @@ public class HomePanel extends JPanel {
 
             if (confirmBtn.isSelected()) {
                 mainFrame.startGame(playerName, selectedClass);
-                mainFrame.showPanel("loadingPanel");
+                mainFrame.showPanel("loading"); // must match key in MainFrame
             }
         });
 

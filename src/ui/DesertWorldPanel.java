@@ -4,29 +4,27 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class DesertWorldPanel extends JPanel {
     private static final long serialVersionUID = 1L;
-    private MainFrame mainFrame;
+    private final MainFrame mainFrame;
     private Character player;
     private final JTextArea battleLog = new JTextArea(10, 40);
     private final JLabel playerLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel mobLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel statusLabel = new JLabel("", SwingConstants.LEFT);
 
-    private final JButton northBtn = new JButton("North");
-    private final JButton eastBtn  = new JButton("East");
-    private final JButton southBtn = new JButton("South");
-    private final JButton westBtn  = new JButton("West");
-    private final JButton inspectBtn = new JButton("Inspect Class");
+    private final JButton northBtn = new JButton("↑");
+    private final JButton eastBtn = new JButton("→");
+    private final JButton southBtn = new JButton("↓");
+    private final JButton westBtn = new JButton("←");
 
     private final JButton skill1Btn = new JButton();
     private final JButton skill2Btn = new JButton();
     private final JButton skill3Btn = new JButton();
-    
 
     private World2Mob currentMob;
     private boolean inWorld = true;
@@ -38,175 +36,148 @@ public class DesertWorldPanel extends JPanel {
     private final int STEPS_FOR_CHEST = 2;
     private final Set<String> clearedDirections = new HashSet<>();
     private final Set<String> availableDirections = new HashSet<>();
-    private final String[] directions = {"North","East","South","West"};
+    private final String[] directions = {"North", "East", "South", "West"};
     private final Map<String, World2Mob> directionMobs = new HashMap<>();
     private String currentDirection;
 
-
     public DesertWorldPanel(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
+        this.mainFrame = Objects.requireNonNull(mainFrame, "mainFrame must not be null");
         initialize();
     }
 
     private void initialize() {
-    	/*
-        // Add background image support (from original GrassyPlains)
-    	ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/grassyplains.png"));
-    	   try {
-    	       URL url = getClass().getResource("/images/backgroundpic/finalworld.png");
-    	       if (url != null) {
-    	           bgIcon = new ImageIcon(url);
-    	       } else {
-    	           // Fallback: Use a solid color or default image
-    	           bgIcon = new ImageIcon(); // Empty icon, or load a default
-    	           System.err.println("Warning: Background image not found. Using fallback.");
-    	       }
-    	   } catch (Exception e) {
-    	       bgIcon = new ImageIcon(); // Fallback
-    	       e.printStackTrace();
-    	   }
-    	   
-    	   
-    	   
-    	Image bgImage = bgIcon.getImage();
-*/
-        JPanel main = new JPanel(new BorderLayout(8, 8)) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                //g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-        main.setBorder(new EmptyBorder(12, 12, 12, 12));
-        main.setOpaque(false); // Allow background to show
+        setLayout(new BorderLayout());
+        setOpaque(false);
 
-        // Center panel: player & mob
-        JPanel center = new JPanel(new GridLayout(1, 2, 10, 0));
-        center.setBackground(Color.DARK_GRAY);
-        center.setOpaque(false);
+        // Status bar
+        JPanel statusBar = new JPanel(new BorderLayout());
+        statusBar.setOpaque(true);
+        statusBar.setBackground(new Color(30, 30, 30));
+        statusBar.setBorder(new EmptyBorder(10, 10, 10, 10));
+        statusLabel.setForeground(Color.WHITE);
+        statusLabel.setFont(new Font("Times New Roman", Font.BOLD, 18));
+        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        statusBar.add(statusLabel, BorderLayout.CENTER);
+        add(statusBar, BorderLayout.NORTH);
 
-        playerLabel.setForeground(Color.WHITE);
-        playerLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
-        playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        // Center area: player, log, mob
+        JPanel midPanel = new JPanel(new GridBagLayout());
+        midPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        mobLabel.setForeground(Color.WHITE);
-        mobLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 20));
-        mobLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanel playerIconPanel = new JPanel();
+        playerIconPanel.setPreferredSize(new Dimension(180, 220));
+        playerIconPanel.setBackground(new Color(0, 0, 0, 120));
+        playerIconPanel.add(playerLabel);
+        gbc.gridx = 0; gbc.gridy = 0;
+        midPanel.add(playerIconPanel, gbc);
 
-        center.add(playerLabel);
-        center.add(mobLabel);
-
+        JScrollPane battleScroll = new JScrollPane(battleLog);
+        battleScroll.setPreferredSize(new Dimension(380, 220));
+        battleLog.setBackground(Color.BLACK);
+        battleLog.setForeground(Color.WHITE);
         battleLog.setEditable(false);
         battleLog.setLineWrap(true);
         battleLog.setWrapStyleWord(true);
-        battleLog.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        battleLog.setBackground(Color.BLACK);
-        battleLog.setForeground(Color.WHITE);
-
-        JPanel centerWrapper = new JPanel(new BorderLayout(6, 6));
-        centerWrapper.setBackground(Color.BLACK);
-        centerWrapper.setOpaque(false);
-        centerWrapper.add(center, BorderLayout.CENTER);
-        centerWrapper.add(new JScrollPane(battleLog), BorderLayout.SOUTH);
-
-        // Status panel
-        JPanel left = new JPanel(new BorderLayout());
-        left.setBackground(Color.BLACK);
-        left.setOpaque(false);
-        statusLabel.setForeground(Color.WHITE);
-        statusLabel.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        statusLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        left.add(statusLabel, BorderLayout.NORTH);
-        inspectBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        left.add(inspectBtn, BorderLayout.SOUTH);
-
-        // D-pad setup
-        JPanel dpad = new JPanel(new GridBagLayout());
-        dpad.setBackground(Color.BLACK);
-        dpad.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
         gbc.gridx = 1;
-        gbc.gridy = 0;
-        northBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        dpad.add(northBtn, gbc);
-        gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        westBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        dpad.add(westBtn, gbc);
-        gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
+        midPanel.add(battleScroll, gbc);
+
+        JPanel mobIconPanel = new JPanel();
+        mobIconPanel.setPreferredSize(new Dimension(180, 220));
+        mobIconPanel.setBackground(new Color(0, 0, 0, 120));
+        mobIconPanel.add(mobLabel);
         gbc.gridx = 2;
-        gbc.gridy = 1;
+        midPanel.add(mobIconPanel, gbc);
+
+        add(midPanel, BorderLayout.CENTER);
+
+        // Bottom area: skills + dpad
+        JPanel bottom = new JPanel(new GridLayout(2, 1));
+        bottom.setOpaque(false);
+
+        JPanel skillRow = new JPanel(new GridLayout(1, 3, 20, 0));
+        skillRow.setOpaque(false);
+        skillRow.setBorder(new EmptyBorder(10, 30, 10, 30));
+        skill1Btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        skill2Btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        skill3Btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        skillRow.add(skill1Btn); skillRow.add(skill2Btn); skillRow.add(skill3Btn);
+        bottom.add(skillRow);
+
+        JPanel dpad = new JPanel(new GridBagLayout());
+        dpad.setOpaque(false);
+        GridBagConstraints d = new GridBagConstraints();
+        d.insets = new Insets(4, 4, 4, 4);
+
+        // Use action commands to carry the logical direction (safer than name/text)
+        northBtn.setActionCommand("North");
+        eastBtn.setActionCommand("East");
+        southBtn.setActionCommand("South");
+        westBtn.setActionCommand("West");
+        northBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         eastBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        dpad.add(eastBtn, gbc);
-        gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
-        gbc.gridx = 1;
-        gbc.gridy = 2;
         southBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        dpad.add(southBtn, gbc);
+        westBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 
-        // Skill panel
-        JPanel skillPanel = new JPanel(new GridLayout(1, 3, 8, 0));
-        skillPanel.setBackground(Color.BLACK);
-        skillPanel.setOpaque(false);
-        skill1Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        skill1Btn.setForeground(Color.BLACK);
-        skill2Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        skill2Btn.setForeground(Color.BLACK);
-        skill3Btn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        skill3Btn.setForeground(Color.BLACK);
-        skillPanel.add(skill1Btn);
-        skillPanel.add(skill2Btn);
-        skillPanel.add(skill3Btn);
-
-        JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.setBackground(Color.BLACK);
-        southPanel.setOpaque(false);
-        southPanel.add(skillPanel, BorderLayout.NORTH);
-        southPanel.add(dpad, BorderLayout.SOUTH);
-
-        main.add(left, BorderLayout.WEST);
-        main.add(centerWrapper, BorderLayout.CENTER);
-        main.add(southPanel, BorderLayout.SOUTH);
-
-        add(main, BorderLayout.CENTER); // Properly add the main panel to this JPanel
-
-        // Setup skill buttons (will be called after player is set)
-        // Movement actions
         ActionListener moveListener = e -> {
-            if (inWorld) explore(((JButton) e.getSource()).getText());
+            String dir = ((AbstractButton) e.getSource()).getActionCommand();
+            if (inWorld) explore(dir);
         };
-        northBtn.addActionListener(moveListener);
-        eastBtn.addActionListener(moveListener);
-        southBtn.addActionListener(moveListener);
-        westBtn.addActionListener(moveListener);
 
-        inspectBtn.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                "Class: " + player.className + "\nPlayer: " + player.name));
+        // Attach movement listeners (no duplicates)
+        Stream.of(northBtn, eastBtn, southBtn, westBtn).forEach(b -> {
+            // ensure no duplicate listeners
+            for (ActionListener al : b.getActionListeners()) b.removeActionListener(al);
+            b.addActionListener(moveListener);
+        });
+
+        d.gridx = 1; d.gridy = 0; dpad.add(northBtn, d);
+        d.gridx = 0; d.gridy = 1; dpad.add(westBtn, d);
+        d.gridx = 2; d.gridy = 1; dpad.add(eastBtn, d);
+        d.gridx = 1; d.gridy = 2; dpad.add(southBtn, d);
+
+        bottom.add(dpad);
+        add(bottom, BorderLayout.SOUTH);
+
+        // Initially disable skill buttons until a mob exists
+        setSkillButtonsEnabled(false);
+
+        // Skill buttons listeners will be configured in setPlayer (so they have the player reference)
     }
 
     public void setPlayer(String name, String className) {
-        switch (className) {
-            case "Mage":
-                player = new Mage(name);
-                break;
-            case "Paladin":
-                player = new Paladin(name);
-                break;
-            default:
-                player = new Warrior(name);
-                break;
+        if (player != null) {
+            // already initialized; update name/class if desired
+            player.name = name;
+            // if class changed we recreate
+            if (!Objects.equals(player.className, className)) {
+                player = createCharacter(name, className);
+            }
+        } else {
+            player = createCharacter(name, className);
         }
-        setupSkillButtons(); // Now that player is set, configure buttons
+
+        configureSkillButtons();
         updateStatus();
-        battleLog.append("You enter the scorching Desert World.\n\n");
+        appendToLog("You enter the scorching Desert World.\n\n");
+    }
+    
+    private Character createCharacter(String name, String className) {
+        switch (className) {
+            case "Mage": return new Mage(name, rng);
+            case "Paladin": return new Paladin(name, rng);
+            default: return new Warrior(name, rng);
+        }
     }
 
-    private void setupSkillButtons() {
+
+    private void configureSkillButtons() {
+        // remove existing listeners to avoid duplicates
+        for (ActionListener al : skill1Btn.getActionListeners()) skill1Btn.removeActionListener(al);
+        for (ActionListener al : skill2Btn.getActionListeners()) skill2Btn.removeActionListener(al);
+        for (ActionListener al : skill3Btn.getActionListeners()) skill3Btn.removeActionListener(al);
+
         if (player instanceof Warrior) {
             skill1Btn.setText("Stone Slash (0-12 Dmg, +10 Mana)");
             skill2Btn.setText("Flame Strike (13-22 Dmg, 20 Mana)");
@@ -226,148 +197,165 @@ public class DesertWorldPanel extends JPanel {
         skill3Btn.addActionListener(e -> doSkill(3));
     }
 
+    private void setSkillButtonsEnabled(boolean enabled) {
+        skill1Btn.setEnabled(enabled);
+        skill2Btn.setEnabled(enabled);
+        skill3Btn.setEnabled(enabled);
+    }
 
     private void doSkill(int choice) {
-        if (currentMob == null) {
-            battleLog.append("No enemy to attack!\n\n");
-            return;
-        }
+        if (player == null || currentMob == null) return;
 
-        String result = player.useSkill(choice, currentMob);
-        battleLog.append(result + "\n\n");
-
-        if (!currentMob.isAlive()) {
-            battleLog.append("You defeated " + currentMob.name + "!\n\n");
-
-            mobsDefeated++; 
- 
-            if(currentMob instanceof GiantWorm) {
-            	Object[] options = {"Enter Portal", "Return Home"};
-            	int ch = JOptionPane.showOptionDialog(
-            	        this,
-            	        "The portal to the Snowy Island is open.\n\nWhat will you do?",
-            	        "Portal Opened",
-            	        JOptionPane.YES_NO_OPTION,
-            	        JOptionPane.QUESTION_MESSAGE,
-            	        null,
-            	        options,
-            	        options[0]
-            	);
-
-            	if (ch == 0) {
-            	    battleLog.append("You step into the portal... The Desert World awaits!\n\n");
-            	    mainFrame.showPanel("snowyIslandPanel");
-
-            	} else {
-            	    battleLog.append("You decide to return home to rest.\n\n");
-            	    mainFrame.showPanel("introPanel");
-            	}
-
-            }
-
-            clearedDirections.add(currentDirection);
-            availableDirections.remove(currentDirection);
-            
-            openRewardChest();
-
-            currentMob = null;
-
-        } else {
-            int mobDmg = currentMob.damage + rng.nextInt(6);
-            player.hp -= mobDmg;
-            if (player.hp < 0) player.hp = 0;
-            battleLog.append(currentMob.name + " attacks for " + mobDmg + " damage!\n\n");
-        }
+        String skillResult = player.useSkill(choice, currentMob);
+        appendToLog(skillResult + "\n");
 
         updateStatus();
 
-        if (player.hp <= 0) {
-            battleLog.append("You have been defeated...\n");
-            disableMovement();
-            JOptionPane.showMessageDialog(this, "Game Over", "Defeat", JOptionPane.PLAIN_MESSAGE);
-        }
-    }
+        // Mob defeated
+        if (!currentMob.isAlive()) {
+            mobsDefeated++;
+            appendToLog("You defeated " + currentMob.name + "!\n\n");
 
-    private void explore(String direction) {
+            // Queue panel change instead of immediate
+            if (currentMob instanceof GiantWorm) {
+                appendToLog("The portal to the Snowy Island is open.\n");
 
-        // Block cleared directions
-        if (clearedDirections.contains(direction)) {
-            JOptionPane.showMessageDialog(this,
-                    "There is nothing in that direction! Try another path.",
-                    "Empty Path", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
+                SwingUtilities.invokeLater(() -> {
+                    Object[] options = {"Enter Portal", "Return Home"};
+                    int choicePortal = JOptionPane.showOptionDialog(
+                            this,
+                            "The portal to the Snowy Island is open.\n\nWhat will you do?",
+                            "Portal Opened",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[0]
+                    );
 
-        stepsTaken++;
-        battleLog.append("You walk " + direction.toLowerCase() + ".\n\n");
+                    if (choicePortal == 0) mainFrame.showPanel("snowyisland");
+                    else mainFrame.showPanel("intro");
+                });
 
-        if (!chestFound && stepsTaken >= STEPS_FOR_CHEST) {
-            battleLog.append("You wander to the desert but Found nothing...\n\n");
-            chestFound = true;
-
-            List<World2Mob> mobs = Arrays.asList(
-                    new Spider(),
-                    new Snake(),
-                    new Mummy()
-            );
-
-            List<String> dirList = new ArrayList<>(Arrays.asList(directions));
-            Collections.shuffle(dirList);
-
-            for (int i = 0; i < 3; i++) {
-                directionMobs.put(dirList.get(i), mobs.get(i));
-                availableDirections.add(dirList.get(i));
+                currentMob = null;
+                setSkillButtonsEnabled(false);
+                updateStatus();
+                return;
             }
 
-            reservedGiantWormDirection = dirList.get(3);
+            // Mark direction cleared
+            if (currentDirection != null) {
+                clearedDirections.add(currentDirection);
+                availableDirections.remove(currentDirection);
+            }
 
+            openRewardChest();
+            currentMob = null;
+            setSkillButtonsEnabled(false);
             updateStatus();
             return;
         }
 
-
-        if (chestFound && currentMob == null) {
-
-            currentDirection = direction;
-
-            if (mobsDefeated == 3 && direction.equals(reservedGiantWormDirection)) {
-                currentMob = new GiantWorm();
-                battleLog.append("The sands shift... The Giant Worm emerges!!!\n\n");
-                battleLog.append("The sand is sinking rapidly!!!\n\n");
-                JOptionPane.showMessageDialog(null,"GIANT WORM INCOMING!!!", "WARNING! MINIBOSS", JOptionPane.ERROR_MESSAGE);
-            }
-            else {
-                currentMob = directionMobs.get(direction);
-            }
-
-            if (currentMob != null) {
-                battleLog.append("A wild " + currentMob.name + " appears!\n\n");
-            } else {
-                battleLog.append("You wander the tundra but find nothing of interest...\n\n");
-            }
-        }
+        // Mob attacks back
+        int mobDmg = currentMob.damage + rng.nextInt(6);
+        player.hp -= mobDmg;
+        if (player.hp < 0) player.hp = 0;
+        appendToLog(currentMob.name + " attacks for " + mobDmg + " damage!\n\n");
 
         updateStatus();
 
+        // Player defeated
+        if (player.hp <= 0) {
+            appendToLog("You have been defeated...\n");
+            disableMovement();
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(this, "Game Over", "Defeat", JOptionPane.PLAIN_MESSAGE);
+                mainFrame.showPanel("intro");
+            });
+        }
     }
 
 
+    private void explore(String direction) {
+    if (direction == null) return;
+
+    // Already cleared
+    if (clearedDirections.contains(direction)) {
+        appendToLog("There is nothing in that direction! Try another path.\n\n");
+        return;
+    }
+
+    stepsTaken++;
+    appendToLog("You walk " + direction.toLowerCase() + ".\n\n");
+
+    // Spawn chest and mobs if not yet found
+    if (!chestFound && stepsTaken >= STEPS_FOR_CHEST) {
+        battleLog.append("You wander through the desert and find nothing of interest...\n\n");
+        chestFound = true;
+
+        List<World2Mob> mobs = Arrays.asList(new Spider(), new Snake(), new Mummy());
+        List<String> dirList = new ArrayList<>(Arrays.asList(directions));
+        Collections.shuffle(dirList);
+
+        // Assign up to 3 mobs to directions
+        directionMobs.clear();
+        availableDirections.clear();
+        for (int i = 0; i < Math.min(3, dirList.size()); i++) {
+            directionMobs.put(dirList.get(i), mobs.get(i));
+            availableDirections.add(dirList.get(i));
+        }
+
+        // Always reserve a direction for Giant Worm
+        reservedGiantWormDirection = (dirList.size() >= 4) ? dirList.get(3) : dirList.get(0);
+
+        updateStatus();
+        return;
+    }
+
+    // Spawn a mob for this direction if none exists
+    if (chestFound && currentMob == null) {
+        currentDirection = direction;
+
+        boolean spawnGiantWorm = mobsDefeated >= 3 && direction.equals(reservedGiantWormDirection);
+
+        if (spawnGiantWorm) {
+            currentMob = new GiantWorm();
+            appendToLog("The sands shift... The Giant Worm emerges!!!\n\n");
+            JOptionPane.showMessageDialog(this,
+                    "GIANT WORM INCOMING!!!", "WARNING! MINIBOSS",
+                    JOptionPane.ERROR_MESSAGE);
+        } else {
+            currentMob = directionMobs.getOrDefault(direction, new Spider()); // fallback mob
+        }
+
+        if (currentMob != null) {
+            appendToLog("A wild " + currentMob.name + " appears!\n\n");
+            setSkillButtonsEnabled(true);
+        }
+    }
+
+    updateStatus();
+}
+
 
     private void updateStatus() {
-        statusLabel.setText("<html><b>Name:</b> " + player.name +
-                "<br/><b>Class:</b> " + player.className +
-                "<br/><b>HP:</b> <span style='color:green;'>" + player.hp + "</span> / " + player.maxHp +
-                "<br/><b>MP:</b> <span style='color:blue;'>" + player.mana + "</span></html>");
+        if (player != null) {
+            statusLabel.setText("<html><b>Name:</b> " + player.name +
+                    "<br/><b>Class:</b> " + player.className +
+                    "<br/><b>HP:</b> <span style='color:green;'>" + player.hp + "</span> / " + player.maxHp +
+                    "<br/><b>MP:</b> <span style='color:blue;'>" + player.mana + "</span></html>");
 
-        playerLabel.setText("<html>" + player.className +
-                "<br/>HP: <span style='color:green;'>" + player.hp + "</span>  " +
-                "MP: <span style='color:blue;'>" + player.mana + "</span></html>");
+            playerLabel.setText("<html>" + player.className +
+                    "<br/>HP: <span style='color:green;'>" + player.hp + "</span>  " +
+                    "MP: <span style='color:blue;'>" + player.mana + "</span></html>");
+        }
 
-        if (currentMob != null)
+        if (currentMob != null) {
             mobLabel.setText("<html>" + currentMob.name +
                     "<br/>HP: <span style='color:red;'>" + currentMob.hp + "</span></html>");
-        else
+        } else {
             mobLabel.setText("");
+        }
     }
 
     private void disableMovement() {
@@ -375,211 +363,147 @@ public class DesertWorldPanel extends JPanel {
         southBtn.setEnabled(false);
         eastBtn.setEnabled(false);
         westBtn.setEnabled(false);
-        skill1Btn.setEnabled(false);
-        skill2Btn.setEnabled(false);
-        skill3Btn.setEnabled(false);
+        setSkillButtonsEnabled(false);
     }
-    
+
     private void openRewardChest() {
-        battleLog.append("You found a reward chest!\n\n");
+        appendToLog("You found a reward chest!\n\n");
 
         int rewardType = rng.nextInt(5);
-
         switch (rewardType) {
-        	case 0:
-        		int hpBoost = 30;
-        		player.maxHp += hpBoost;
-        		player.hp += hpBoost;
-        		if (player.hp > player.maxHp) player.hp = player.maxHp;
-        		battleLog.append("Your maximum HP increased by " + hpBoost + "!\n\n");
-        		JOptionPane.showMessageDialog(null, "HP INCREASED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
-        		break;
-        	case 1:
-        	    int dmgBoost = 15;
-        	    player.tempDamage += dmgBoost;
-        	    battleLog.append("Your damage increased by " + dmgBoost + " for the next battle!\n\n");
-                break;
-            case 2: 
+            case 0 -> {
+                int hpBoost = 30;
+                player.maxHp += hpBoost;
+                player.hp += hpBoost;
+                if (player.hp > player.maxHp) player.hp = player.maxHp;
+                appendToLog("Your maximum HP increased by " + hpBoost + "!\n\n");
+                JOptionPane.showMessageDialog(this, "HP INCREASED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
+            }
+            case 1 -> {
+                int dmgBoost = 15;
+                player.tempDamage += dmgBoost;
+                appendToLog("Your damage increased by " + dmgBoost + " for the next battle!\n\n");
+            }
+            case 2 -> {
                 int manaBoost = 20;
                 player.maxMana += manaBoost;
                 player.mana += manaBoost;
                 if (player.mana > player.maxMana) player.mana = player.maxMana;
-                battleLog.append("Your maximum Mana increased by " + manaBoost + "!\n\n");
-                JOptionPane.showMessageDialog(null, "MANA INCREASED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
-                break;
-            case 3:
+                appendToLog("Your maximum Mana increased by " + manaBoost + "!\n\n");
+                JOptionPane.showMessageDialog(this, "MANA INCREASED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
+            }
+            case 3 -> {
                 player.hp = player.maxHp;
-                battleLog.append("You found a healing potion! HP restored to full!\n\n");
-                JOptionPane.showMessageDialog(null, "HP RESTORED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
-                break;
-            case 4:
+                appendToLog("You found a healing potion! HP restored to full!\n\n");
+                JOptionPane.showMessageDialog(this, "HP RESTORED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
+            }
+            case 4 -> {
                 player.mana = player.maxMana;
-                battleLog.append("You found a mana elixir! Mana restored to full!\n\n");
-                JOptionPane.showMessageDialog(null, "MANA RESTORED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
-                break;
+                appendToLog("You found a mana elixir! Mana restored to full!\n\n");
+                JOptionPane.showMessageDialog(this, "MANA RESTORED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
-
         updateStatus();
     }
 
-    static abstract class Character {
-    	int tempDamage = 0;
+    private void appendToLog(String text) {
+        battleLog.append(text);
+        // auto-scroll to bottom
+        SwingUtilities.invokeLater(() -> {
+            JScrollPane sp = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, battleLog);
+            if (sp != null) {
+                JViewport vp = sp.getViewport();
+                if (vp != null) vp.setViewPosition(new Point(0, battleLog.getHeight()));
+            }
+        });
+    }
+
+    public static abstract class Character {
+        int tempDamage = 0;
         String name, className;
         int hp, maxHp, mana, maxMana;
+        Random rng;  // Add this
 
-        Character(String name, String className, int hp, int mana) {
-            this.name = name; this.className = className;
+        Character(String name, String className, int hp, int mana, Random rng) {
+            this.name = name;
+            this.className = className;
             this.hp = this.maxHp = hp;
             this.mana = this.maxMana = mana;
+            this.rng = rng; // assign panel's RNG
         }
 
         boolean isAlive() { return hp > 0; }
         abstract String useSkill(int choice, World2Mob target);
     }
 
-    static class Warrior extends Character {
-        Warrior(String n) {
-            super(n,"Warrior",180,80);
-        }
+
+    public static class Warrior extends Character {
+        Warrior(String n, Random rng) { super(n, "Warrior", 180, 80, rng); }
+
         @Override
         String useSkill(int choice, World2Mob target) {
-            int dmg = 0;
-            String msg = "";
+            if (target == null) return "No target!";
+            int dmg; String msg;
             switch (choice) {
-                case 1:
-                    dmg = 5 + new Random().nextInt(6);
-                    dmg += tempDamage; // apply damage buff if any
-                    target.hp -= dmg;
+                case 1 -> {
+                    dmg = 5 + rng.nextInt(6); dmg += tempDamage;
+                    target.hp -= dmg; 
                     mana = Math.min(maxMana, mana + 10);
                     msg = "Stone Slash deals " + dmg;
-                    break;
-
-                case 2:
+                }
+                case 2 -> {
                     if (mana >= 20) {
-                        dmg = 12 + new Random().nextInt(8);
-                        dmg += tempDamage;
-                        target.hp -= dmg;
-                        mana -= 20;
+                        dmg = 12 + rng.nextInt(8); dmg += tempDamage;
+                        target.hp -= dmg; mana -= 20;
                         msg = "Flame Strike deals " + dmg;
-                    } else {
-                        msg = "Not enough mana!";
-                    }
-                    break;
-
-                case 3:
+                    } else msg = "Not enough mana!";
+                }
+                case 3 -> {
                     if (mana >= 30) {
-                        dmg = 20 + new Random().nextInt(15);
-                        dmg += tempDamage;
-                        target.hp -= dmg;
-                        mana -= 30;
+                        dmg = 20 + rng.nextInt(15); dmg += tempDamage;
+                        target.hp -= dmg; mana -= 30;
                         msg = "Earthquake Blade deals " + dmg;
-                    } else {
-                        msg = "Not enough mana!";
-                    }
-                    break;
-
-                default:
-                    msg = "Unknown skill.";
+                    } else msg = "Not enough mana!";
+                }
+                default -> msg = "Unknown skill.";
             }
-            if (mana < 0) mana = 0;
             return msg;
         }
     }
 
-    static class Mage extends Character {
-        Mage(String n) {
-            super(n,"Mage",120,150);
-        }
+    public static class Mage extends Character {
+        Mage(String n, Random rng) { super(n, "Mage", 120, 150, rng); }
+
         @Override
         String useSkill(int choice, World2Mob target) {
-            int dmg = 0;
-            String msg = "";
+            if (target == null) return "No target!";
+            int dmg; String msg;
             switch (choice) {
-                case 1:
-                    dmg = 5 + new Random().nextInt(6);
-                    dmg += tempDamage;
-                    target.hp -= dmg;
-                    mana = Math.min(maxMana, mana + 10);
-                    msg = "Frost Bolt deals " + dmg;
-                    break;
-
-                case 2:
-                    if (mana >= 20) {
-                        dmg = 11 + new Random().nextInt(10);
-                        dmg += tempDamage;
-                        target.hp -= dmg;
-                        mana -= 20;
-                        msg = "Rune Burst deals " + dmg;
-                    } else {
-                        msg = "Not enough mana!";
-                    }
-                    break;
-
-                case 3:
-                    if (mana >= 30) {
-                        dmg = 21 + new Random().nextInt(15);
-                        dmg += tempDamage;
-                        target.hp -= dmg;
-                        mana -= 30;
-                        msg = "Lightstorm deals " + dmg;
-                    } else {
-                        msg = "Not enough mana!";
-                    }
-                    break;
-
-                default:
-                    msg = "Unknown skill.";
+                case 1 -> { dmg = 5 + rng.nextInt(6); dmg += tempDamage; target.hp -= dmg; mana = Math.min(maxMana, mana + 10); msg = "Frost Bolt deals " + dmg; }
+                case 2 -> { if (mana >= 20) { dmg = 11 + rng.nextInt(10); dmg += tempDamage; target.hp -= dmg; mana -= 20; msg = "Rune Burst deals " + dmg; } else msg = "Not enough mana!"; }
+                case 3 -> { if (mana >= 30) { dmg = 21 + rng.nextInt(15); dmg += tempDamage; target.hp -= dmg; mana -= 30; msg = "Lightstorm deals " + dmg; } else msg = "Not enough mana!"; }
+                default -> msg = "Unknown skill.";
             }
-            if (mana < 0) mana = 0;
             return msg;
         }
     }
-    static class Paladin extends Character {
-        Paladin(String n) {
-            super(n,"Paladin",220,120);
-        }
+
+    public static class Paladin extends Character {
+        Paladin(String n, Random rng) { super(n, "Paladin", 220, 120, rng); }
+
         @Override
         String useSkill(int choice, World2Mob target) {
-            int dmg = 0;
-            String msg = "";
+            if (target == null) return "No target!";
+            int dmg; String msg;
             switch (choice) {
-                case 1:
-                    dmg = 5 + new Random().nextInt(8);
-                    dmg += tempDamage;
-                    target.hp -= dmg;
-                    mana = Math.min(maxMana, mana + 10);
-                    msg = "Shield Bash deals " + dmg;
-                    break;
-
-                case 2:
-                    if (mana >= 20) {
-                        mana -= 20;
-                        msg = "Radiant Guard! Damage reduced.";
-                        // if you want a real reduction effect, we can add state here later
-                    } else {
-                        msg = "Not enough mana!";
-                    }
-                    break;
-
-                case 3:
-                    if (mana >= 30) {
-                        int heal = 20 + new Random().nextInt(16);
-                        mana -= 30;
-                        hp = Math.min(maxHp, hp + heal);
-                        msg = "Holy Renewal heals " + heal;
-                    } else {
-                        msg = "Not enough mana!";
-                    }
-                    break;
-
-                default:
-                    msg = "Unknown skill.";
+                case 1 -> { dmg = 5 + rng.nextInt(8); dmg += tempDamage; target.hp -= dmg; mana = Math.min(maxMana, mana + 10); msg = "Shield Bash deals " + dmg; }
+                case 2 -> { if (mana >= 20) { mana -= 20; msg = "Radiant Guard! Damage reduced."; } else msg = "Not enough mana!"; }
+                case 3 -> { if (mana >= 30) { int heal = 20 + rng.nextInt(16); mana -= 30; hp = Math.min(maxHp, hp + heal); msg = "Holy Renewal heals " + heal; } else msg = "Not enough mana!"; }
+                default -> msg = "Unknown skill.";
             }
-            if (mana < 0) mana = 0;
             return msg;
         }
     }
-
     public static abstract class World2Mob 
     {
         String name; int hp, damage;
@@ -611,16 +535,15 @@ public class DesertWorldPanel extends JPanel {
     { 
     	Mummy() 
     	{ 
-    		super("Mummy", 100, 15); 
+    		super("Mummy", 60, 15); 
     	} 
     }
     public static class GiantWorm extends World2Mob 
     { 
     	GiantWorm() 
     	{ 
-    		super("Giant Worm", 60, 13); 
+    		super("Giant Worm", 100, 13); 
     	} 
     }
-
-  
+         
 }
