@@ -52,10 +52,7 @@ public class Paladin extends Character {
         }
     }
 
-    /**
-     * Display skills in a JTextArea (Swing UI).
-     * You can also use this to update buttons dynamically.
-     */
+  
     @Override
     protected void displaySkillsSwing(JTextArea battleLog) {
         String[] skills = {

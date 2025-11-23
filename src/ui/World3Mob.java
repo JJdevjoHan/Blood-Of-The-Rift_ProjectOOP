@@ -8,7 +8,7 @@ public class World3Mob extends World1Mob {
 
     @Override
     public String specialSkill(Character target) {
-        int damage = (int)(this.damage * 1.8) + 10; // Increased damage for World 3 mobs
+        int damage = (int)(this.damage * 1.8) + 10; 
         target.takeDamage(damage); 
         
         return name + " unleashes a powerful special attack! Deals " + damage + " damage. ";

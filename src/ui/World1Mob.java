@@ -27,8 +27,7 @@ public abstract class World1Mob {
     public String attack(Character target) {
         int damage = (int)(Math.random() * this.damage) + 1;
         target.takeDamage(damage); // Silent
-        
-        // Return the full message string
+     
         return name + " attacks " + target.name + " for " + damage + " damage. ";
     }
 
@@ -36,7 +35,6 @@ public abstract class World1Mob {
         int damage = (int)(this.damage * 1.5) + 5; 
         target.takeDamage(damage); // Silent
         
-        // Return the full message string
         return name + " uses a special attack! Deals " + damage + " damage. ";
     }
 }

@@ -107,7 +107,7 @@ public class LoadingPanel extends JPanel {
             	System.out.println("Loading complete, switching to grassyPlains");
                 ((Timer) e.getSource()).stop();
                 
-                // Delay before switching panels
+                
                 Timer delay = new Timer(500, ev -> {
                     mainFrame.showPanel("grassyPlains");
                     

@@ -37,7 +37,7 @@ public abstract class Character {
     
     public void addTemporaryDamage(int amount) {
         this.temporaryDamageBuff = amount;
-        this.damageBuffDuration = 3; // lasts 3 turns
+        this.damageBuffDuration = 3; 
     }
 
     public void decrementDamageBuffDuration() {

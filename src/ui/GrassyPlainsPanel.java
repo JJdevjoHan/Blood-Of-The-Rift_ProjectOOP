@@ -153,18 +153,14 @@ public class GrassyPlainsPanel extends JPanel {
         bottom.add(dpad);
         add(bottom, BorderLayout.SOUTH);
 
-        // Initially disable skill buttons until a mob exists
         setSkillButtonsEnabled(false);
 
-        // Skill buttons listeners will be configured in setPlayer (so they have the player reference)
     }
 
     
     public void setPlayer(String name, String className) {
         if (player != null) {
-            // already initialized; update name/class if desired
             player.name = name;
-            // if class changed we recreate
             if (!Objects.equals(player.className, className)) {
                 player = createCharacter(name, className);
             }
@@ -187,7 +183,6 @@ public class GrassyPlainsPanel extends JPanel {
 
 
     private void configureSkillButtons() {
-        // remove existing listeners to avoid duplicates
         for (ActionListener al : skill1Btn.getActionListeners()) skill1Btn.removeActionListener(al);
         for (ActionListener al : skill2Btn.getActionListeners()) skill2Btn.removeActionListener(al);
         for (ActionListener al : skill3Btn.getActionListeners()) skill3Btn.removeActionListener(al);
@@ -225,12 +220,10 @@ public class GrassyPlainsPanel extends JPanel {
 
     updateStatus();
 
-    // Mob defeated
     if (!currentMob.isAlive()) {
         mobsDefeated++;
         appendToLog("You defeated " + currentMob.name + "!\n\n");
 
-        // Queue panel change instead of immediate
         if (currentMob instanceof Minotaur) {
             appendToLog("The portal to the Desert World is open.\n What will you do?\n\n");
 
@@ -257,7 +250,6 @@ public class GrassyPlainsPanel extends JPanel {
             return;
         }
 
-        // Mark direction cleared
         if (currentDirection != null) {
             clearedDirections.add(currentDirection);
             availableDirections.remove(currentDirection);
@@ -270,7 +262,6 @@ public class GrassyPlainsPanel extends JPanel {
         return;
     }
 
-    // Mob attacks back
     int mobDmg = currentMob.damage + rng.nextInt(6);
     player.hp -= mobDmg;
     if (player.hp < 0) player.hp = 0;
@@ -278,7 +269,6 @@ public class GrassyPlainsPanel extends JPanel {
 
     updateStatus();
 
-    // Player defeated
     if (player.hp <= 0) {
         appendToLog("You have been defeated...\n");
         disableMovement();
@@ -293,7 +283,6 @@ public class GrassyPlainsPanel extends JPanel {
     private void explore(String direction) {
     if (direction == null) return;
 
-    // Already cleared
     if (clearedDirections.contains(direction)) {
         appendToLog("There is nothing in that direction! Try another path.\n\n");
         return;
@@ -302,7 +291,6 @@ public class GrassyPlainsPanel extends JPanel {
     stepsTaken++;
     appendToLog("You walk " + direction.toLowerCase() + ".\n\n");
 
-    // Spawn chest and mobs if not yet found
     if (!chestFound && stepsTaken >= STEPS_FOR_CHEST) {
     	
         if (player instanceof Warrior) {
@@ -320,7 +308,6 @@ public class GrassyPlainsPanel extends JPanel {
             List<String> dirList = new ArrayList<>(Arrays.asList(directions));
         Collections.shuffle(dirList);
 
-        // Assign up to 3 mobs to directions
         directionMobs.clear();
         availableDirections.clear();
         for (int i = 0; i < Math.min(3, dirList.size()); i++) {
@@ -328,14 +315,12 @@ public class GrassyPlainsPanel extends JPanel {
             availableDirections.add(dirList.get(i));
         }
 
-        // Always reserve a direction for Giant Worm
         reservedMinotaurDirection = (dirList.size() >= 4) ? dirList.get(3) : dirList.get(0);
 
         updateStatus();
         return;
     }
 
-    // Spawn a mob for this direction if none exists
     if (chestFound && currentMob == null) {
         currentDirection = direction;
 
@@ -502,9 +487,33 @@ public class GrassyPlainsPanel extends JPanel {
             if (target == null) return "No target!";
             int dmg; String msg;
             switch (choice) {
-                case 1 -> { dmg = 5 + rng.nextInt(6); dmg += tempDamage; target.hp -= dmg; mana = Math.min(maxMana, mana + 10); msg = "Frost Bolt deals " + dmg; }
-                case 2 -> { if (mana >= 20) { dmg = 11 + rng.nextInt(10); dmg += tempDamage; target.hp -= dmg; mana -= 20; msg = "Rune Burst deals " + dmg; } else msg = "Not enough mana!"; }
-                case 3 -> { if (mana >= 30) { dmg = 21 + rng.nextInt(15); dmg += tempDamage; target.hp -= dmg; mana -= 30; msg = "Lightstorm deals " + dmg; } else msg = "Not enough mana!"; }
+                case 1 -> { 
+                	dmg = 5 + rng.nextInt(6); 
+                	dmg += tempDamage; 
+                	target.hp -= dmg; 
+                	mana = Math.min(maxMana, mana + 10); 
+                	msg = "Frost Bolt deals " + dmg; 
+                	}
+                case 2 -> { 
+                	if (mana >= 20) { 
+                		dmg = 11 + rng.nextInt(10); 
+                		dmg += tempDamage; 
+                		target.hp -= dmg; 
+                		mana -= 20; 
+                		msg = "Rune Burst deals " + dmg; 
+                	} else 
+                		msg = "Not enough mana!"; 
+                }
+                case 3 -> { 
+                	if (mana >= 30) { 
+                		dmg = 21 + rng.nextInt(15); 
+                		dmg += tempDamage; 
+                		target.hp -= dmg; 
+                		mana -= 30; 
+                		msg = "Lightstorm deals " + dmg; 
+                	} else 
+                		msg = "Not enough mana!"; 
+                }
                 default -> msg = "Unknown skill.";
             }
             return msg;
@@ -519,9 +528,29 @@ public class GrassyPlainsPanel extends JPanel {
             if (target == null) return "No target!";
             int dmg; String msg;
             switch (choice) {
-                case 1 -> { dmg = 5 + rng.nextInt(8); dmg += tempDamage; target.hp -= dmg; mana = Math.min(maxMana, mana + 10); msg = "Shield Bash deals " + dmg; }
-                case 2 -> { if (mana >= 20) { mana -= 20; msg = "Radiant Guard! Damage reduced."; } else msg = "Not enough mana!"; }
-                case 3 -> { if (mana >= 30) { int heal = 20 + rng.nextInt(16); mana -= 30; hp = Math.min(maxHp, hp + heal); msg = "Holy Renewal heals " + heal; } else msg = "Not enough mana!"; }
+                case 1 -> { 
+                	dmg = 5 + rng.nextInt(8); 
+                	dmg += tempDamage; 
+                	target.hp -= dmg; 
+                	mana = Math.min(maxMana, mana + 10); 
+                	msg = "Shield Bash deals " + dmg; 
+                }
+                case 2 -> { 
+                	if (mana >= 20) { 
+                		mana -= 20; 
+                		msg = "Radiant Guard! Damage reduced."; 
+                		} else 
+                			msg = "Not enough mana!"; 
+                	}
+                case 3 -> { 
+                	if (mana >= 30) { 
+                		int heal = 20 + rng.nextInt(16); 
+                		mana -= 30; 
+                		hp = Math.min(maxHp, hp + heal); 
+                		msg = "Holy Renewal heals " + heal; 
+                		} else 
+                			msg = "Not enough mana!"; 
+                	}
                 default -> msg = "Unknown skill.";
             }
             return msg;
