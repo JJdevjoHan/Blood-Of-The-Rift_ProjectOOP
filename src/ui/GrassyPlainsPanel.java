@@ -51,6 +51,7 @@ public class GrassyPlainsPanel extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(false);
 
+        // Status bar
         JPanel statusBar = new JPanel(new BorderLayout());
         statusBar.setOpaque(true);
         statusBar.setBackground(new Color(30, 30, 30));
@@ -64,7 +65,7 @@ public class GrassyPlainsPanel extends JPanel {
         statusBar.setBorder(new LineBorder(Color.BLACK, 2, true));
         add(statusBar, BorderLayout.NORTH);
 
- 
+        // Center area: player, log, mob
         JPanel midPanel = new JPanel(new GridBagLayout());
         midPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -100,6 +101,7 @@ public class GrassyPlainsPanel extends JPanel {
 
         add(midPanel, BorderLayout.CENTER);
 
+        // Bottom area: skills + dpad
         JPanel bottom = new JPanel(new GridLayout(2, 1));
         bottom.setOpaque(false);
 
@@ -121,6 +123,7 @@ public class GrassyPlainsPanel extends JPanel {
         GridBagConstraints d = new GridBagConstraints();
         d.insets = new Insets(4, 4, 4, 4);
 
+        // Use action commands to carry the logical direction (safer than name/text)
         northBtn.setActionCommand("North");
         eastBtn.setActionCommand("East");
         southBtn.setActionCommand("South");
@@ -135,7 +138,9 @@ public class GrassyPlainsPanel extends JPanel {
             if (inWorld) explore(dir);
         };
 
+        // Attach movement listeners (no duplicates)
         Stream.of(northBtn, eastBtn, southBtn, westBtn).forEach(b -> {
+            // ensure no duplicate listeners
             for (ActionListener al : b.getActionListeners()) b.removeActionListener(al);
             b.addActionListener(moveListener);
         });
@@ -319,15 +324,15 @@ public class GrassyPlainsPanel extends JPanel {
     if (chestFound && currentMob == null) {
         currentDirection = direction;
 
-        boolean spawnMinotaur = mobsDefeated >= 3 && direction.equals(reservedMinotaurDirection);
+        //boolean spawnMinotaur = mobsDefeated >= 3 && direction.equals(reservedMinotaurDirection);
 
-        if (spawnMinotaur) {
+        if (mobsDefeated >= 3 && direction.equals(reservedMinotaurDirection)) {
             currentMob = new Minotaur();
             battleLog.append("A hulking Minotaur blocks your path! It's the guardian of these plains!\n\n");
             battleLog.append("The ground shakes... The Minotaur emerges!!!\n\n");
             JOptionPane.showMessageDialog(null, "MINOTAUR INCOMING!!!", "WARNING! MINIBOSS", JOptionPane.ERROR_MESSAGE);
-        } else if (directionMobs.containsKey(direction)){
-        	currentMob = directionMobs.get(direction);// fallback mob
+        } else {
+            currentMob = directionMobs.getOrDefault(direction, new Minotaur()); // fallback mob
         }
 
         if (currentMob != null) {

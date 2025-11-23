@@ -312,8 +312,8 @@ public class DesertWorldPanel extends JPanel {
             JOptionPane.showMessageDialog(this,
                     "GIANT WORM INCOMING!!!", "WARNING! MINIBOSS",
                     JOptionPane.ERROR_MESSAGE);
-        } else if (directionMobs.containsKey(direction)){
-        	currentMob = directionMobs.get(direction);// fallback mob
+        } else {
+            currentMob = directionMobs.getOrDefault(direction, new Spider()); // fallback mob
         }
 
         if (currentMob != null) {
