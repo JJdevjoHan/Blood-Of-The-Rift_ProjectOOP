@@ -502,9 +502,33 @@ public class GrassyPlainsPanel extends JPanel {
             if (target == null) return "No target!";
             int dmg; String msg;
             switch (choice) {
-                case 1 -> { dmg = 5 + rng.nextInt(6); dmg += tempDamage; target.hp -= dmg; mana = Math.min(maxMana, mana + 10); msg = "Frost Bolt deals " + dmg; }
-                case 2 -> { if (mana >= 20) { dmg = 11 + rng.nextInt(10); dmg += tempDamage; target.hp -= dmg; mana -= 20; msg = "Rune Burst deals " + dmg; } else msg = "Not enough mana!"; }
-                case 3 -> { if (mana >= 30) { dmg = 21 + rng.nextInt(15); dmg += tempDamage; target.hp -= dmg; mana -= 30; msg = "Lightstorm deals " + dmg; } else msg = "Not enough mana!"; }
+                case 1 -> { 
+                	dmg = 5 + rng.nextInt(6); 
+                	dmg += tempDamage; 
+                	target.hp -= dmg; 
+                	mana = Math.min(maxMana, mana + 10); 
+                	msg = "Frost Bolt deals " + dmg; 
+                	}
+                case 2 -> { 
+                	if (mana >= 20) { 
+                		dmg = 11 + rng.nextInt(10); 
+                		dmg += tempDamage; 
+                		target.hp -= dmg; 
+                		mana -= 20; 
+                		msg = "Rune Burst deals " + dmg; 
+                	} else 
+                		msg = "Not enough mana!"; 
+                }
+                case 3 -> { 
+                	if (mana >= 30) { 
+                		dmg = 21 + rng.nextInt(15); 
+                		dmg += tempDamage; 
+                		target.hp -= dmg; 
+                		mana -= 30; 
+                		msg = "Lightstorm deals " + dmg; 
+                	} else 
+                		msg = "Not enough mana!"; 
+                }
                 default -> msg = "Unknown skill.";
             }
             return msg;
@@ -519,9 +543,29 @@ public class GrassyPlainsPanel extends JPanel {
             if (target == null) return "No target!";
             int dmg; String msg;
             switch (choice) {
-                case 1 -> { dmg = 5 + rng.nextInt(8); dmg += tempDamage; target.hp -= dmg; mana = Math.min(maxMana, mana + 10); msg = "Shield Bash deals " + dmg; }
-                case 2 -> { if (mana >= 20) { mana -= 20; msg = "Radiant Guard! Damage reduced."; } else msg = "Not enough mana!"; }
-                case 3 -> { if (mana >= 30) { int heal = 20 + rng.nextInt(16); mana -= 30; hp = Math.min(maxHp, hp + heal); msg = "Holy Renewal heals " + heal; } else msg = "Not enough mana!"; }
+                case 1 -> { 
+                	dmg = 5 + rng.nextInt(8); 
+                	dmg += tempDamage; 
+                	target.hp -= dmg; 
+                	mana = Math.min(maxMana, mana + 10); 
+                	msg = "Shield Bash deals " + dmg; 
+                }
+                case 2 -> { 
+                	if (mana >= 20) { 
+                		mana -= 20; 
+                		msg = "Radiant Guard! Damage reduced."; 
+                		} else 
+                			msg = "Not enough mana!"; 
+                	}
+                case 3 -> { 
+                	if (mana >= 30) { 
+                		int heal = 20 + rng.nextInt(16); 
+                		mana -= 30; 
+                		hp = Math.min(maxHp, hp + heal); 
+                		msg = "Holy Renewal heals " + heal; 
+                		} else 
+                			msg = "Not enough mana!"; 
+                	}
                 default -> msg = "Unknown skill.";
             }
             return msg;

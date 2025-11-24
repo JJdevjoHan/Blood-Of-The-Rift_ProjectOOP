@@ -303,6 +303,8 @@ public class FinalWorldPanel extends JPanel {
     }
 }
 
+
+
 // Moved outside the panel for reusability
 class Kyros extends World5Boss {
     Kyros() {
