@@ -248,7 +248,7 @@ public class GrassyPlainsPanel extends JPanel {
                 );
 
                 if (choicePortal == 0) mainFrame.showPanel("desertWorld");
-                else mainFrame.showPanel("intro");
+                else mainFrame.showPanel("home");
             });
 
             currentMob = null;
