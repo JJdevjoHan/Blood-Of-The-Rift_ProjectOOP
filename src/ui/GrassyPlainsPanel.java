@@ -51,7 +51,6 @@ public class GrassyPlainsPanel extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        // Status bar
         JPanel statusBar = new JPanel(new BorderLayout());
         statusBar.setOpaque(true);
         statusBar.setBackground(new Color(30, 30, 30));
@@ -65,7 +64,6 @@ public class GrassyPlainsPanel extends JPanel {
         statusBar.setBorder(new LineBorder(Color.BLACK, 2, true));
         add(statusBar, BorderLayout.NORTH);
 
-        // Center area: player, log, mob
         JPanel midPanel = new JPanel(new GridBagLayout());
         midPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -101,7 +99,6 @@ public class GrassyPlainsPanel extends JPanel {
 
         add(midPanel, BorderLayout.CENTER);
 
-        // Bottom area: skills + dpad
         JPanel bottom = new JPanel(new GridLayout(2, 1));
         bottom.setOpaque(false);
 
@@ -123,7 +120,6 @@ public class GrassyPlainsPanel extends JPanel {
         GridBagConstraints d = new GridBagConstraints();
         d.insets = new Insets(4, 4, 4, 4);
 
-        // Use action commands to carry the logical direction (safer than name/text)
         northBtn.setActionCommand("North");
         eastBtn.setActionCommand("East");
         southBtn.setActionCommand("South");
@@ -138,9 +134,7 @@ public class GrassyPlainsPanel extends JPanel {
             if (inWorld) explore(dir);
         };
 
-        // Attach movement listeners (no duplicates)
         Stream.of(northBtn, eastBtn, southBtn, westBtn).forEach(b -> {
-            // ensure no duplicate listeners
             for (ActionListener al : b.getActionListeners()) b.removeActionListener(al);
             b.addActionListener(moveListener);
         });
@@ -152,19 +146,14 @@ public class GrassyPlainsPanel extends JPanel {
 
         bottom.add(dpad);
         add(bottom, BorderLayout.SOUTH);
-
-        // Initially disable skill buttons until a mob exists
         setSkillButtonsEnabled(false);
 
-        // Skill buttons listeners will be configured in setPlayer (so they have the player reference)
     }
 
     
     public void setPlayer(String name, String className) {
         if (player != null) {
-            // already initialized; update name/class if desired
             player.name = name;
-            // if class changed we recreate
             if (!Objects.equals(player.className, className)) {
                 player = createCharacter(name, className);
             }
@@ -187,7 +176,6 @@ public class GrassyPlainsPanel extends JPanel {
 
 
     private void configureSkillButtons() {
-        // remove existing listeners to avoid duplicates
         for (ActionListener al : skill1Btn.getActionListeners()) skill1Btn.removeActionListener(al);
         for (ActionListener al : skill2Btn.getActionListeners()) skill2Btn.removeActionListener(al);
         for (ActionListener al : skill3Btn.getActionListeners()) skill3Btn.removeActionListener(al);
@@ -225,12 +213,10 @@ public class GrassyPlainsPanel extends JPanel {
 
     updateStatus();
 
-    // Mob defeated
     if (!currentMob.isAlive()) {
         mobsDefeated++;
         appendToLog("You defeated " + currentMob.name + "!\n\n");
 
-        // Queue panel change instead of immediate
         if (currentMob instanceof Minotaur) {
             appendToLog("The portal to the Desert World is open.\n What will you do?\n\n");
 
@@ -257,7 +243,6 @@ public class GrassyPlainsPanel extends JPanel {
             return;
         }
 
-        // Mark direction cleared
         if (currentDirection != null) {
             clearedDirections.add(currentDirection);
             availableDirections.remove(currentDirection);
@@ -270,7 +255,6 @@ public class GrassyPlainsPanel extends JPanel {
         return;
     }
 
-    // Mob attacks back
     int mobDmg = currentMob.damage + rng.nextInt(6);
     player.hp -= mobDmg;
     if (player.hp < 0) player.hp = 0;
@@ -278,7 +262,6 @@ public class GrassyPlainsPanel extends JPanel {
 
     updateStatus();
 
-    // Player defeated
     if (player.hp <= 0) {
         appendToLog("You have been defeated...\n");
         disableMovement();
@@ -293,7 +276,6 @@ public class GrassyPlainsPanel extends JPanel {
     private void explore(String direction) {
     if (direction == null) return;
 
-    // Already cleared
     if (clearedDirections.contains(direction)) {
         appendToLog("There is nothing in that direction! Try another path.\n\n");
         return;
@@ -302,7 +284,6 @@ public class GrassyPlainsPanel extends JPanel {
     stepsTaken++;
     appendToLog("You walk " + direction.toLowerCase() + ".\n\n");
 
-    // Spawn chest and mobs if not yet found
     if (!chestFound && stepsTaken >= STEPS_FOR_CHEST) {
     	
         if (player instanceof Warrior) {
@@ -320,7 +301,6 @@ public class GrassyPlainsPanel extends JPanel {
             List<String> dirList = new ArrayList<>(Arrays.asList(directions));
         Collections.shuffle(dirList);
 
-        // Assign up to 3 mobs to directions
         directionMobs.clear();
         availableDirections.clear();
         for (int i = 0; i < Math.min(3, dirList.size()); i++) {
@@ -328,14 +308,12 @@ public class GrassyPlainsPanel extends JPanel {
             availableDirections.add(dirList.get(i));
         }
 
-        // Always reserve a direction for Giant Worm
         reservedMinotaurDirection = (dirList.size() >= 4) ? dirList.get(3) : dirList.get(0);
 
         updateStatus();
         return;
     }
 
-    // Spawn a mob for this direction if none exists
     if (chestFound && currentMob == null) {
         currentDirection = direction;
 
@@ -431,7 +409,6 @@ public class GrassyPlainsPanel extends JPanel {
 
     private void appendToLog(String text) {
         battleLog.append(text);
-        // auto-scroll to bottom
         SwingUtilities.invokeLater(() -> {
             JScrollPane sp = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, battleLog);
             if (sp != null) {
@@ -445,14 +422,14 @@ public class GrassyPlainsPanel extends JPanel {
         int tempDamage = 0;
         String name, className;
         int hp, maxHp, mana, maxMana;
-        Random rng;  // Add this
+        Random rng; 
 
         Character(String name, String className, int hp, int mana, Random rng) {
             this.name = name;
             this.className = className;
             this.hp = this.maxHp = hp;
             this.mana = this.maxMana = mana;
-            this.rng = rng; // assign panel's RNG
+            this.rng = rng; 
         }
 
         boolean isAlive() { return hp > 0; }

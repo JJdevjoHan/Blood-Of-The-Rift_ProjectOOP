@@ -49,7 +49,6 @@ public class DesertWorldPanel extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        // Status bar
         JPanel statusBar = new JPanel(new BorderLayout());
         statusBar.setOpaque(true);
         statusBar.setBackground(new Color(30, 30, 30));
@@ -60,7 +59,6 @@ public class DesertWorldPanel extends JPanel {
         statusBar.add(statusLabel, BorderLayout.CENTER);
         add(statusBar, BorderLayout.NORTH);
 
-        // Center area: player, log, mob
         JPanel midPanel = new JPanel(new GridBagLayout());
         midPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -92,7 +90,6 @@ public class DesertWorldPanel extends JPanel {
 
         add(midPanel, BorderLayout.CENTER);
 
-        // Bottom area: skills + dpad
         JPanel bottom = new JPanel(new GridLayout(2, 1));
         bottom.setOpaque(false);
 
@@ -110,7 +107,6 @@ public class DesertWorldPanel extends JPanel {
         GridBagConstraints d = new GridBagConstraints();
         d.insets = new Insets(4, 4, 4, 4);
 
-        // Use action commands to carry the logical direction (safer than name/text)
         northBtn.setActionCommand("North");
         eastBtn.setActionCommand("East");
         southBtn.setActionCommand("South");
@@ -125,9 +121,7 @@ public class DesertWorldPanel extends JPanel {
             if (inWorld) explore(dir);
         };
 
-        // Attach movement listeners (no duplicates)
         Stream.of(northBtn, eastBtn, southBtn, westBtn).forEach(b -> {
-            // ensure no duplicate listeners
             for (ActionListener al : b.getActionListeners()) b.removeActionListener(al);
             b.addActionListener(moveListener);
         });
@@ -140,17 +134,12 @@ public class DesertWorldPanel extends JPanel {
         bottom.add(dpad);
         add(bottom, BorderLayout.SOUTH);
 
-        // Initially disable skill buttons until a mob exists
         setSkillButtonsEnabled(false);
-
-        // Skill buttons listeners will be configured in setPlayer (so they have the player reference)
     }
 
     public void setPlayer(String name, String className) {
         if (player != null) {
-            // already initialized; update name/class if desired
             player.name = name;
-            // if class changed we recreate
             if (!Objects.equals(player.className, className)) {
                 player = createCharacter(name, className);
             }
@@ -165,15 +154,17 @@ public class DesertWorldPanel extends JPanel {
     
     private Character createCharacter(String name, String className) {
         switch (className) {
-            case "Mage": return new Mage(name, rng);
-            case "Paladin": return new Paladin(name, rng);
-            default: return new Warrior(name, rng);
+            case "Mage": 
+            	return new Mage(name, rng);
+            case "Paladin": 
+            	return new Paladin(name, rng);
+            default: 
+            	return new Warrior(name, rng);
         }
     }
 
 
     private void configureSkillButtons() {
-        // remove existing listeners to avoid duplicates
         for (ActionListener al : skill1Btn.getActionListeners()) skill1Btn.removeActionListener(al);
         for (ActionListener al : skill2Btn.getActionListeners()) skill2Btn.removeActionListener(al);
         for (ActionListener al : skill3Btn.getActionListeners()) skill3Btn.removeActionListener(al);
@@ -211,12 +202,10 @@ public class DesertWorldPanel extends JPanel {
 
         updateStatus();
 
-        // Mob defeated
         if (!currentMob.isAlive()) {
             mobsDefeated++;
             appendToLog("You defeated " + currentMob.name + "!\n\n");
 
-            // Queue panel change instead of immediate
             if (currentMob instanceof GiantWorm) {
                 appendToLog("The portal to the Snowy Island is open.\n");
 
@@ -233,8 +222,12 @@ public class DesertWorldPanel extends JPanel {
                             options[0]
                     );
 
-                    if (choicePortal == 0) mainFrame.showPanel("snowyisland");
-                    else mainFrame.showPanel("intro");
+                    if (choicePortal == 0) {
+                    	mainFrame.showPanel("snowyisland");
+                    }
+                    else {
+                    	mainFrame.showPanel("home");
+                    }
                 });
 
                 currentMob = null;
@@ -243,7 +236,6 @@ public class DesertWorldPanel extends JPanel {
                 return;
             }
 
-            // Mark direction cleared
             if (currentDirection != null) {
                 clearedDirections.add(currentDirection);
                 availableDirections.remove(currentDirection);
@@ -256,7 +248,6 @@ public class DesertWorldPanel extends JPanel {
             return;
         }
 
-        // Mob attacks back
         int mobDmg = currentMob.damage + rng.nextInt(6);
         player.hp -= mobDmg;
         if (player.hp < 0) player.hp = 0;
@@ -264,7 +255,6 @@ public class DesertWorldPanel extends JPanel {
 
         updateStatus();
 
-        // Player defeated
         if (player.hp <= 0) {
             appendToLog("You have been defeated...\n");
             disableMovement();
@@ -279,7 +269,6 @@ public class DesertWorldPanel extends JPanel {
     private void explore(String direction) {
     if (direction == null) return;
 
-    // Already cleared
     if (clearedDirections.contains(direction)) {
         appendToLog("There is nothing in that direction! Try another path.\n\n");
         return;
@@ -288,7 +277,6 @@ public class DesertWorldPanel extends JPanel {
     stepsTaken++;
     appendToLog("You walk " + direction.toLowerCase() + ".\n\n");
 
-    // Spawn chest and mobs if not yet found
     if (!chestFound && stepsTaken >= STEPS_FOR_CHEST) {
         battleLog.append("You wander through the desert and find nothing of interest...\n\n");
         chestFound = true;
@@ -297,7 +285,6 @@ public class DesertWorldPanel extends JPanel {
         List<String> dirList = new ArrayList<>(Arrays.asList(directions));
         Collections.shuffle(dirList);
 
-        // Assign up to 3 mobs to directions
         directionMobs.clear();
         availableDirections.clear();
         for (int i = 0; i < Math.min(3, dirList.size()); i++) {
@@ -305,14 +292,12 @@ public class DesertWorldPanel extends JPanel {
             availableDirections.add(dirList.get(i));
         }
 
-        // Always reserve a direction for Giant Worm
         reservedGiantWormDirection = (dirList.size() >= 4) ? dirList.get(3) : dirList.get(0);
 
         updateStatus();
         return;
     }
 
-    // Spawn a mob for this direction if none exists
     if (chestFound && currentMob == null) {
         currentDirection = direction;
 
@@ -324,8 +309,8 @@ public class DesertWorldPanel extends JPanel {
             JOptionPane.showMessageDialog(this,
                     "GIANT WORM INCOMING!!!", "WARNING! MINIBOSS",
                     JOptionPane.ERROR_MESSAGE);
-        } else {
-            currentMob = directionMobs.getOrDefault(direction, new Spider()); // fallback mob
+        } else if (directionMobs.containsKey(direction)){
+        	currentMob = directionMobs.get(direction);
         }
 
         if (currentMob != null) {
@@ -422,14 +407,14 @@ public class DesertWorldPanel extends JPanel {
         int tempDamage = 0;
         String name, className;
         int hp, maxHp, mana, maxMana;
-        Random rng;  // Add this
+        Random rng; 
 
         Character(String name, String className, int hp, int mana, Random rng) {
             this.name = name;
             this.className = className;
             this.hp = this.maxHp = hp;
             this.mana = this.maxMana = mana;
-            this.rng = rng; // assign panel's RNG
+            this.rng = rng; 
         }
 
         boolean isAlive() { return hp > 0; }

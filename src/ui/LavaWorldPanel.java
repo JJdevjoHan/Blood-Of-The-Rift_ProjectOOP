@@ -60,7 +60,6 @@ public class LavaWorldPanel extends JPanel {
         statusBar.add(statusLabel, BorderLayout.CENTER);
         add(statusBar, BorderLayout.NORTH);
 
-        // Center area: player, log, mob
         JPanel midPanel = new JPanel(new GridBagLayout());
         midPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -92,7 +91,6 @@ public class LavaWorldPanel extends JPanel {
 
         add(midPanel, BorderLayout.CENTER);
 
-        // Bottom area: skills + dpad
         JPanel bottom = new JPanel(new GridLayout(2, 1));
         bottom.setOpaque(false);
 
@@ -110,7 +108,6 @@ public class LavaWorldPanel extends JPanel {
         GridBagConstraints d = new GridBagConstraints();
         d.insets = new Insets(4, 4, 4, 4);
 
-        // Use action commands to carry the logical direction (safer than name/text)
         northBtn.setActionCommand("North");
         eastBtn.setActionCommand("East");
         southBtn.setActionCommand("South");
@@ -125,9 +122,7 @@ public class LavaWorldPanel extends JPanel {
             if (inWorld) explore(dir);
         };
 
-        // Attach movement listeners (no duplicates)
         Stream.of(northBtn, eastBtn, southBtn, westBtn).forEach(b -> {
-            // ensure no duplicate listeners
             for (ActionListener al : b.getActionListeners()) b.removeActionListener(al);
             b.addActionListener(moveListener);
         });
@@ -223,11 +218,11 @@ public class LavaWorldPanel extends JPanel {
                         options[0]
                 );
 
-                if (choicePortal == 0) { // Enter Portal
+                if (choicePortal == 0) { 
                     
                     mainFrame.showPanel("finalWorld");
                 } else { 
-                    mainFrame.showPanel("intro");
+                    mainFrame.showPanel("home");
                 }
                 currentMob = null;
                 setSkillButtonsEnabled(false);
@@ -235,23 +230,19 @@ public class LavaWorldPanel extends JPanel {
                 return;
             }
 
-            // Clear direction if mob is defeated
             if (currentDirection != null) {
                 clearedDirections.add(currentDirection);
                 availableDirections.remove(currentDirection);
             }
 
-            // Open reward chest
             openRewardChest();
 
-            // Clear current mob and disable skills
             currentMob = null;
             setSkillButtonsEnabled(false);
             updateStatus();
             return;
         }
 
-        // If mob is still alive, it attacks back
         int mobDmg = currentMob.damage + rng.nextInt(6);
         player.hp -= mobDmg;
         if (player.hp < 0) player.hp = 0;
@@ -259,12 +250,10 @@ public class LavaWorldPanel extends JPanel {
 
         updateStatus();
 
-        // Check if player is defeated
         if (player.hp <= 0) {
             appendToLog("You have been defeated...\n");
             disableMovement();
             JOptionPane.showMessageDialog(this, "Game Over", "Defeat", JOptionPane.PLAIN_MESSAGE);
-            //mainFrame.showPanel("intro");
         }
     }
 
@@ -280,7 +269,6 @@ public class LavaWorldPanel extends JPanel {
         stepsTaken++;
         appendToLog("You walk " + direction.toLowerCase() + ".\n\n");
 
-        // find chest and spawn mobs
         if (!chestFound && stepsTaken >= STEPS_FOR_CHEST) {
         	battleLog.append("You wander to the desert but Found nothing...\n\n");
             chestFound = true;
@@ -293,7 +281,6 @@ public class LavaWorldPanel extends JPanel {
             List<String> dirList = new ArrayList<>(Arrays.asList(directions));
             Collections.shuffle(dirList);
 
-            // put up to 3 mobs into directionMobs safely
             directionMobs.clear();
             availableDirections.clear();
             for (int i = 0; i < Math.min(3, dirList.size()); i++) {
@@ -301,7 +288,6 @@ public class LavaWorldPanel extends JPanel {
                 availableDirections.add(dirList.get(i));
             }
 
-            // reserve a direction for Minotaur if possible
             if (dirList.size() >= 4) {
                 reservedGolemDirection = dirList.get(3);
             } else {
@@ -312,7 +298,6 @@ public class LavaWorldPanel extends JPanel {
             return;
         }
 
-        // If chest has been found and there's currently no mob, spawn one for this direction
         if (chestFound && currentMob == null) {
             currentDirection = direction;
 
@@ -324,8 +309,8 @@ public class LavaWorldPanel extends JPanel {
                 battleLog.append("The Minancing Aura of the Golem....skicles!!\n\n");
                 JOptionPane.showMessageDialog(null,"GOLEM INCOMING!!!", "WARNING! MINIBOSS", JOptionPane.ERROR_MESSAGE);
             }
-            else {
-                currentMob = directionMobs.get(direction); // may be null
+            else if (directionMobs.containsKey(direction)){
+            	currentMob = directionMobs.get(direction);
             }
 
             if (currentMob != null) {
@@ -410,7 +395,6 @@ public class LavaWorldPanel extends JPanel {
 
     private void appendToLog(String text) {
         battleLog.append(text);
-        // auto-scroll to bottom
         SwingUtilities.invokeLater(() -> {
             JScrollPane sp = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, battleLog);
             if (sp != null) {
@@ -424,14 +408,13 @@ public class LavaWorldPanel extends JPanel {
         int tempDamage = 0;
         String name, className;
         int hp, maxHp, mana, maxMana;
-        Random rng;  // Add this
-
+        Random rng;  
         Character(String name, String className, int hp, int mana, Random rng) {
             this.name = name;
             this.className = className;
             this.hp = this.maxHp = hp;
             this.mana = this.maxMana = mana;
-            this.rng = rng; // assign panel's RNG
+            this.rng = rng; 
         }
 
         boolean isAlive() { return hp > 0; }
