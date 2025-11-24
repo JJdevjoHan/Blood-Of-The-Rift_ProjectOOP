@@ -346,8 +346,8 @@ public class GrassyPlainsPanel extends JPanel {
             battleLog.append("A hulking Minotaur blocks your path! It's the guardian of these plains!\n\n");
             battleLog.append("The ground shakes... The Minotaur emerges!!!\n\n");
             JOptionPane.showMessageDialog(null, "MINOTAUR INCOMING!!!", "WARNING! MINIBOSS", JOptionPane.ERROR_MESSAGE);
-        } else {
-            currentMob = directionMobs.getOrDefault(direction, new Minotaur()); // fallback mob
+        } else if (directionMobs.containsKey(direction)){
+        	currentMob = directionMobs.get(direction);
         }
 
         if (currentMob != null) {
