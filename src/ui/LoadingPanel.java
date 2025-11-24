@@ -40,13 +40,11 @@ public class LoadingPanel extends JPanel {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Background image setup
         ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/loading1.jpg"));
         URL url = getClass().getResource("/images/backgroundpic/loading1.jpg");
         System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
 
-        // Main content panel with background
         JPanel contentPane = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -55,7 +53,7 @@ public class LoadingPanel extends JPanel {
             }
         };
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        contentPane.setOpaque(false); // Allow background to show
+        contentPane.setOpaque(false); 
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);

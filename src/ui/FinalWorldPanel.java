@@ -73,7 +73,6 @@ public class FinalWorldPanel extends JPanel {
 		setLayout(new BorderLayout());
         setOpaque(false);
 
-        // Status bar
         JPanel statusBar = new JPanel(new BorderLayout());
         statusBar.setOpaque(true);
         statusBar.setBackground(new Color(30, 30, 30));
@@ -84,7 +83,6 @@ public class FinalWorldPanel extends JPanel {
         statusBar.add(statusLabel, BorderLayout.CENTER);
         add(statusBar, BorderLayout.NORTH);
 
-        // Center area: player, log, mob
         JPanel midPanel = new JPanel(new GridBagLayout());
         midPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -116,7 +114,6 @@ public class FinalWorldPanel extends JPanel {
 
         add(midPanel, BorderLayout.CENTER);
 
-        // Bottom area: skills + dpad
         JPanel bottom = new JPanel(new GridLayout(2, 1));
         bottom.setOpaque(false);
 
@@ -174,10 +171,10 @@ public class FinalWorldPanel extends JPanel {
                 player = new Warrior(name);
                 break;
         }
-        setupSkillButtons(); // Now that player is set, configure buttons
+        setupSkillButtons(); 
         updateStatus();
         battleLog.append("You face the last horrors of the rift...\n\n");
-        spawnNextMob(); // Start with the first boss
+        spawnNextMob(); 
     }
 
     private void setupSkillButtons() {
@@ -255,7 +252,7 @@ public class FinalWorldPanel extends JPanel {
             battleLog.append("You have been defeated...\n");
             disableCombat();
             JOptionPane.showMessageDialog(this, "Game Over", "Defeat", JOptionPane.PLAIN_MESSAGE);
-            mainFrame.showPanel("introPanel"); // Switch to intro on defeat
+            mainFrame.showPanel("introPanel"); 
         }
     }
 
@@ -303,7 +300,6 @@ public class FinalWorldPanel extends JPanel {
     }
 }
 
-// Moved outside the panel for reusability
 class Kyros extends World5Boss {
     Kyros() {
         super("General | Kyros", 160, 25);

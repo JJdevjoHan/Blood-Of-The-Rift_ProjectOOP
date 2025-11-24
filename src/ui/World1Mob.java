@@ -1,8 +1,5 @@
 package ui;
 
-import ui.Character;
-import ui.World1Mob;
-
 public abstract class World1Mob {
     public String name;
     public int hp;
