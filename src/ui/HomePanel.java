@@ -89,23 +89,23 @@ public class HomePanel extends JPanel {
                 return ImageIcon.class;
             }
         };
-        
-     // Center panel border
+       
    
         table.setRowHeight(100);
-        table.setBackground(Color.BLACK);
+        table.setOpaque(false);
+        table.setBackground(new Color(0,0,0,0));
         table.setForeground(Color.WHITE);
 
-        // Styling for header
-        table.getTableHeader().setBackground(Color.BLACK);
+        table.getTableHeader().setOpaque(false);
+        table.getTableHeader().setBackground(new Color(0,0,0,0));
         table.getTableHeader().setForeground(Color.WHITE);
         table.getTableHeader().setFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 16));
-        table.setBorder(new LineBorder(Color.BLACK));
-        table.getTableHeader().setBorder(new LineBorder(Color.BLACK));
+        table.setBorder(new LineBorder(new Color(0,0,0,0)));
+        table.getTableHeader().setBorder(new LineBorder(new Color(0,0,0,0)));
 
         JTableHeader header = table.getTableHeader();
-        header.setBackground(Color.BLACK);
-        header.setForeground(Color.WHITE);
+        //header.setBackground(Color.BLACK);
+        //header.setForeground(Color.WHITE);
         header.setBorder(new LineBorder(Color.BLACK));
         topPanel.add(header);
         topPanel.add(table);
