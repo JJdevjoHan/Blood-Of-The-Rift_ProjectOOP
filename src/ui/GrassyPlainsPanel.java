@@ -6,6 +6,7 @@ import javax.swing.border.LineBorder;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
@@ -48,6 +49,14 @@ public class GrassyPlainsPanel extends JPanel {
     }
 
     private void initialize() {
+    	
+    	/*
+    	ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/loading1.jpg"));
+        URL url = getClass().getResource("/images/backgroundpic/loading1.jpg");
+        System.out.println("Resource URL: " + url);
+        Image bgImage = bgIcon.getImage();
+        */
+        
         setLayout(new BorderLayout());
         setOpaque(false);
 
