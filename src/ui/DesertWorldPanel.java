@@ -195,7 +195,7 @@ public class DesertWorldPanel extends JPanel {
     }
 
     private void doSkill(int choice) {
-        if (player == null || currentMob == null) return;
+        //if (player == null || currentMob == null) return;
 
         String skillResult = player.useSkill(choice, currentMob);
         appendToLog(skillResult + "\n");
