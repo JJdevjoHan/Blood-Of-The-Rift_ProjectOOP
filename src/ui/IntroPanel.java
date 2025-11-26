@@ -46,15 +46,15 @@ class IntroPanel extends JPanel {
         gbcTitle.insets = new Insets(20, 10, 20, 10);
         centerPanel.add(lblTitle, gbcTitle);
 
-        JLabel lblSkip = new JLabel("Skip intro?", SwingConstants.CENTER);
-        lblSkip.setForeground(Color.WHITE);
-        lblSkip.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        JLabel skip = new JLabel("Skip intro?", SwingConstants.CENTER);
+        skip.setForeground(Color.WHITE);
+        skip.setFont(new Font("Tahoma", Font.PLAIN, 16));
 
         GridBagConstraints gbcSkip = new GridBagConstraints();
         gbcSkip.gridx = 0;
         gbcSkip.gridy = 1;
         gbcSkip.insets = new Insets(10, 10, 10, 10);
-        centerPanel.add(lblSkip, gbcSkip);
+        centerPanel.add(skip, gbcSkip);
 
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 30, 0));
         buttonPanel.setOpaque(false);
