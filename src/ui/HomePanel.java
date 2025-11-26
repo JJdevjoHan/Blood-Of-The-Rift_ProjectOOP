@@ -43,8 +43,8 @@ public class HomePanel extends JPanel {
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // Background image setup
-        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/background3.png"));
-        URL url = getClass().getResource("/images/backgroundpic/background3.png");
+        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/home.png"));
+        URL url = getClass().getResource("/images/backgroundpic/home.png");
         System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
 

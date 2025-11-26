@@ -30,7 +30,7 @@ public class LoadingPanel extends JPanel {
     
     private int lineIndex = 0;
     private int charIndex = 0;
-    private String selectedClass, playerName;
+    private String selectedClass , playerName;
     public LoadingPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         initialize();
@@ -40,8 +40,8 @@ public class LoadingPanel extends JPanel {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/loading1.jpg"));
-        URL url = getClass().getResource("/images/backgroundpic/loading1.jpg");
+        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/loading.png"));
+        URL url = getClass().getResource("/images/backgroundpic/loading.png");
         System.out.println("Resource URL: " + url);
         Image bgImage = bgIcon.getImage();
 

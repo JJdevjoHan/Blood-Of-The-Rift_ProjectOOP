@@ -37,7 +37,7 @@ class DialoguePanel extends JPanel {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/storyline1.png"));
+        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/storyline.png"));
         Image bgImage = bgIcon.getImage();
 
         JPanel contentPane = new JPanel(new BorderLayout()) {

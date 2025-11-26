@@ -6,7 +6,6 @@ import javax.swing.border.LineBorder;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
@@ -215,7 +214,7 @@ public class GrassyPlainsPanel extends JPanel {
     }
 
     private void doSkill(int choice) {
-    if (player == null || currentMob == null) return;
+    //if (player == null || currentMob == null) return;
 
     String skillResult = player.useSkill(choice, currentMob);
     appendToLog(skillResult + "\n");
