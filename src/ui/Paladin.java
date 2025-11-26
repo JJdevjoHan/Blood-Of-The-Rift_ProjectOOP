@@ -1,14 +1,11 @@
 package ui;
 
-import javax.swing.JTextArea;
 import java.util.Random;
 
 public class Paladin extends Character {
 
-    private final Random random = new Random();
-
-    public Paladin(String playerName) {
-        super(playerName, "Paladin", 220, 120);
+    public Paladin(String name, Random rng) {
+        super(name, "Paladin", 220, 120, rng);
     }
 
     @Override
@@ -19,11 +16,11 @@ public class Paladin extends Character {
 
         switch (choice) {
             case 1: // Shield Bash
-                damage = getDamageWithBuff((int)(Math.random() * 9));
+                damage = getDamageWithBuff(rng.nextInt(9)); // 0-8
                 mana += 10;
                 if (mana > maxMana) mana = maxMana;
 
-                if (random.nextInt(100) < 20) {
+                if (rng.nextInt(100) < 20) {
                     damage = (int)(damage * 1.5);
                     critMessage = " >> CRITICAL HIT! <<";
                 }
@@ -40,7 +37,7 @@ public class Paladin extends Character {
 
             case 3: // Holy Renewal
                 if (mana >= 30) {
-                    int healAmount = 20 + (int)(Math.random() * 16);
+                    int healAmount = 20 + rng.nextInt(16); // 20-35
                     mana -= 30;
                     this.hp += healAmount;
                     if (this.hp > this.maxHp) this.hp = this.maxHp;
@@ -48,28 +45,7 @@ public class Paladin extends Character {
                 } else return "Not enough mana!";
 
             default:
-                return "Invalid skill choice. Turn skipped.";
+                return "Invalid skill choice.";
         }
     }
-
-    /**
-     * Display skills in a JTextArea (Swing UI).
-     * You can also use this to update buttons dynamically.
-     */
-    @Override
-    protected void displaySkillsSwing(JTextArea battleLog) {
-        String[] skills = {
-                "[1] Shield Bash (0-8 Dmg, +10 Mana)",
-                "[2] Radiant Guard (Reduce damage, 20 Mana)",
-                "[3] Holy Renewal (Heal 20-35 HP, 30 Mana)"
-        };
-        battleLog.append(name + "'s Skills:\n");
-        for (String skill : skills) {
-            battleLog.append(skill + "\n");
-        }
-        battleLog.append("\n");
-        battleLog.setCaretPosition(battleLog.getDocument().getLength());
-    }
-
-  
 }

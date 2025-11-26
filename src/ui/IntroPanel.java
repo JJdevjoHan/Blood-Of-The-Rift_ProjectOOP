@@ -1,14 +1,14 @@
 package ui;
 
-import javax.swing.JPanel;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.ImageIcon;
+import java.net.URL;
 
 class IntroPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     private MainFrame mainFrame;
+    private Image bgImage;
 
     public IntroPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -18,17 +18,29 @@ class IntroPanel extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(20, 20, 20, 20));
+        setBackground(Color.BLACK);
 
-        ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/background2.png"));
-        Image bgImage = bgIcon.getImage();
+        // SAFE IMAGE LOADING
+        URL imgUrl = getClass().getResource("/images/backgroundpic/intro.png");
+        if (imgUrl != null) {
+            bgImage = new ImageIcon(imgUrl).getImage();
+        } else {
+            System.err.println("Warning: Intro background not found.");
+        }
 
         JPanel contentPane = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+                if (bgImage != null) {
+                    g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+                } else {
+                    g.setColor(Color.BLACK);
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                }
             }
         };
+        contentPane.setOpaque(false);
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
         add(contentPane, BorderLayout.CENTER);
 
@@ -60,18 +72,10 @@ class IntroPanel extends JPanel {
         buttonPanel.setOpaque(false);
 
         JToggleButton yesButton = new JToggleButton("Yes");
-        yesButton.addActionListener(e -> {
-            if (yesButton.isSelected()) {
-                mainFrame.showPanel("home");
-            }
-        });
+        yesButton.addActionListener(e -> { if (yesButton.isSelected()) mainFrame.showPanel("home"); });
 
         JToggleButton noButton = new JToggleButton("No");
-        noButton.addActionListener(e -> {
-            if (noButton.isSelected()) {
-                mainFrame.showPanel("dialogue");
-            }
-        });
+        noButton.addActionListener(e -> { if (noButton.isSelected()) mainFrame.showPanel("dialogue"); });
 
         buttonPanel.add(yesButton);
         buttonPanel.add(noButton);
@@ -86,16 +90,9 @@ class IntroPanel extends JPanel {
     }
 
     private void fadeIn() {
+        // Simple fade simulation
         new Thread(() -> {
-            try {
-                for (float i = 0f; i <= 1f; i += 0.02f) {
-                    setOpaque(false); 
-                    Thread.sleep(30);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            try { Thread.sleep(100); repaint(); } catch (Exception e) {}
         }).start();
     }
 }
-

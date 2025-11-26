@@ -1,7 +1,7 @@
 package ui;
 
-import java.util.Random;
 import javax.swing.JTextArea;
+import java.util.Random;
 
 public abstract class Character {
     public String name;
@@ -11,15 +11,18 @@ public abstract class Character {
     public int maxHp;
     public int maxMana;
 
-    protected Random random = new Random();
-    private int temporaryDamageBuff = 0;
-    private int damageBuffDuration = 0;
+    // FIX 1: Added tempDamage so chests work
+    public int tempDamage = 0;
 
-    public Character(String name, String className, int hp, int mana) {
+    // FIX 2: Added Random to parent
+    protected Random rng;
+
+    public Character(String name, String className, int hp, int mana, Random rng) {
         this.name = name;
         this.className = className;
         this.hp = this.maxHp = hp;
         this.mana = this.maxMana = mana;
+        this.rng = rng;
     }
 
     public boolean isAlive() {
@@ -32,27 +35,16 @@ public abstract class Character {
     }
 
     public int getDamageWithBuff(int baseDamage) {
-        return baseDamage + this.temporaryDamageBuff;
-    }
-    
-    public void addTemporaryDamage(int amount) {
-        this.temporaryDamageBuff = amount;
-        this.damageBuffDuration = 3; // lasts 3 turns
+        return baseDamage + this.tempDamage;
     }
 
-    public void decrementDamageBuffDuration() {
-        if (this.damageBuffDuration > 0) {
-            this.damageBuffDuration--;
-            if (this.damageBuffDuration == 0) {
-                this.temporaryDamageBuff = 0;
-            }
-        }
+    // Used by console version, keeping for compatibility
+    public void addTemporaryDamage(int amount) {
+        this.tempDamage += amount;
     }
 
     public abstract String useSkill(int choice, World1Mob target);
-    protected abstract void displaySkillsSwing(JTextArea battleLog);
 
-	public void resetTemporaryDamage() {
-		
-	}
+    // Added for compatibility if needed
+    protected void displaySkillsSwing(JTextArea battleLog) {}
 }

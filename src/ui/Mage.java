@@ -1,17 +1,13 @@
 package ui;
 
-import javax.swing.JTextArea;
 import java.util.Random;
 
 public class Mage extends Character {
 
-    private final Random random = new Random();
-
-    public Mage(String playerName) {
-        super(playerName, "Mage", 120, 150);
+    public Mage(String name, Random rng) {
+        super(name, "Mage", 120, 150, rng);
     }
 
- 
     @Override
     public String useSkill(int choice, World1Mob target) {
         int damage;
@@ -20,11 +16,11 @@ public class Mage extends Character {
 
         switch (choice) {
             case 1: // Frost Bolt
-                damage = getDamageWithBuff((int)(Math.random() * 11));
+                damage = getDamageWithBuff(rng.nextInt(11)); // 0-10
                 mana += 10;
                 if (mana > maxMana) mana = maxMana;
 
-                if (random.nextInt(100) < 20) {
+                if (rng.nextInt(100) < 20) {
                     damage = (int)(damage * 1.5);
                     critMessage = " >> CRITICAL HIT! <<";
                 }
@@ -35,10 +31,10 @@ public class Mage extends Character {
 
             case 2: // Rune Burst
                 if (mana >= 20) {
-                    damage = getDamageWithBuff(11 + (int)(Math.random() * 10));
+                    damage = getDamageWithBuff(11 + rng.nextInt(10)); // 11-20
                     mana -= 20;
 
-                    if (random.nextInt(100) < 20) {
+                    if (rng.nextInt(100) < 20) {
                         damage = (int)(damage * 1.5);
                         critMessage = " >> CRITICAL HIT! <<";
                     }
@@ -50,10 +46,10 @@ public class Mage extends Character {
 
             case 3: // Lightstorm
                 if (mana >= 30) {
-                    damage = getDamageWithBuff(21 + (int)(Math.random() * 15));
+                    damage = getDamageWithBuff(21 + rng.nextInt(15)); // 21-35
                     mana -= 30;
 
-                    if (random.nextInt(100) < 20) {
+                    if (rng.nextInt(100) < 20) {
                         damage = (int)(damage * 1.5);
                         critMessage = " >> CRITICAL HIT! <<";
                     }
@@ -64,20 +60,7 @@ public class Mage extends Character {
                 } else return "Not enough mana!";
 
             default:
-                return "Invalid skill choice. Turn skipped.";
+                return "Invalid skill choice.";
         }
     }
-
-   
-    @Override
-    protected void displaySkillsSwing(JTextArea battleLog) {
-        battleLog.setText(
-            "Mage Skills:\n" +
-            "1. Frost Bolt (0 Mana) - Deals 0–10 damage. +10 Mana.\n" +
-            "2. Rune Burst (20 Mana) - Deals 11–20 damage.\n" +
-            "3. Lightstorm (30 Mana) - Deals 21–35 damage.\n"
-        );
-        battleLog.setCaretPosition(battleLog.getDocument().getLength());
-    }
-
 }

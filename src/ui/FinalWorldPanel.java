@@ -162,19 +162,19 @@ public class FinalWorldPanel extends JPanel {
     public void setPlayer(String name, String className) {
         switch (className) {
             case "Mage":
-                player = new Mage(name);
+                player = new Mage(name, rng); // FIXED: Added rng
                 break;
             case "Paladin":
-                player = new Paladin(name);
+                player = new Paladin(name, rng); // FIXED: Added rng
                 break;
             default:
-                player = new Warrior(name);
+                player = new Warrior(name, rng); // FIXED: Added rng
                 break;
         }
-        setupSkillButtons(); 
+        setupSkillButtons();
         updateStatus();
         battleLog.append("You face the last horrors of the rift...\n\n");
-        spawnNextMob(); 
+        spawnNextMob();
     }
 
     private void setupSkillButtons() {

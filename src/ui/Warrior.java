@@ -1,14 +1,11 @@
 package ui;
 
-import javax.swing.JTextArea;
 import java.util.Random;
 
 public class Warrior extends Character {
 
-    private final Random random = new Random();
-
-    public Warrior(String playerName) {
-        super(playerName, "Warrior", 180, 80);
+    public Warrior(String name, Random rng) {
+        super(name, "Warrior", 180, 80, rng);
     }
 
     @Override
@@ -19,11 +16,11 @@ public class Warrior extends Character {
 
         switch (choice) {
             case 1: // Stone Slash
-                damage = getDamageWithBuff((int)(Math.random() * 13));
+                damage = getDamageWithBuff(rng.nextInt(13)); // 0-12
                 mana += 10;
                 if (mana > maxMana) mana = maxMana;
 
-                if (random.nextInt(100) < 20) {
+                if (rng.nextInt(100) < 20) {
                     damage = (int)(damage * 1.5);
                     critMessage = " >> CRITICAL HIT! <<";
                 }
@@ -34,10 +31,10 @@ public class Warrior extends Character {
 
             case 2: // Flame Strike
                 if (mana >= 20) {
-                    damage = getDamageWithBuff(13 + (int)(Math.random() * 10));
+                    damage = getDamageWithBuff(13 + rng.nextInt(10)); // 13-22
                     mana -= 20;
 
-                    if (random.nextInt(100) < 20) {
+                    if (rng.nextInt(100) < 20) {
                         damage = (int)(damage * 1.5);
                         critMessage = " >> CRITICAL HIT! <<";
                     }
@@ -49,10 +46,10 @@ public class Warrior extends Character {
 
             case 3: // Earthquake Blade
                 if (mana >= 30) {
-                    damage = getDamageWithBuff(23 + (int)(Math.random() * 13));
+                    damage = getDamageWithBuff(23 + rng.nextInt(13)); // 23-35
                     mana -= 30;
 
-                    if (random.nextInt(100) < 20) {
+                    if (rng.nextInt(100) < 20) {
                         damage = (int)(damage * 1.5);
                         critMessage = " >> CRITICAL HIT! <<";
                     }
@@ -66,20 +63,4 @@ public class Warrior extends Character {
                 return "Invalid skill choice.";
         }
     }
-
-    /**
-     * Display Warrior skills in the Swing JTextArea
-     */
-    @Override
-    protected void displaySkillsSwing(JTextArea battleLog) {
-        battleLog.setText(
-            "Warrior Skills:\n" +
-            "1. Stone Slash (0 Mana) - Deals 0–12 damage. +10 Mana.\n" +
-            "2. Flame Strike (20 Mana) - Deals 13–22 damage.\n" +
-            "3. Earthquake Blade (30 Mana) - Deals 23–35 damage.\n"
-        );
-        battleLog.setCaretPosition(battleLog.getDocument().getLength());
-    }
-
-    
 }

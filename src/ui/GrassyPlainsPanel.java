@@ -1,603 +1,700 @@
 package ui;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-
+import javax.swing.border.*;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GrassyPlainsPanel extends JPanel {
-    private static final long serialVersionUID = 1L;
     private final MainFrame mainFrame;
     private Character player;
-    private final JTextArea battleLog = new JTextArea(10, 40);
-    private final JLabel playerLabel = new JLabel("", SwingConstants.CENTER);
-    private final JLabel mobLabel = new JLabel("", SwingConstants.CENTER);
-    private final JLabel statusLabel = new JLabel("", SwingConstants.LEFT);
 
-    private final JButton northBtn = new JButton("↑");
-    private final JButton eastBtn = new JButton("→");
-    private final JButton southBtn = new JButton("↓");
-    private final JButton westBtn = new JButton("←");
+    // LAYOUT MANAGERS
+    private CardLayout mainCardLayout;
+    private JPanel containerPanel;
+    private CardLayout bottomCardLayout;
+    private JPanel bottomPanel;
 
-    private final JButton skill1Btn = new JButton();
-    private final JButton skill2Btn = new JButton();
-    private final JButton skill3Btn = new JButton();
+    // EXPLORE UI COMPONENTS
+    private JLabel viewportLabel;
+    private JTextPane dialoguePane;
+    private JPanel buttonPanel;
+    private RiftButton btnNorth, btnSouth, btnEast, btnWest;
+    private RiftBar playerHpBar;
+    private RiftBar playerMpBar;
 
+    // VERSUS (VS) SCREEN COMPONENTS
+    private JPanel versusPanel;
+    private JLabel vsPlayerLabel, vsMobLabel, vsTextLabel, vsStatusLabel;
+
+    // BATTLE UI COMPONENTS
+    private JPanel battlePanel;
+    private JLabel playerPortrait, mobPortrait;
+    private JLabel playerNameLabel, mobNameLabel;
+    private RiftBar battleHpBar, battleMpBar, mobHpBar;
+    private RiftButton btnSkill1, btnSkill2, btnSkill3;
+
+    // NEW: Battle Log (Replaces Popups)
+    private JTextPane battleLogPane;
+
+    // STATE
     private World1Mob currentMob;
-    private boolean inWorld = true;
     private final Random rng = new Random();
-    private String reservedMinotaurDirection;
     private int mobsDefeated = 0;
-    private int stepsTaken = 0;
-    private boolean chestFound = false;
-    private final int STEPS_FOR_CHEST = 2;
-    private final Set<String> clearedDirections = new HashSet<>();
-    private final Set<String> availableDirections = new HashSet<>();
-    private final String[] directions = {"North", "East", "South", "West"};
-    private final Map<String, World1Mob> directionMobs = new HashMap<>();
-    private String currentDirection;
+    private final int MOBS_UNTIL_BOSS = 3;
+    private int introStep = 0;
+    private final String[] introLines = {
+            "You step out of your home...",
+            "The world you once knew is gone.",
+            "The Grassy Plains are now a dying yellow.",
+            "A dark energy radiates from the distance..."
+    };
+
+    private Image bgImage;
+
+    // STYLING
+    private final Color NEON_CYAN = new Color(0, 255, 255);
+    private final Color VS_SILVER = new Color(220, 220, 220);
+    private final Color BG_BLACK = Color.BLACK;
+    private final Font RETRO_FONT = new Font("Consolas", Font.BOLD, 22);
+    private final Font HEADER_FONT = new Font("Impact", Font.PLAIN, 28);
+    private final Font CHAR_FONT = new Font("Consolas", Font.BOLD, 110);
+    private final Font VS_FONT = new Font("Impact", Font.ITALIC | Font.BOLD, 80);
+    private final Border CYAN_BORDER = new LineBorder(NEON_CYAN, 3);
 
     public GrassyPlainsPanel(MainFrame mainFrame) {
-        this.mainFrame = Objects.requireNonNull(mainFrame, "mainFrame must not be null");
+        this.mainFrame = mainFrame;
         initialize();
     }
 
     private void initialize() {
-    	
-    	/*
-    	ImageIcon bgIcon = new ImageIcon(getClass().getResource("/images/backgroundpic/loading1.jpg"));
-        URL url = getClass().getResource("/images/backgroundpic/loading1.jpg");
-        System.out.println("Resource URL: " + url);
-        Image bgImage = bgIcon.getImage();
-        */
-        
         setLayout(new BorderLayout());
-        setOpaque(false);
+        mainCardLayout = new CardLayout();
+        containerPanel = new JPanel(mainCardLayout);
+        add(containerPanel, BorderLayout.CENTER);
 
-        JPanel statusBar = new JPanel(new BorderLayout());
-        statusBar.setOpaque(true);
-        statusBar.setBackground(new Color(30, 30, 30));
-        statusBar.setBorder(new EmptyBorder(10, 10, 10, 10));
-        
-        statusLabel.setForeground(Color.WHITE);
-        statusLabel.setFont(new Font("Times New Roman", Font.BOLD, 18));
-        statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        statusBar.add(statusLabel, BorderLayout.CENTER);
-        statusBar.setBorder(new LineBorder(Color.BLACK, 2, true));
-        add(statusBar, BorderLayout.NORTH);
+        // Load the background image
+        URL bgUrl = getClass().getResource("/images/backgroundpic/grassyplains.png");
+        if (bgUrl != null) {
+            bgImage = new ImageIcon(bgUrl).getImage();
+        }
 
-        JPanel midPanel = new JPanel(new GridBagLayout());
-        midPanel.setOpaque(false);
+        containerPanel.add(createRetroLayout(), "EXPLORE");
+        containerPanel.add(createVersusPanel(), "VERSUS");
+        containerPanel.add(createBattlePanel(), "BATTLE");
+    }
+
+    // EXPLORE LAYOUT
+    private JPanel createRetroLayout() {
+        JPanel main = new JPanel(new GridBagLayout());
+        main.setBackground(BG_BLACK);
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.weightx = 1.0;
 
-        JPanel playerIconPanel = new JPanel();
-        playerIconPanel.setPreferredSize(new Dimension(180, 220));
-        playerIconPanel.setBackground(new Color(0, 0, 0, 120));
-        playerIconPanel.add(playerLabel);
-        playerIconPanel.setBorder(new LineBorder(Color.BLACK, 2, true));
-        
+        // TOP BOX
+        JPanel headerBox = createBoxPanel();
+        JLabel title = new JLabel("GRASSY PLAINS", SwingConstants.CENTER);
+        title.setFont(HEADER_FONT);
+        title.setForeground(Color.WHITE);
+        headerBox.add(title, BorderLayout.CENTER);
+        gbc.gridy = 0; gbc.weighty = 0.1;
+        main.add(headerBox, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        midPanel.add(playerIconPanel, gbc);
-
-        JScrollPane battleScroll = new JScrollPane(battleLog);
-        battleScroll.setPreferredSize(new Dimension(380, 220));
-        battleLog.setBackground(Color.BLACK);
-        battleLog.setForeground(Color.WHITE);
-        battleLog.setEditable(false);
-        battleLog.setLineWrap(true);
-        battleLog.setWrapStyleWord(true);
-        gbc.gridx = 1;
-        midPanel.add(battleScroll, gbc);
-
-        JPanel mobIconPanel = new JPanel();
-        mobIconPanel.setPreferredSize(new Dimension(180, 220));
-        mobIconPanel.setBackground(new Color(0, 0, 0, 120));
-        mobIconPanel.add(mobLabel);
-        mobIconPanel.setBorder(new LineBorder(Color.BLACK, 2, true));
-        gbc.gridx = 2;
-        midPanel.add(mobIconPanel, gbc);
-
-        add(midPanel, BorderLayout.CENTER);
-
-        JPanel bottom = new JPanel(new GridLayout(2, 1));
-        bottom.setOpaque(false);
-
-        JPanel skillRow = new JPanel(new GridLayout(1, 3, 20, 0));
-        skillRow.setOpaque(false);
-        skillRow.setBorder(new EmptyBorder(10, 30, 10, 30));
-        
-        skill1Btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
-        skill2Btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
-        skill3Btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
-        
-        skillRow.add(skill1Btn); 
-        skillRow.add(skill2Btn); 
-        skillRow.add(skill3Btn);
-        bottom.add(skillRow);
-
-        JPanel dpad = new JPanel(new GridBagLayout());
-        dpad.setOpaque(false);
-        GridBagConstraints d = new GridBagConstraints();
-        d.insets = new Insets(4, 4, 4, 4);
-
-        northBtn.setActionCommand("North");
-        eastBtn.setActionCommand("East");
-        southBtn.setActionCommand("South");
-        westBtn.setActionCommand("West");
-        northBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        eastBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        southBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        westBtn.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-
-        ActionListener moveListener = e -> {
-            String dir = ((AbstractButton) e.getSource()).getActionCommand();
-            if (inWorld) explore(dir);
-        };
-
-        Stream.of(northBtn, eastBtn, southBtn, westBtn).forEach(b -> {
-            for (ActionListener al : b.getActionListeners()) b.removeActionListener(al);
-            b.addActionListener(moveListener);
-        });
-
-        d.gridx = 1; d.gridy = 0; dpad.add(northBtn, d);
-        d.gridx = 0; d.gridy = 1; dpad.add(westBtn, d);
-        d.gridx = 2; d.gridy = 1; dpad.add(eastBtn, d);
-        d.gridx = 1; d.gridy = 2; dpad.add(southBtn, d);
-
-        bottom.add(dpad);
-        add(bottom, BorderLayout.SOUTH);
-        setSkillButtonsEnabled(false);
-
-    }
-
-    
-    public void setPlayer(String name, String className) {
-        if (player != null) {
-            player.name = name;
-            if (!Objects.equals(player.className, className)) {
-                player = createCharacter(name, className);
+        // MIDDLE BOX (VIEWPORT)
+        JPanel viewportBox = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bgImage != null) {
+                    g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+                } else {
+                    g.setColor(Color.BLACK);
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                }
             }
-        } else {
-            player = createCharacter(name, className);
-        }
+        };
+        viewportBox.setBorder(CYAN_BORDER);
 
-        configureSkillButtons();
+        GridBagConstraints viewGbc = new GridBagConstraints();
+        viewGbc.gridx = 0; viewGbc.anchor = GridBagConstraints.CENTER;
+
+        JPanel statsContainer = new JPanel(new GridBagLayout());
+        statsContainer.setOpaque(false);
+        GridBagConstraints statGbc = new GridBagConstraints();
+        statGbc.gridx = 0; statGbc.anchor = GridBagConstraints.WEST;
+
+        playerHpBar = new RiftBar(100, Color.GREEN); playerHpBar.setPreferredSize(new Dimension(300, 25));
+        statGbc.gridy = 0; statsContainer.add(playerHpBar, statGbc);
+
+        playerMpBar = new RiftBar(100, Color.BLUE); playerMpBar.setPreferredSize(new Dimension(200, 15));
+        statGbc.gridy = 1; statGbc.insets = new Insets(3, 0, 0, 0);
+        statsContainer.add(playerMpBar, statGbc);
+
+        viewGbc.gridy = 0; viewportBox.add(statsContainer, viewGbc);
+
+        viewportLabel = new JLabel("", SwingConstants.CENTER);
+        viewportLabel.setForeground(Color.WHITE);
+        viewportLabel.setFont(CHAR_FONT);
+        viewGbc.gridy = 1; viewGbc.insets = new Insets(20, 0, 0, 0);
+        viewportBox.add(viewportLabel, viewGbc);
+
+        gbc.gridy = 1; gbc.weighty = 0.7;
+        main.add(viewportBox, gbc);
+
+        // BOTTOM BOX
+        bottomPanel = createBoxPanel();
+        bottomCardLayout = new CardLayout();
+        bottomPanel.setLayout(bottomCardLayout);
+        bottomPanel.setPreferredSize(new Dimension(900, 150));
+
+        dialoguePane = new JTextPane();
+        dialoguePane.setBackground(BG_BLACK); dialoguePane.setForeground(Color.WHITE);
+        dialoguePane.setFont(RETRO_FONT); dialoguePane.setEditable(false);
+
+        StyledDocument doc = dialoguePane.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        doc.setParagraphAttributes(0, doc.getLength(), center, false);
+
+        JPanel textWrapper = new JPanel(new GridBagLayout()); textWrapper.setBackground(BG_BLACK);
+        textWrapper.add(dialoguePane); bottomPanel.add(textWrapper, "TEXT");
+
+        buttonPanel = new JPanel(new GridBagLayout()); buttonPanel.setBackground(BG_BLACK);
+        GridBagConstraints btnGbc = new GridBagConstraints();
+
+        JLabel promptLabel = new JLabel("Where do you want to go?");
+        promptLabel.setFont(RETRO_FONT); promptLabel.setForeground(NEON_CYAN);
+        btnGbc.gridx = 0; btnGbc.gridy = 0; btnGbc.gridwidth = 4;
+        btnGbc.insets = new Insets(0, 0, 15, 0); btnGbc.anchor = GridBagConstraints.CENTER;
+        buttonPanel.add(promptLabel, btnGbc);
+
+        btnNorth = new RiftButton("NORTH"); btnSouth = new RiftButton("SOUTH");
+        btnEast = new RiftButton("EAST"); btnWest = new RiftButton("WEST");
+
+        btnNorth.addActionListener(e -> explore(1)); btnEast.addActionListener(e -> explore(2));
+        btnSouth.addActionListener(e -> explore(3)); btnWest.addActionListener(e -> explore(4));
+
+        btnGbc.gridy = 1; btnGbc.gridwidth = 1; btnGbc.insets = new Insets(0, 10, 0, 10); btnGbc.fill = GridBagConstraints.NONE;
+        btnGbc.gridx = 0; buttonPanel.add(btnWest, btnGbc); btnGbc.gridx = 1; buttonPanel.add(btnNorth, btnGbc);
+        btnGbc.gridx = 2; buttonPanel.add(btnSouth, btnGbc); btnGbc.gridx = 3; buttonPanel.add(btnEast, btnGbc);
+        bottomPanel.add(buttonPanel, "BUTTONS");
+
+        gbc.gridy = 2; gbc.weighty = 0.2; main.add(bottomPanel, gbc);
+        return main;
+    }
+
+    private JPanel createBoxPanel() {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBackground(BG_BLACK);
+        p.setBorder(CYAN_BORDER);
+        return p;
+    }
+
+    // VERSUS PANEL -
+    private JPanel createVersusPanel() {
+        JPanel mainVSPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bgImage != null) {
+                    g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+                    g.setColor(new Color(0, 0, 0, 180));
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                } else {
+                    g.setColor(Color.BLACK);
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                }
+            }
+        };
+        mainVSPanel.setOpaque(false);
+
+        JPanel centerContainer = new JPanel(new GridBagLayout());
+        centerContainer.setOpaque(false);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(0, 20, 0, 20);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        // LEFT >> PLAYER PORTRAIT
+        vsPlayerLabel = new JLabel("", SwingConstants.CENTER);
+        vsPlayerLabel.setBorder(new LineBorder(Color.CYAN, 4));
+        vsPlayerLabel.setPreferredSize(new Dimension(300, 300));
+        gbc.gridx = 0; gbc.weightx = 0.4;
+        centerContainer.add(vsPlayerLabel, gbc);
+
+        // CENTER: VS LOGO
+        vsTextLabel = new JLabel("VS", SwingConstants.CENTER);
+        vsTextLabel.setFont(VS_FONT);
+        vsTextLabel.setForeground(VS_SILVER);
+        vsTextLabel.setBorder(new EmptyBorder(0, 10, 0, 10));
+        gbc.gridx = 1; gbc.weightx = 0.2;
+        centerContainer.add(vsTextLabel, gbc);
+
+        // RIGHT: MOB PORTRAIT
+        vsMobLabel = new JLabel("", SwingConstants.CENTER);
+        vsMobLabel.setBorder(new LineBorder(Color.RED, 4));
+        vsMobLabel.setPreferredSize(new Dimension(300, 300));
+        gbc.gridx = 2; gbc.weightx = 0.4;
+        centerContainer.add(vsMobLabel, gbc);
+
+        mainVSPanel.add(centerContainer, BorderLayout.CENTER);
+
+        // Bottom Status Text Label
+        vsStatusLabel = new JLabel("", SwingConstants.CENTER);
+        vsStatusLabel.setFont(RETRO_FONT);
+        vsStatusLabel.setForeground(Color.WHITE);
+        vsStatusLabel.setBorder(new EmptyBorder(20, 0, 30, 0));
+        mainVSPanel.add(vsStatusLabel, BorderLayout.SOUTH);
+
+        return mainVSPanel;
+    }
+
+    // BATTLE LAYOUT
+    private JPanel createBattlePanel() {
+        // Main Battle Container
+        JPanel p = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bgImage != null) {
+                    g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+                    g.setColor(new Color(0, 0, 0, 200)); // Heavy tint
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                }
+            }
+        };
+        p.setOpaque(false);
+
+        // ARENA (SPLIT CENTER)
+        JPanel arena = new JPanel(new GridLayout(1, 2, 20, 0));
+        arena.setOpaque(false);
+        arena.setBorder(new EmptyBorder(20, 40, 0, 40));
+
+        // lEFT: HERO SIDE
+        JPanel heroPane = new JPanel(new GridBagLayout());
+        heroPane.setOpaque(false);
+        GridBagConstraints hGbc = new GridBagConstraints();
+        hGbc.gridx = 0; hGbc.fill = GridBagConstraints.HORIZONTAL; hGbc.anchor = GridBagConstraints.CENTER;
+
+        playerPortrait = new JLabel("", SwingConstants.CENTER);
+        playerPortrait.setBorder(new LineBorder(Color.DARK_GRAY, 2));
+        playerPortrait.setPreferredSize(new Dimension(300, 300));
+        hGbc.gridy = 0; hGbc.insets = new Insets(0, 0, 15, 0);
+        heroPane.add(playerPortrait, hGbc);
+
+        playerNameLabel = new JLabel("HERO", SwingConstants.CENTER);
+        playerNameLabel.setForeground(Color.CYAN);
+        playerNameLabel.setFont(HEADER_FONT);
+        hGbc.gridy = 1; hGbc.insets = new Insets(0, 0, 5, 0);
+        heroPane.add(playerNameLabel, hGbc);
+
+        battleHpBar = new RiftBar(100, Color.GREEN);
+        battleHpBar.setPreferredSize(new Dimension(300, 30));
+        hGbc.gridy = 2; hGbc.insets = new Insets(0, 0, 5, 0);
+        heroPane.add(battleHpBar, hGbc);
+
+        battleMpBar = new RiftBar(100, Color.BLUE);
+        battleMpBar.setPreferredSize(new Dimension(200, 15));
+        hGbc.gridy = 3;
+        heroPane.add(battleMpBar, hGbc);
+
+        arena.add(heroPane);
+
+        //RIGHT: ENEMY SIDE
+        JPanel mobPane = new JPanel(new GridBagLayout());
+        mobPane.setOpaque(false);
+        GridBagConstraints mGbc = new GridBagConstraints();
+        mGbc.gridx = 0; mGbc.fill = GridBagConstraints.HORIZONTAL; mGbc.anchor = GridBagConstraints.CENTER;
+
+        mobPortrait = new JLabel("", SwingConstants.CENTER);
+        mobPortrait.setBorder(new LineBorder(Color.DARK_GRAY, 2));
+        mobPortrait.setPreferredSize(new Dimension(300, 300));
+        mGbc.gridy = 0; mGbc.insets = new Insets(0, 0, 15, 0);
+        mobPane.add(mobPortrait, mGbc);
+
+        mobNameLabel = new JLabel("ENEMY", SwingConstants.CENTER);
+        mobNameLabel.setForeground(Color.RED);
+        mobNameLabel.setFont(HEADER_FONT);
+        mGbc.gridy = 1; mGbc.insets = new Insets(0, 0, 5, 0);
+        mobPane.add(mobNameLabel, mGbc);
+
+        mobHpBar = new RiftBar(100, Color.RED);
+        mobHpBar.setPreferredSize(new Dimension(300, 30));
+        mGbc.gridy = 2;
+        mobPane.add(mobHpBar, mGbc);
+
+        arena.add(mobPane);
+        p.add(arena, BorderLayout.CENTER);
+
+        //SOUTH WRAPPER: LOG + SKILLS
+        JPanel southWrapper = new JPanel(new BorderLayout());
+        southWrapper.setOpaque(false);
+
+        //BATTLE LOG
+        battleLogPane = new JTextPane();
+        battleLogPane.setOpaque(false);
+        battleLogPane.setEditable(false);
+        battleLogPane.setFont(RETRO_FONT);
+        battleLogPane.setForeground(Color.WHITE);
+        battleLogPane.setPreferredSize(new Dimension(800, 80)); // Height for 2 lines of text
+
+        // Center text in log
+        StyledDocument doc = battleLogPane.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        doc.setParagraphAttributes(0, doc.getLength(), center, false);
+
+        JPanel logContainer = new JPanel(new BorderLayout());
+        logContainer.setOpaque(false);
+        logContainer.setBorder(new EmptyBorder(10, 100, 10, 100)); // Side margins
+        logContainer.add(battleLogPane, BorderLayout.CENTER);
+
+        southWrapper.add(logContainer, BorderLayout.NORTH);
+
+        // SKILLS
+        JPanel skills = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
+        skills.setOpaque(false);
+        skills.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE));
+
+        btnSkill1 = new RiftButton("SKILL 1");
+        btnSkill2 = new RiftButton("SKILL 2");
+        btnSkill3 = new RiftButton("SKILL 3");
+
+        Dimension skillDim = new Dimension(220, 50);
+        btnSkill1.setPreferredSize(skillDim);
+        btnSkill2.setPreferredSize(skillDim);
+        btnSkill3.setPreferredSize(skillDim);
+
+        btnSkill1.addActionListener(e -> doSkill(1));
+        btnSkill2.addActionListener(e -> doSkill(2));
+        btnSkill3.addActionListener(e -> doSkill(3));
+
+        skills.add(btnSkill1); skills.add(btnSkill2); skills.add(btnSkill3);
+
+        southWrapper.add(skills, BorderLayout.SOUTH);
+        p.add(southWrapper, BorderLayout.SOUTH);
+
+        return p;
+    }
+
+    // LOGIC & FLOW
+
+    public void setPlayerObject(Character p) {
+        this.player = p;
+        updateSkillButtons();
+        updateViewport();
+        mainCardLayout.show(containerPanel, "EXPLORE");
+        startIntroSequence();
+    }
+
+    private void updateViewport() {
+        String path = "/images/playable/" + player.className.toLowerCase() + ".png";
+        URL url = getClass().getResource(path);
+        if (url != null) {
+            ImageIcon icon = new ImageIcon(url);
+            Image img = icon.getImage().getScaledInstance(400, 400, Image.SCALE_SMOOTH);
+            viewportLabel.setIcon(new ImageIcon(img));
+            viewportLabel.setText("");
+            playerPortrait.setIcon(new ImageIcon(icon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
+        }
         updateStatus();
-        appendToLog("You enter the vast, windy Grassy Plains.\n\n");
     }
-    
-    private Character createCharacter(String name, String className) {
-        switch (className) {
-            case "Mage": return new Mage(name, rng);
-            case "Paladin": return new Paladin(name, rng);
-            default: return new Warrior(name, rng);
+
+    private void startIntroSequence() {
+        introStep = 0;
+        bottomCardLayout.show(bottomPanel, "TEXT"); dialoguePane.setText("");
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override public void run() {
+                SwingUtilities.invokeLater(() -> {
+                    if (introStep < introLines.length) {
+                        dialoguePane.setText(introLines[introStep]); introStep++;
+                    } else {
+                        promptNavigation(); timer.cancel();
+                    }
+                });
+            }
+        }, 500, 2000);
+    }
+
+    private void promptNavigation() {
+        bottomCardLayout.show(bottomPanel, "BUTTONS");
+    }
+
+    private void explore(int dir) {
+        bottomCardLayout.show(bottomPanel, "TEXT");
+        String txt = switch(dir) {
+            case 1 -> "You head NORTH. The trees are twisted.";
+            case 2 -> "You walk EAST towards the cliffs.";
+            case 3 -> "You push SOUTH through tall grass.";
+            case 4 -> "You follow the dried riverbed WEST.";
+            default -> "";
+        };
+        dialoguePane.setText(txt);
+
+        if (rng.nextInt(100) < 60) {
+            new Timer().schedule(new TimerTask() {
+                @Override public void run() { SwingUtilities.invokeLater(() -> triggerEncounter()); }
+            }, 1000);
+        } else {
+            new Timer().schedule(new TimerTask() {
+                @Override public void run() {
+                    SwingUtilities.invokeLater(() -> {
+                        dialoguePane.setText("You wander the place but find nothing of interest.");
+                        new Timer().schedule(new TimerTask() {
+                            @Override public void run() { SwingUtilities.invokeLater(() -> promptNavigation()); }
+                        }, 1500);
+                    });
+                }
+            }, 1500);
         }
     }
 
+    // ENCOUNTER LOGIC
 
-    private void configureSkillButtons() {
-        for (ActionListener al : skill1Btn.getActionListeners()) skill1Btn.removeActionListener(al);
-        for (ActionListener al : skill2Btn.getActionListeners()) skill2Btn.removeActionListener(al);
-        for (ActionListener al : skill3Btn.getActionListeners()) skill3Btn.removeActionListener(al);
+    private void triggerEncounter() {
+        if (mobsDefeated >= MOBS_UNTIL_BOSS) currentMob = new World1Mob.Minotaur();
+        else {
+            int roll = rng.nextInt(3);
+            if (roll == 0) currentMob = new World1Mob.Slime();
+            else if (roll == 1) currentMob = new World1Mob.Bull();
+            else currentMob = new World1Mob.Wolf();
+        }
+        startVersusSequence();
+    }
 
+    private void startVersusSequence() {
+        mainCardLayout.show(containerPanel, "VERSUS");
+
+        // Bossingg Intro Text
+        if (currentMob instanceof World1Mob.Minotaur) {
+            vsStatusLabel.setText("A hulking Minotaur blocks your path! It roars, its eyes glowing with the rift's energy.");
+            vsStatusLabel.setForeground(new Color(255, 100, 100));
+        } else {
+            vsStatusLabel.setText("A wild " + currentMob.name.toUpperCase() + " has appeared! Prepare for battle!");
+            vsStatusLabel.setForeground(Color.WHITE);
+        }
+
+        // Load Images
+        String pPath = "/images/playable/" + player.className.toLowerCase() + ".png";
+        URL pUrl = getClass().getResource(pPath);
+        if (pUrl != null) {
+            ImageIcon pIcon = new ImageIcon(pUrl);
+            vsPlayerLabel.setIcon(new ImageIcon(pIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
+        }
+
+        String mobFileName = "Slime";
+        String nameCheck = currentMob.name.toLowerCase();
+
+        if (nameCheck.contains("wolf")) mobFileName = "Dire Wolf";
+        else if (nameCheck.contains("bull")) mobFileName = "Wild Bull";
+        else if (nameCheck.contains("slime")) mobFileName = "Slime";
+        else if (nameCheck.contains("minotaur")) mobFileName = "Minotaur";
+
+        String mPath = "/images/World1Mob/" + mobFileName + ".png";
+
+        try {
+            URL mUrl = getClass().getResource(mPath);
+            if(mUrl != null) {
+                ImageIcon mIcon = new ImageIcon(mUrl);
+                Image sc = mIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+                vsMobLabel.setIcon(new ImageIcon(sc));
+                vsMobLabel.setText("");
+                mobPortrait.setIcon(new ImageIcon(sc));
+                mobPortrait.setText("");
+            } else {
+                vsMobLabel.setIcon(null); vsMobLabel.setText(currentMob.name);
+            }
+        } catch (Exception e) { vsMobLabel.setText(currentMob.name); }
+
+        new Timer().schedule(new TimerTask() {
+            @Override public void run() { SwingUtilities.invokeLater(() -> startBattle()); }
+        }, 4000);
+    }
+
+    private void startBattle() {
+        mainCardLayout.show(containerPanel, "BATTLE");
+
+        // Reset Battle Log
+        battleLogPane.setText("It is your turn! Choose a skill.");
+
+        mobNameLabel.setText(currentMob.name.toUpperCase());
+        mobHpBar.setMax(currentMob.maxHp);
+        mobHpBar.updateValue(currentMob.hp);
+
+        playerNameLabel.setText(player.name.toUpperCase() + " [" + player.className + "]");
+        battleHpBar.setMax(player.maxHp); battleHpBar.updateValue(player.hp);
+        battleMpBar.setMax(player.maxMana); battleMpBar.updateValue(player.mana);
+
+        // Enable buttons initially
+        setButtonsEnabled(true);
+    }
+
+    // BATTLE LOGIC
+
+    private void updateSkillButtons() {
         if (player instanceof Warrior) {
-            skill1Btn.setText("Stone Slash (0-12 Dmg, +10 Mana)");
-            skill2Btn.setText("Flame Strike (13-22 Dmg, 20 Mana)");
-            skill3Btn.setText("Earthquake Blade (23-35 Dmg, 30 Mana)");
+            btnSkill1.setText("STONE SLASH"); btnSkill2.setText("FLAME STRIKE"); btnSkill3.setText("EARTHQUAKE");
         } else if (player instanceof Mage) {
-            skill1Btn.setText("Frost Bolt (0-10 Dmg, +10 Mana)");
-            skill2Btn.setText("Rune Burst (11-20 Dmg, 20 Mana)");
-            skill3Btn.setText("Lightstorm (21-35 Dmg, 30 Mana)");
+            btnSkill1.setText("FROST BOLT"); btnSkill2.setText("RUNE BURST"); btnSkill3.setText("LIGHTSTORM");
         } else if (player instanceof Paladin) {
-            skill1Btn.setText("Shield Bash (0-8 Dmg, +10 Mana)");
-            skill2Btn.setText("Radiant Guard (Reduces damage taken, 20 Mana)");
-            skill3Btn.setText("Holy Renewal (Heal 20-35 HP, 30 Mana)");
+            btnSkill1.setText("SHIELD BASH"); btnSkill2.setText("RADIANT GUARD"); btnSkill3.setText("HOLY RENEWAL");
         }
-
-        skill1Btn.addActionListener(e -> doSkill(1));
-        skill2Btn.addActionListener(e -> doSkill(2));
-        skill3Btn.addActionListener(e -> doSkill(3));
     }
 
-    private void setSkillButtonsEnabled(boolean enabled) {
-        skill1Btn.setEnabled(enabled);
-        skill2Btn.setEnabled(enabled);
-        skill3Btn.setEnabled(enabled);
+    private void setButtonsEnabled(boolean enabled) {
+        btnSkill1.setEnabled(enabled);
+        btnSkill2.setEnabled(enabled);
+        btnSkill3.setEnabled(enabled);
     }
 
     private void doSkill(int choice) {
-    if (player == null || currentMob == null) return;
+        if (currentMob == null) return;
 
-    String skillResult = player.useSkill(choice, currentMob);
-    appendToLog(skillResult + "\n");
+        //DISABLE BUTTONS
+        setButtonsEnabled(false);
 
-    updateStatus();
+        // 2. PLAYER ATTACK
+        String res = player.useSkill(choice, currentMob);
+        mobHpBar.updateValue(currentMob.hp);
+        battleMpBar.updateValue(player.mana); // Update mana
 
-    if (!currentMob.isAlive()) {
-        mobsDefeated++;
-        appendToLog("You defeated " + currentMob.name + "!\n\n");
+        // Update Log
+        battleLogPane.setText(res);
 
-        if (currentMob instanceof Minotaur) {
-            appendToLog("The portal to the Desert World is open.\n What will you do?\n\n");
-
-            SwingUtilities.invokeLater(() -> {
-                Object[] options = {"Enter Portal", "Return Home"};
-                int choicePortal = JOptionPane.showOptionDialog(
-                        this,
-                        "The portal to the Desert World is open.\n\nWhat will you do?",
-                        "Portal Opened",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[0]
-                );
-
-                if (choicePortal == 0) mainFrame.showPanel("desertWorld");
-                else mainFrame.showPanel("home");
-            });
-
-            currentMob = null;
-            setSkillButtonsEnabled(false);
-            updateStatus();
+        // Check if Mob Died
+        if (!currentMob.isAlive()) {
+            // Delay slightly so player sees the killing blow text
+            new Timer().schedule(new TimerTask() {
+                @Override public void run() {
+                    SwingUtilities.invokeLater(() -> endBattle(true));
+                }
+            }, 1500);
             return;
         }
 
-        if (currentDirection != null) {
-            clearedDirections.add(currentDirection);
-            availableDirections.remove(currentDirection);
-        }
+        // 3. ENEMY TURN (DELAYED)
+        new java.util.Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(() -> {
+                    // Enemy Attacks
+                    String enemyAtk = currentMob.attack(player);
+                    battleHpBar.updateValue(player.hp);
+                    battleLogPane.setText(enemyAtk);
 
-        openRewardChest();
-        currentMob = null;
-        setSkillButtonsEnabled(false);
-        updateStatus();
-        return;
-    }
-
-    int mobDmg = currentMob.damage + rng.nextInt(6);
-    player.hp -= mobDmg;
-    if (player.hp < 0) player.hp = 0;
-    appendToLog(currentMob.name + " attacks for " + mobDmg + " damage!\n\n");
-
-    updateStatus();
-
-    if (player.hp <= 0) {
-        appendToLog("You have been defeated...\n");
-        disableMovement();
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(this, "Game Over", "Defeat", JOptionPane.PLAIN_MESSAGE);
-            mainFrame.showPanel("intro");
-        });
-    }
-}
-
-
-    private void explore(String direction) {
-    if (direction == null) return;
-
-    if (clearedDirections.contains(direction)) {
-        appendToLog("There is nothing in that direction! Try another path.\n\n");
-        return;
-    }
-
-    stepsTaken++;
-    appendToLog("You walk " + direction.toLowerCase() + ".\n\n");
-
-    if (!chestFound && stepsTaken >= STEPS_FOR_CHEST) {
-    	
-        if (player instanceof Warrior) {
-                appendToLog("You found a chest with an equipment\n\n You Obtained Dual War Axes\n\n");
-                JOptionPane.showMessageDialog(this, "You Found a Chest!!!", "Found!", JOptionPane.INFORMATION_MESSAGE);
-            } else if (player instanceof Mage) {
-                appendToLog("You found a chest with an equipment\n\n You Obtained A Hat and A Wand\n\n");
-            } else if (player instanceof Paladin) {
-                appendToLog("You found a chest with an equipment\n\n You Obtained A Shield and A Sword\n\n");
+                    // Check if Player Died
+                    if (player.hp <= 0) {
+                        new Timer().schedule(new TimerTask() {
+                            @Override public void run() {
+                                SwingUtilities.invokeLater(() -> {
+                                    JOptionPane.showMessageDialog(GrassyPlainsPanel.this, "DEFEATED", "Game Over", JOptionPane.ERROR_MESSAGE);
+                                    mainFrame.showPanel("intro");
+                                });
+                            }
+                        }, 1500);
+                    } else {
+                        // 4. RESET TO PLAYER TURN (DELAYED)
+                        new java.util.Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                SwingUtilities.invokeLater(() -> {
+                                    battleLogPane.setText("It is your turn. Choose an action.");
+                                    setButtonsEnabled(true);
+                                });
+                            }
+                        }, 1500); // 1.5s delay after enemy attack text. pwede rani dugayon
+                    }
+                });
             }
-        	chestFound = true;
-            appendToLog("Resting..........Be ready for the Journey Ahead\n\n");
+        }, 1500); // 1.5s delay after player attack text
+    }
 
-            List<World1Mob> mobs = Arrays.asList(new Slime(), new Bull(), new Wolf());        
-            List<String> dirList = new ArrayList<>(Arrays.asList(directions));
-        Collections.shuffle(dirList);
-
-        directionMobs.clear();
-        availableDirections.clear();
-        for (int i = 0; i < Math.min(3, dirList.size()); i++) {
-            directionMobs.put(dirList.get(i), mobs.get(i));
-            availableDirections.add(dirList.get(i));
+    private void endBattle(boolean win) {
+        if (win) {
+            battleLogPane.setText("VICTORY! Enemy defeated.");
+            // Wait a moment then proceed
+            new Timer().schedule(new TimerTask() {
+                @Override public void run() {
+                    SwingUtilities.invokeLater(() -> {
+                        // Custom Boss Outro
+                        if (currentMob instanceof World1Mob.Minotaur) {
+                            playWorld1Outro();
+                        } else {
+                            mobsDefeated++;
+                            openRewardChest();
+                            showExplore();
+                        }
+                    });
+                }
+            }, 1500);
         }
+    }
 
-        reservedMinotaurDirection = (dirList.size() >= 4) ? dirList.get(3) : dirList.get(0);
+    // STORY OUTRO
+    private void playWorld1Outro() {
+        mainCardLayout.show(containerPanel, "EXPLORE");
+        bottomCardLayout.show(bottomPanel, "TEXT");
 
+        updateViewport();
+
+        String msg1 = "With the Minotaur defeated, its dark energy evaporates.\n" +
+                "A faint, healthy green returns to the grass around you.";
+        dialoguePane.setText(msg1);
+
+        new java.util.Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(() -> {
+                    String msg2 = "The ground shakes violently as the beast's power is drawn away...\n" +
+                            "...pulled towards a new focal point: a swirling portal of sand and heat.";
+                    dialoguePane.setText(msg2);
+
+                    new java.util.Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            SwingUtilities.invokeLater(() -> {
+                                int c = JOptionPane.showConfirmDialog(GrassyPlainsPanel.this,
+                                        "Enter the Desert World?", "Portal Opened", JOptionPane.YES_NO_OPTION);
+                                if (c == JOptionPane.YES_OPTION) mainFrame.showPanel("desertWorld");
+                                else mainFrame.showPanel("home");
+                            });
+                        }
+                    }, 5000);
+                });
+            }
+        }, 5000);
+    }
+
+    private void showExplore() {
+        mainCardLayout.show(containerPanel, "EXPLORE");
+        updateViewport();
         updateStatus();
-        return;
-    }
-
-    if (chestFound && currentMob == null) {
-        currentDirection = direction;
-
-        //boolean spawnMinotaur = mobsDefeated >= 3 && direction.equals(reservedMinotaurDirection);
-
-        if (mobsDefeated >= 3 && direction.equals(reservedMinotaurDirection)) {
-            currentMob = new Minotaur();
-            battleLog.append("A hulking Minotaur blocks your path! It's the guardian of these plains!\n\n");
-            battleLog.append("The ground shakes... The Minotaur emerges!!!\n\n");
-            JOptionPane.showMessageDialog(null, "MINOTAUR INCOMING!!!", "WARNING! MINIBOSS", JOptionPane.ERROR_MESSAGE);
-        } else if (directionMobs.containsKey(direction)){
-        	currentMob = directionMobs.get(direction);
-        }
-
-        if (currentMob != null) {
-            appendToLog("A wild " + currentMob.name + " appears!\n\n");
-            setSkillButtonsEnabled(true);
-        }
-    }
-
-    updateStatus();
-}
-
-
-
-    private void updateStatus() {
-        if (player != null) {
-            statusLabel.setText("<html><b>Name:</b> " + player.name +
-                    "<br/><b>Class:</b> " + player.className +
-                    "<br/><b>HP:</b> <span style='color:green;'>" + player.hp + "</span> / " + player.maxHp +
-                    "<br/><b>MP:</b> <span style='color:blue;'>" + player.mana + "</span></html>");
-
-            playerLabel.setText("<html>" + player.className +
-                    "<br/>HP: <span style='color:green;'>" + player.hp + "</span>  " +
-                    "MP: <span style='color:blue;'>" + player.mana + "</span></html>");
-        }
-
-        if (currentMob != null) {
-            mobLabel.setText("<html>" + currentMob.name +
-                    "<br/>HP: <span style='color:red;'>" + currentMob.hp + "</span></html>");
-        } else {
-            mobLabel.setText("");
-        }
-    }
-
-    private void disableMovement() {
-        northBtn.setEnabled(false);
-        southBtn.setEnabled(false);
-        eastBtn.setEnabled(false);
-        westBtn.setEnabled(false);
-        setSkillButtonsEnabled(false);
+        promptNavigation();
     }
 
     private void openRewardChest() {
-        appendToLog("You found a reward chest!\n\n");
-
-        int rewardType = rng.nextInt(5);
-        switch (rewardType) {
-            case 0 -> {
-                int hpBoost = 30;
-                player.maxHp += hpBoost;
-                player.hp += hpBoost;
-                if (player.hp > player.maxHp) player.hp = player.maxHp;
-                appendToLog("Your maximum HP increased by " + hpBoost + "!\n\n");
-                JOptionPane.showMessageDialog(this, "HP INCREASED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
-            }
-            case 1 -> {
-                int dmgBoost = 15;
-                player.tempDamage += dmgBoost;
-                appendToLog("Your damage increased by " + dmgBoost + " for the next battle!\n\n");
-            }
-            case 2 -> {
-                int manaBoost = 20;
-                player.maxMana += manaBoost;
-                player.mana += manaBoost;
-                if (player.mana > player.maxMana) player.mana = player.maxMana;
-                appendToLog("Your maximum Mana increased by " + manaBoost + "!\n\n");
-                JOptionPane.showMessageDialog(this, "MANA INCREASED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
-            }
-            case 3 -> {
-                player.hp = player.maxHp;
-                appendToLog("You found a healing potion! HP restored to full!\n\n");
-                JOptionPane.showMessageDialog(this, "HP RESTORED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
-            }
-            case 4 -> {
-                player.mana = player.maxMana;
-                appendToLog("You found a mana elixir! Mana restored to full!\n\n");
-                JOptionPane.showMessageDialog(this, "MANA RESTORED!", "Reward", JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-        updateStatus();
+        Object[] opts = {"[1] Heal", "[2] Mana", "[3] Dmg Up"};
+        int c = JOptionPane.showOptionDialog(this, "Reward:", "Loot", 0, 3, null, opts, opts[0]);
+        if (c == 0) player.hp = player.maxHp;
+        else if (c == 1) player.mana = player.maxMana;
+        else player.tempDamage += 15;
     }
 
-    private void appendToLog(String text) {
-        battleLog.append(text);
-        SwingUtilities.invokeLater(() -> {
-            JScrollPane sp = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, battleLog);
-            if (sp != null) {
-                JViewport vp = sp.getViewport();
-                if (vp != null) vp.setViewPosition(new Point(0, battleLog.getHeight()));
-            }
-        });
-    }
-
-    public static abstract class Character {
-        int tempDamage = 0;
-        String name, className;
-        int hp, maxHp, mana, maxMana;
-        Random rng; 
-
-        Character(String name, String className, int hp, int mana, Random rng) {
-            this.name = name;
-            this.className = className;
-            this.hp = this.maxHp = hp;
-            this.mana = this.maxMana = mana;
-            this.rng = rng; 
-        }
-
-        boolean isAlive() { return hp > 0; }
-        abstract String useSkill(int choice, World1Mob target);
-    }
-
-
-    public static class Warrior extends Character {
-        Warrior(String n, Random rng) { super(n, "Warrior", 180, 80, rng); }
-
-        @Override
-        String useSkill(int choice, World1Mob target) {
-            if (target == null) return "No target!";
-            int dmg; String msg;
-            switch (choice) {
-                case 1 -> {
-                    dmg = 5 + rng.nextInt(6); dmg += tempDamage;
-                    target.hp -= dmg; 
-                    mana = Math.min(maxMana, mana + 10);
-                    msg = "Stone Slash deals " + dmg;
-                }
-                case 2 -> {
-                    if (mana >= 20) {
-                        dmg = 12 + rng.nextInt(8); dmg += tempDamage;
-                        target.hp -= dmg; mana -= 20;
-                        msg = "Flame Strike deals " + dmg;
-                    } else msg = "Not enough mana!";
-                }
-                case 3 -> {
-                    if (mana >= 30) {
-                        dmg = 20 + rng.nextInt(15); dmg += tempDamage;
-                        target.hp -= dmg; mana -= 30;
-                        msg = "Earthquake Blade deals " + dmg;
-                    } else msg = "Not enough mana!";
-                }
-                default -> msg = "Unknown skill.";
-            }
-            return msg;
+    private void updateStatus() {
+        if(player != null) {
+            playerHpBar.setMax(player.maxHp); playerHpBar.updateValue(player.hp);
+            playerMpBar.setMax(player.maxMana); playerMpBar.updateValue(player.mana);
         }
     }
-
-    public static class Mage extends Character {
-        Mage(String n, Random rng) { super(n, "Mage", 120, 150, rng); }
-
-        @Override
-        String useSkill(int choice, World1Mob target) {
-            if (target == null) return "No target!";
-            int dmg; String msg;
-            switch (choice) {
-                case 1 -> { 
-                	dmg = 5 + rng.nextInt(6); 
-                	dmg += tempDamage; 
-                	target.hp -= dmg; 
-                	mana = Math.min(maxMana, mana + 10); 
-                	msg = "Frost Bolt deals " + dmg; 
-                	}
-                case 2 -> { 
-                	if (mana >= 20) { 
-                		dmg = 11 + rng.nextInt(10); 
-                		dmg += tempDamage; 
-                		target.hp -= dmg; 
-                		mana -= 20; 
-                		msg = "Rune Burst deals " + dmg; 
-                	} else 
-                		msg = "Not enough mana!"; 
-                }
-                case 3 -> { 
-                	if (mana >= 30) { 
-                		dmg = 21 + rng.nextInt(15); 
-                		dmg += tempDamage; 
-                		target.hp -= dmg; 
-                		mana -= 30; 
-                		msg = "Lightstorm deals " + dmg; 
-                	} else 
-                		msg = "Not enough mana!"; 
-                }
-                default -> msg = "Unknown skill.";
-            }
-            return msg;
-        }
-    }
-
-    public static class Paladin extends Character {
-        Paladin(String n, Random rng) { super(n, "Paladin", 220, 120, rng); }
-
-        @Override
-        String useSkill(int choice, World1Mob target) {
-            if (target == null) return "No target!";
-            int dmg; String msg;
-            switch (choice) {
-                case 1 -> { 
-                	dmg = 5 + rng.nextInt(8); 
-                	dmg += tempDamage; 
-                	target.hp -= dmg; 
-                	mana = Math.min(maxMana, mana + 10); 
-                	msg = "Shield Bash deals " + dmg; 
-                }
-                case 2 -> { 
-                	if (mana >= 20) { 
-                		mana -= 20; 
-                		msg = "Radiant Guard! Damage reduced."; 
-                		} else 
-                			msg = "Not enough mana!"; 
-                	}
-                case 3 -> { 
-                	if (mana >= 30) { 
-                		int heal = 20 + rng.nextInt(16); 
-                		mana -= 30; 
-                		hp = Math.min(maxHp, hp + heal); 
-                		msg = "Holy Renewal heals " + heal; 
-                		} else 
-                			msg = "Not enough mana!"; 
-                	}
-                default -> msg = "Unknown skill.";
-            }
-            return msg;
-        }
-    }
-    public static abstract class World1Mob {
-        String name; int hp, damage;
-        World1Mob(String name, int hp, int dmg)
-        { 
-        	this.name=name; 
-        	this.hp=hp; 
-        	this.damage=dmg; 
-        }
-        boolean isAlive()
-        { 
-        	return hp>0; 
-        }
-    }
-
-    public static class Slime extends World1Mob 
-    { 
-    	Slime() 
-    	{ 
-    		super("Slime", 20, 5); 
-    	} 
-    }
-    public static class Bull extends World1Mob 
-    { 
-    	Bull() 
-    	{ 
-    		super("Wild Bull", 30, 8); 
-    	} 
-    }
-    public static class Wolf extends World1Mob 
-    { 
-    	Wolf() 
-    	{ 
-    		super("Dire Wolf", 40, 10); 
-    	} 
-    }
-    public static class Minotaur extends World1Mob 
-    { 
-    	Minotaur() 
-    	{ 
-    		super("Minotaur",80,12); 
-    	} 
-    }
-         
 }
