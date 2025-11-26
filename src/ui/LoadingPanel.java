@@ -17,8 +17,8 @@ public class LoadingPanel extends JPanel {
 
     private final String[] storyLines = {
             "You wake up from a deep sleep...",
-            "The world has changed..."
-    };//dungangan pani
+            "Are you ready to save the World?"
+    };
 
     private int lineIndex = 0;
     private int charIndex = 0;
@@ -33,7 +33,7 @@ public class LoadingPanel extends JPanel {
         setBorder(new EmptyBorder(20, 20, 20, 20));
         setBackground(Color.BLACK);
 
-        URL imgUrl = getClass().getResource("/images/backgroundpic/loading1.jpg");
+        URL imgUrl = getClass().getResource("/images/backgroundpic/storyline.png");
         if (imgUrl != null) bgImage = new ImageIcon(imgUrl).getImage();
 
         JPanel contentPane = new JPanel(new BorderLayout()) {
@@ -54,7 +54,7 @@ public class LoadingPanel extends JPanel {
         storyPane.setEditable(false);
         storyPane.setOpaque(false);
         storyPane.setForeground(Color.WHITE);
-        storyPane.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 22));
+        storyPane.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 28));
 
         StyledDocument doc = storyPane.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
@@ -83,12 +83,12 @@ public class LoadingPanel extends JPanel {
         }
 
         // Create new Timer
-        typeTimer = new Timer(50, e -> {
+        typeTimer = new Timer(100, e -> {
             if (lineIndex >= storyLines.length) {
                 ((Timer) e.getSource()).stop(); // Stop typing
 
                 // --- REDIRECT TO HOME WORLD ---
-                Timer delay = new Timer(1000, ev -> {
+                Timer delay = new Timer(2500, ev -> {
                     ((Timer) ev.getSource()).stop(); // Stop the delay timer
                     mainFrame.showPanel("homeWorld");
                 });

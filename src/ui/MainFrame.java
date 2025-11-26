@@ -14,13 +14,14 @@ public class MainFrame extends JFrame {
     private DialoguePanel dialoguePanel;
     private HomePanel homePanel; // Main Menu
     private LoadingPanel loadingPanel;
-    private Home inGameHomePanel; // The new Safehouse (Home.java)
+    private Home inGameHomePanel; // The Safehouse
 
+    // World Panels
     private GrassyPlainsPanel grassyPlainsPanel;
     private DesertWorldPanel desertWorldPanel;
     private SnowyIslandPanel snowyIslandPanel;
-    private LavaWorldPanel lavaWorldPanel;
-    private FinalWorldPanel finalWorldPanel;
+    private LavaWorldPanel lavaWorldPanel; // Now Active
+    private FinalWorldPanel finalWorldPanel; // Placeholder for next update
 
     private Character currentPlayer;
 
@@ -35,15 +36,14 @@ public class MainFrame extends JFrame {
         mainPanel = new JPanel(cardLayout);
         mainPanel.setBackground(Color.BLACK);
 
-        // Initialize Panels
+        // Initialize UI Panels
         introPanel = new IntroPanel(this);
         dialoguePanel = new DialoguePanel(this);
         homePanel = new HomePanel(this);
         loadingPanel = new LoadingPanel(this);
-
-        // Initialize the new Home Room
         inGameHomePanel = new Home(this);
 
+        // Initialize World Panels
         grassyPlainsPanel = new GrassyPlainsPanel(this);
         desertWorldPanel = new DesertWorldPanel(this);
         snowyIslandPanel = new SnowyIslandPanel(this);
@@ -53,14 +53,14 @@ public class MainFrame extends JFrame {
         // Add to CardLayout
         mainPanel.add(introPanel, "intro");
         mainPanel.add(dialoguePanel, "dialogue");
-        mainPanel.add(homePanel, "home"); // Menu
+        mainPanel.add(homePanel, "home");
         mainPanel.add(loadingPanel, "loading");
-        mainPanel.add(inGameHomePanel, "homeWorld"); // The Room
+        mainPanel.add(inGameHomePanel, "homeWorld");
 
         mainPanel.add(grassyPlainsPanel, "grassyPlains");
         mainPanel.add(desertWorldPanel, "desertWorld");
         mainPanel.add(snowyIslandPanel, "snowyIsland");
-        mainPanel.add(lavaWorldPanel, "lavaWorld");
+        mainPanel.add(lavaWorldPanel, "lavaWorld"); // Add to stack
         mainPanel.add(finalWorldPanel, "finalWorld");
 
         setContentPane(mainPanel);
@@ -80,7 +80,7 @@ public class MainFrame extends JFrame {
             default: currentPlayer = new Warrior(playerName, rng); break;
         }
 
-        // Pass UNARMED player to homeboy
+        // Pass UNARMED player to the Safehouse
         inGameHomePanel.setPlayer(currentPlayer);
 
         // Start loading
@@ -88,11 +88,35 @@ public class MainFrame extends JFrame {
         loadingPanel.startLoading(playerName, selectedClass);
     }
 
-    // Called by Home.java when leaving
+    //WORLD TRANSITIONS
     public void enterGrassyPlains(Character buffedPlayer) {
-        // Pass EQUIPPED player to Grassy Plains
+        this.currentPlayer = buffedPlayer;
         grassyPlainsPanel.setPlayerObject(buffedPlayer);
         showPanel("grassyPlains");
+    }
+
+    public void enterDesertWorld(Character buffedPlayer) {
+        this.currentPlayer = buffedPlayer;
+        desertWorldPanel.setPlayerObject(buffedPlayer);
+        showPanel("desertWorld");
+    }
+
+    public void enterSnowyIsland(Character buffedPlayer) {
+        this.currentPlayer = buffedPlayer;
+        snowyIslandPanel.setPlayerObject(buffedPlayer);
+        showPanel("snowyIsland");
+    }
+
+    public void enterLavaWorld(Character buffedPlayer) {
+        this.currentPlayer = buffedPlayer;
+        lavaWorldPanel.setPlayerObject(buffedPlayer);
+        showPanel("lavaWorld");
+    }
+
+    public void enterFinalWorld(Character buffedPlayer) {
+        this.currentPlayer = buffedPlayer;
+        finalWorldPanel.setPlayerObject(buffedPlayer);
+        showPanel("finalWorld");
     }
 
     public static void main(String[] args) {

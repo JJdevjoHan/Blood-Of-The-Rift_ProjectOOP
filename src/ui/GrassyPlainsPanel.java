@@ -40,7 +40,7 @@ public class GrassyPlainsPanel extends JPanel {
     private RiftBar battleHpBar, battleMpBar, mobHpBar;
     private RiftButton btnSkill1, btnSkill2, btnSkill3;
 
-    // NEW: Battle Log (Replaces Popups)
+    // BATTLE LOG
     private JTextPane battleLogPane;
 
     // STATE
@@ -79,28 +79,23 @@ public class GrassyPlainsPanel extends JPanel {
         containerPanel = new JPanel(mainCardLayout);
         add(containerPanel, BorderLayout.CENTER);
 
-        // Load the background image
         URL bgUrl = getClass().getResource("/images/backgroundpic/grassyplains.png");
-        if (bgUrl != null) {
-            bgImage = new ImageIcon(bgUrl).getImage();
-        }
+        if (bgUrl != null) bgImage = new ImageIcon(bgUrl).getImage();
 
         containerPanel.add(createRetroLayout(), "EXPLORE");
         containerPanel.add(createVersusPanel(), "VERSUS");
         containerPanel.add(createBattlePanel(), "BATTLE");
     }
 
-    // EXPLORE LAYOUT
+    //explore layout
     private JPanel createRetroLayout() {
         JPanel main = new JPanel(new GridBagLayout());
         main.setBackground(BG_BLACK);
-
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.weightx = 1.0;
 
-        // TOP BOX
         JPanel headerBox = createBoxPanel();
         JLabel title = new JLabel("GRASSY PLAINS", SwingConstants.CENTER);
         title.setFont(HEADER_FONT);
@@ -109,17 +104,12 @@ public class GrassyPlainsPanel extends JPanel {
         gbc.gridy = 0; gbc.weighty = 0.1;
         main.add(headerBox, gbc);
 
-        // MIDDLE BOX (VIEWPORT)
         JPanel viewportBox = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                if (bgImage != null) {
-                    g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
-                } else {
-                    g.setColor(Color.BLACK);
-                    g.fillRect(0, 0, getWidth(), getHeight());
-                }
+                if (bgImage != null) g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
+                else { g.setColor(Color.BLACK); g.fillRect(0, 0, getWidth(), getHeight()); }
             }
         };
         viewportBox.setBorder(CYAN_BORDER);
@@ -150,7 +140,6 @@ public class GrassyPlainsPanel extends JPanel {
         gbc.gridy = 1; gbc.weighty = 0.7;
         main.add(viewportBox, gbc);
 
-        // BOTTOM BOX
         bottomPanel = createBoxPanel();
         bottomCardLayout = new CardLayout();
         bottomPanel.setLayout(bottomCardLayout);
@@ -199,7 +188,7 @@ public class GrassyPlainsPanel extends JPanel {
         return p;
     }
 
-    // VERSUS PANEL -
+    // vs panel
     private JPanel createVersusPanel() {
         JPanel mainVSPanel = new JPanel(new BorderLayout()) {
             @Override
@@ -209,185 +198,115 @@ public class GrassyPlainsPanel extends JPanel {
                     g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
                     g.setColor(new Color(0, 0, 0, 180));
                     g.fillRect(0, 0, getWidth(), getHeight());
-                } else {
-                    g.setColor(Color.BLACK);
-                    g.fillRect(0, 0, getWidth(), getHeight());
-                }
+                } else { g.setColor(Color.BLACK); g.fillRect(0, 0, getWidth(), getHeight()); }
             }
         };
         mainVSPanel.setOpaque(false);
-
-        JPanel centerContainer = new JPanel(new GridBagLayout());
-        centerContainer.setOpaque(false);
-
+        JPanel centerContainer = new JPanel(new GridBagLayout()); centerContainer.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(0, 20, 0, 20);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(0, 20, 0, 20); gbc.fill = GridBagConstraints.BOTH; gbc.anchor = GridBagConstraints.CENTER;
 
-        // LEFT >> PLAYER PORTRAIT
         vsPlayerLabel = new JLabel("", SwingConstants.CENTER);
-        vsPlayerLabel.setBorder(new LineBorder(Color.CYAN, 4));
-        vsPlayerLabel.setPreferredSize(new Dimension(300, 300));
-        gbc.gridx = 0; gbc.weightx = 0.4;
-        centerContainer.add(vsPlayerLabel, gbc);
+        vsPlayerLabel.setBorder(new LineBorder(Color.CYAN, 4)); vsPlayerLabel.setPreferredSize(new Dimension(300, 300));
+        gbc.gridx = 0; gbc.weightx = 0.4; centerContainer.add(vsPlayerLabel, gbc);
 
-        // CENTER: VS LOGO
         vsTextLabel = new JLabel("VS", SwingConstants.CENTER);
-        vsTextLabel.setFont(VS_FONT);
-        vsTextLabel.setForeground(VS_SILVER);
+        vsTextLabel.setFont(VS_FONT); vsTextLabel.setForeground(VS_SILVER);
         vsTextLabel.setBorder(new EmptyBorder(0, 10, 0, 10));
-        gbc.gridx = 1; gbc.weightx = 0.2;
-        centerContainer.add(vsTextLabel, gbc);
+        gbc.gridx = 1; gbc.weightx = 0.2; centerContainer.add(vsTextLabel, gbc);
 
-        // RIGHT: MOB PORTRAIT
         vsMobLabel = new JLabel("", SwingConstants.CENTER);
-        vsMobLabel.setBorder(new LineBorder(Color.RED, 4));
-        vsMobLabel.setPreferredSize(new Dimension(300, 300));
-        gbc.gridx = 2; gbc.weightx = 0.4;
-        centerContainer.add(vsMobLabel, gbc);
+        vsMobLabel.setBorder(new LineBorder(Color.RED, 4)); vsMobLabel.setPreferredSize(new Dimension(300, 300));
+        gbc.gridx = 2; gbc.weightx = 0.4; centerContainer.add(vsMobLabel, gbc);
 
         mainVSPanel.add(centerContainer, BorderLayout.CENTER);
-
-        // Bottom Status Text Label
         vsStatusLabel = new JLabel("", SwingConstants.CENTER);
-        vsStatusLabel.setFont(RETRO_FONT);
-        vsStatusLabel.setForeground(Color.WHITE);
+        vsStatusLabel.setFont(RETRO_FONT); vsStatusLabel.setForeground(Color.WHITE);
         vsStatusLabel.setBorder(new EmptyBorder(20, 0, 30, 0));
         mainVSPanel.add(vsStatusLabel, BorderLayout.SOUTH);
-
         return mainVSPanel;
     }
 
-    // BATTLE LAYOUT
+    // battle panel
     private JPanel createBattlePanel() {
-        // Main Battle Container
         JPanel p = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 if (bgImage != null) {
                     g.drawImage(bgImage, 0, 0, getWidth(), getHeight(), this);
-                    g.setColor(new Color(0, 0, 0, 200)); // Heavy tint
-                    g.fillRect(0, 0, getWidth(), getHeight());
+                    g.setColor(new Color(0, 0, 0, 200)); g.fillRect(0, 0, getWidth(), getHeight());
                 }
             }
         };
         p.setOpaque(false);
-
-        // ARENA (SPLIT CENTER)
         JPanel arena = new JPanel(new GridLayout(1, 2, 20, 0));
-        arena.setOpaque(false);
-        arena.setBorder(new EmptyBorder(20, 40, 0, 40));
+        arena.setOpaque(false); arena.setBorder(new EmptyBorder(20, 40, 0, 40));
 
-        // lEFT: HERO SIDE
-        JPanel heroPane = new JPanel(new GridBagLayout());
-        heroPane.setOpaque(false);
+        JPanel heroPane = new JPanel(new GridBagLayout()); heroPane.setOpaque(false);
         GridBagConstraints hGbc = new GridBagConstraints();
         hGbc.gridx = 0; hGbc.fill = GridBagConstraints.HORIZONTAL; hGbc.anchor = GridBagConstraints.CENTER;
 
         playerPortrait = new JLabel("", SwingConstants.CENTER);
-        playerPortrait.setBorder(new LineBorder(Color.DARK_GRAY, 2));
-        playerPortrait.setPreferredSize(new Dimension(300, 300));
-        hGbc.gridy = 0; hGbc.insets = new Insets(0, 0, 15, 0);
-        heroPane.add(playerPortrait, hGbc);
+        playerPortrait.setBorder(new LineBorder(Color.DARK_GRAY, 2)); playerPortrait.setPreferredSize(new Dimension(300, 300));
+        hGbc.gridy = 0; hGbc.insets = new Insets(0, 0, 15, 0); heroPane.add(playerPortrait, hGbc);
 
         playerNameLabel = new JLabel("HERO", SwingConstants.CENTER);
-        playerNameLabel.setForeground(Color.CYAN);
-        playerNameLabel.setFont(HEADER_FONT);
-        hGbc.gridy = 1; hGbc.insets = new Insets(0, 0, 5, 0);
-        heroPane.add(playerNameLabel, hGbc);
+        playerNameLabel.setForeground(Color.CYAN); playerNameLabel.setFont(HEADER_FONT);
+        hGbc.gridy = 1; hGbc.insets = new Insets(0, 0, 5, 0); heroPane.add(playerNameLabel, hGbc);
 
-        battleHpBar = new RiftBar(100, Color.GREEN);
-        battleHpBar.setPreferredSize(new Dimension(300, 30));
-        hGbc.gridy = 2; hGbc.insets = new Insets(0, 0, 5, 0);
-        heroPane.add(battleHpBar, hGbc);
+        battleHpBar = new RiftBar(100, Color.GREEN); battleHpBar.setPreferredSize(new Dimension(300, 30));
+        hGbc.gridy = 2; hGbc.insets = new Insets(0, 0, 5, 0); heroPane.add(battleHpBar, hGbc);
 
-        battleMpBar = new RiftBar(100, Color.BLUE);
-        battleMpBar.setPreferredSize(new Dimension(200, 15));
-        hGbc.gridy = 3;
-        heroPane.add(battleMpBar, hGbc);
-
+        battleMpBar = new RiftBar(100, Color.BLUE); battleMpBar.setPreferredSize(new Dimension(200, 15));
+        hGbc.gridy = 3; heroPane.add(battleMpBar, hGbc);
         arena.add(heroPane);
 
-        //RIGHT: ENEMY SIDE
-        JPanel mobPane = new JPanel(new GridBagLayout());
-        mobPane.setOpaque(false);
+        JPanel mobPane = new JPanel(new GridBagLayout()); mobPane.setOpaque(false);
         GridBagConstraints mGbc = new GridBagConstraints();
         mGbc.gridx = 0; mGbc.fill = GridBagConstraints.HORIZONTAL; mGbc.anchor = GridBagConstraints.CENTER;
 
         mobPortrait = new JLabel("", SwingConstants.CENTER);
-        mobPortrait.setBorder(new LineBorder(Color.DARK_GRAY, 2));
-        mobPortrait.setPreferredSize(new Dimension(300, 300));
-        mGbc.gridy = 0; mGbc.insets = new Insets(0, 0, 15, 0);
-        mobPane.add(mobPortrait, mGbc);
+        mobPortrait.setBorder(new LineBorder(Color.DARK_GRAY, 2)); mobPortrait.setPreferredSize(new Dimension(300, 300));
+        mGbc.gridy = 0; mGbc.insets = new Insets(0, 0, 15, 0); mobPane.add(mobPortrait, mGbc);
 
         mobNameLabel = new JLabel("ENEMY", SwingConstants.CENTER);
-        mobNameLabel.setForeground(Color.RED);
-        mobNameLabel.setFont(HEADER_FONT);
-        mGbc.gridy = 1; mGbc.insets = new Insets(0, 0, 5, 0);
-        mobPane.add(mobNameLabel, mGbc);
+        mobNameLabel.setForeground(Color.RED); mobNameLabel.setFont(HEADER_FONT);
+        mGbc.gridy = 1; mGbc.insets = new Insets(0, 0, 5, 0); mobPane.add(mobNameLabel, mGbc);
 
-        mobHpBar = new RiftBar(100, Color.RED);
-        mobHpBar.setPreferredSize(new Dimension(300, 30));
-        mGbc.gridy = 2;
-        mobPane.add(mobHpBar, mGbc);
-
+        mobHpBar = new RiftBar(100, Color.RED); mobHpBar.setPreferredSize(new Dimension(300, 30));
+        mGbc.gridy = 2; mobPane.add(mobHpBar, mGbc);
         arena.add(mobPane);
         p.add(arena, BorderLayout.CENTER);
 
-        //SOUTH WRAPPER: LOG + SKILLS
-        JPanel southWrapper = new JPanel(new BorderLayout());
-        southWrapper.setOpaque(false);
+        JPanel southWrapper = new JPanel(new BorderLayout()); southWrapper.setOpaque(false);
+        battleLogPane = new JTextPane(); battleLogPane.setOpaque(false);
+        battleLogPane.setEditable(false); battleLogPane.setFont(RETRO_FONT);
+        battleLogPane.setForeground(Color.WHITE); battleLogPane.setPreferredSize(new Dimension(800, 80));
 
-        //BATTLE LOG
-        battleLogPane = new JTextPane();
-        battleLogPane.setOpaque(false);
-        battleLogPane.setEditable(false);
-        battleLogPane.setFont(RETRO_FONT);
-        battleLogPane.setForeground(Color.WHITE);
-        battleLogPane.setPreferredSize(new Dimension(800, 80)); // Height for 2 lines of text
-
-        // Center text in log
         StyledDocument doc = battleLogPane.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
 
-        JPanel logContainer = new JPanel(new BorderLayout());
-        logContainer.setOpaque(false);
-        logContainer.setBorder(new EmptyBorder(10, 100, 10, 100)); // Side margins
+        JPanel logContainer = new JPanel(new BorderLayout()); logContainer.setOpaque(false);
+        logContainer.setBorder(new EmptyBorder(10, 100, 10, 100));
         logContainer.add(battleLogPane, BorderLayout.CENTER);
-
         southWrapper.add(logContainer, BorderLayout.NORTH);
 
-        // SKILLS
-        JPanel skills = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
-        skills.setOpaque(false);
+        JPanel skills = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20)); skills.setOpaque(false);
         skills.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE));
 
-        btnSkill1 = new RiftButton("SKILL 1");
-        btnSkill2 = new RiftButton("SKILL 2");
-        btnSkill3 = new RiftButton("SKILL 3");
-
+        btnSkill1 = new RiftButton("SKILL 1"); btnSkill2 = new RiftButton("SKILL 2"); btnSkill3 = new RiftButton("SKILL 3");
         Dimension skillDim = new Dimension(220, 50);
-        btnSkill1.setPreferredSize(skillDim);
-        btnSkill2.setPreferredSize(skillDim);
-        btnSkill3.setPreferredSize(skillDim);
-
-        btnSkill1.addActionListener(e -> doSkill(1));
-        btnSkill2.addActionListener(e -> doSkill(2));
+        btnSkill1.setPreferredSize(skillDim); btnSkill2.setPreferredSize(skillDim); btnSkill3.setPreferredSize(skillDim);
+        btnSkill1.addActionListener(e -> doSkill(1)); btnSkill2.addActionListener(e -> doSkill(2));
         btnSkill3.addActionListener(e -> doSkill(3));
-
         skills.add(btnSkill1); skills.add(btnSkill2); skills.add(btnSkill3);
-
         southWrapper.add(skills, BorderLayout.SOUTH);
         p.add(southWrapper, BorderLayout.SOUTH);
-
         return p;
     }
-
-    // LOGIC & FLOW
 
     public void setPlayerObject(Character p) {
         this.player = p;
@@ -441,26 +360,17 @@ public class GrassyPlainsPanel extends JPanel {
             default -> "";
         };
         dialoguePane.setText(txt);
-
-        if (rng.nextInt(100) < 60) {
-            new Timer().schedule(new TimerTask() {
-                @Override public void run() { SwingUtilities.invokeLater(() -> triggerEncounter()); }
-            }, 1000);
+        if (rng.nextInt(100) < 80) {
+            new Timer().schedule(new TimerTask() { @Override public void run() { SwingUtilities.invokeLater(() -> triggerEncounter()); } }, 1000);
         } else {
-            new Timer().schedule(new TimerTask() {
-                @Override public void run() {
-                    SwingUtilities.invokeLater(() -> {
-                        dialoguePane.setText("You wander the place but find nothing of interest.");
-                        new Timer().schedule(new TimerTask() {
-                            @Override public void run() { SwingUtilities.invokeLater(() -> promptNavigation()); }
-                        }, 1500);
-                    });
-                }
-            }, 1500);
+            new Timer().schedule(new TimerTask() { @Override public void run() {
+                SwingUtilities.invokeLater(() -> {
+                    dialoguePane.setText("You wander the place but find nothing of interest.");
+                    new Timer().schedule(new TimerTask() { @Override public void run() { SwingUtilities.invokeLater(() -> promptNavigation()); } }, 1500);
+                });
+            } }, 1500);
         }
     }
-
-    // ENCOUNTER LOGIC
 
     private void triggerEncounter() {
         if (mobsDefeated >= MOBS_UNTIL_BOSS) currentMob = new World1Mob.Minotaur();
@@ -475,72 +385,48 @@ public class GrassyPlainsPanel extends JPanel {
 
     private void startVersusSequence() {
         mainCardLayout.show(containerPanel, "VERSUS");
-
-        // Bossingg Intro Text
         if (currentMob instanceof World1Mob.Minotaur) {
             vsStatusLabel.setText("A hulking Minotaur blocks your path! It roars, its eyes glowing with the rift's energy.");
             vsStatusLabel.setForeground(new Color(255, 100, 100));
         } else {
-            vsStatusLabel.setText("A wild " + currentMob.name.toUpperCase() + " has appeared! Prepare for battle!");
+            vsStatusLabel.setText("A " + currentMob.name.toUpperCase() + " has appeared! Prepare for battle!");
             vsStatusLabel.setForeground(Color.WHITE);
         }
-
-        // Load Images
         String pPath = "/images/playable/" + player.className.toLowerCase() + ".png";
         URL pUrl = getClass().getResource(pPath);
         if (pUrl != null) {
             ImageIcon pIcon = new ImageIcon(pUrl);
             vsPlayerLabel.setIcon(new ImageIcon(pIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH)));
         }
-
         String mobFileName = "Slime";
         String nameCheck = currentMob.name.toLowerCase();
-
         if (nameCheck.contains("wolf")) mobFileName = "Dire Wolf";
         else if (nameCheck.contains("bull")) mobFileName = "Wild Bull";
         else if (nameCheck.contains("slime")) mobFileName = "Slime";
         else if (nameCheck.contains("minotaur")) mobFileName = "Minotaur";
-
         String mPath = "/images/World1Mob/" + mobFileName + ".png";
-
         try {
             URL mUrl = getClass().getResource(mPath);
             if(mUrl != null) {
                 ImageIcon mIcon = new ImageIcon(mUrl);
                 Image sc = mIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
-                vsMobLabel.setIcon(new ImageIcon(sc));
-                vsMobLabel.setText("");
-                mobPortrait.setIcon(new ImageIcon(sc));
-                mobPortrait.setText("");
-            } else {
-                vsMobLabel.setIcon(null); vsMobLabel.setText(currentMob.name);
-            }
+                vsMobLabel.setIcon(new ImageIcon(sc)); vsMobLabel.setText("");
+                mobPortrait.setIcon(new ImageIcon(sc)); mobPortrait.setText("");
+            } else { vsMobLabel.setIcon(null); vsMobLabel.setText(currentMob.name); }
         } catch (Exception e) { vsMobLabel.setText(currentMob.name); }
-
-        new Timer().schedule(new TimerTask() {
-            @Override public void run() { SwingUtilities.invokeLater(() -> startBattle()); }
-        }, 4000);
+        new Timer().schedule(new TimerTask() { @Override public void run() { SwingUtilities.invokeLater(() -> startBattle()); } }, 4000);
     }
 
     private void startBattle() {
         mainCardLayout.show(containerPanel, "BATTLE");
-
-        // Reset Battle Log
         battleLogPane.setText("It is your turn! Choose a skill.");
-
         mobNameLabel.setText(currentMob.name.toUpperCase());
-        mobHpBar.setMax(currentMob.maxHp);
-        mobHpBar.updateValue(currentMob.hp);
-
+        mobHpBar.setMax(currentMob.maxHp); mobHpBar.updateValue(currentMob.hp);
         playerNameLabel.setText(player.name.toUpperCase() + " [" + player.className + "]");
         battleHpBar.setMax(player.maxHp); battleHpBar.updateValue(player.hp);
         battleMpBar.setMax(player.maxMana); battleMpBar.updateValue(player.mana);
-
-        // Enable buttons initially
         setButtonsEnabled(true);
     }
-
-    // BATTLE LOGIC
 
     private void updateSkillButtons() {
         if (player instanceof Warrior) {
@@ -553,142 +439,103 @@ public class GrassyPlainsPanel extends JPanel {
     }
 
     private void setButtonsEnabled(boolean enabled) {
-        btnSkill1.setEnabled(enabled);
-        btnSkill2.setEnabled(enabled);
-        btnSkill3.setEnabled(enabled);
+        btnSkill1.setEnabled(enabled); btnSkill2.setEnabled(enabled); btnSkill3.setEnabled(enabled);
     }
 
     private void doSkill(int choice) {
         if (currentMob == null) return;
-
-        //DISABLE BUTTONS
         setButtonsEnabled(false);
-
-        // 2. PLAYER ATTACK
         String res = player.useSkill(choice, currentMob);
         mobHpBar.updateValue(currentMob.hp);
-        battleMpBar.updateValue(player.mana); // Update mana
-
-        // Update Log
+        battleMpBar.updateValue(player.mana);
         battleLogPane.setText(res);
-
-        // Check if Mob Died
         if (!currentMob.isAlive()) {
-            // Delay slightly so player sees the killing blow text
-            new Timer().schedule(new TimerTask() {
-                @Override public void run() {
-                    SwingUtilities.invokeLater(() -> endBattle(true));
-                }
-            }, 1500);
+            new Timer().schedule(new TimerTask() { @Override public void run() { SwingUtilities.invokeLater(() -> endBattle(true)); } }, 1500);
             return;
         }
-
-        // 3. ENEMY TURN (DELAYED)
         new java.util.Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
+            @Override public void run() {
                 SwingUtilities.invokeLater(() -> {
-                    // Enemy Attacks
                     String enemyAtk = currentMob.attack(player);
                     battleHpBar.updateValue(player.hp);
                     battleLogPane.setText(enemyAtk);
-
-                    // Check if Player Died
                     if (player.hp <= 0) {
-                        new Timer().schedule(new TimerTask() {
-                            @Override public void run() {
-                                SwingUtilities.invokeLater(() -> {
-                                    JOptionPane.showMessageDialog(GrassyPlainsPanel.this, "DEFEATED", "Game Over", JOptionPane.ERROR_MESSAGE);
-                                    mainFrame.showPanel("intro");
-                                });
-                            }
-                        }, 1500);
+                        new Timer().schedule(new TimerTask() { @Override public void run() { SwingUtilities.invokeLater(() -> {
+                            JOptionPane.showMessageDialog(GrassyPlainsPanel.this, "DEFEATED", "Game Over", JOptionPane.ERROR_MESSAGE);
+                            mainFrame.showPanel("intro");
+                        }); } }, 1500);
                     } else {
-                        // 4. RESET TO PLAYER TURN (DELAYED)
-                        new java.util.Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                SwingUtilities.invokeLater(() -> {
-                                    battleLogPane.setText("It is your turn. Choose an action.");
-                                    setButtonsEnabled(true);
-                                });
-                            }
-                        }, 1500); // 1.5s delay after enemy attack text. pwede rani dugayon
+                        new java.util.Timer().schedule(new TimerTask() { @Override public void run() { SwingUtilities.invokeLater(() -> {
+                            battleLogPane.setText("It is your turn. Choose an action.");
+                            setButtonsEnabled(true);
+                        }); } }, 1500);
                     }
                 });
             }
-        }, 1500); // 1.5s delay after player attack text
+        }, 1500);
     }
 
     private void endBattle(boolean win) {
         if (win) {
             battleLogPane.setText("VICTORY! Enemy defeated.");
-            // Wait a moment then proceed
-            new Timer().schedule(new TimerTask() {
-                @Override public void run() {
-                    SwingUtilities.invokeLater(() -> {
-                        // Custom Boss Outro
-                        if (currentMob instanceof World1Mob.Minotaur) {
-                            playWorld1Outro();
-                        } else {
-                            mobsDefeated++;
-                            openRewardChest();
-                            showExplore();
-                        }
-                    });
-                }
-            }, 1500);
+            new Timer().schedule(new TimerTask() { @Override public void run() { SwingUtilities.invokeLater(() -> {
+                if (currentMob instanceof World1Mob.Minotaur) playWorld1Outro();
+                else { mobsDefeated++; openRewardChest(); showExplore(); }
+            }); } }, 1500);
         }
     }
 
-    // STORY OUTRO
     private void playWorld1Outro() {
         mainCardLayout.show(containerPanel, "EXPLORE");
         bottomCardLayout.show(bottomPanel, "TEXT");
-
         updateViewport();
-
         String msg1 = "With the Minotaur defeated, its dark energy evaporates.\n" +
                 "A faint, healthy green returns to the grass around you.";
         dialoguePane.setText(msg1);
-
         new java.util.Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                SwingUtilities.invokeLater(() -> {
-                    String msg2 = "The ground shakes violently as the beast's power is drawn away...\n" +
-                            "...pulled towards a new focal point: a swirling portal of sand and heat.";
-                    dialoguePane.setText(msg2);
+            @Override public void run() { SwingUtilities.invokeLater(() -> {
+                String msg2 = "The ground shakes violently as the beast's power is drawn away...\n" +
+                        "...pulled towards a new focal point: a swirling portal of sand and heat.";
+                dialoguePane.setText(msg2);
+                new java.util.Timer().schedule(new TimerTask() {
+                    @Override public void run() { SwingUtilities.invokeLater(() -> {
 
-                    new java.util.Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            SwingUtilities.invokeLater(() -> {
-                                int c = JOptionPane.showConfirmDialog(GrassyPlainsPanel.this,
-                                        "Enter the Desert World?", "Portal Opened", JOptionPane.YES_NO_OPTION);
-                                if (c == JOptionPane.YES_OPTION) mainFrame.showPanel("desertWorld");
-                                else mainFrame.showPanel("home");
-                            });
-                        }
-                    }, 5000);
-                });
-            }
-        }, 5000);
+                        int c = RiftDialog.showConfirmDialog(GrassyPlainsPanel.this,
+                                "Enter the Desert World?", "PORTAL OPENED");
+
+                        if (c == JOptionPane.YES_OPTION) mainFrame.enterDesertWorld(player);
+                        else mainFrame.showPanel("home");
+
+                    }); } }, 5000);
+            }); } }, 5000);
     }
 
     private void showExplore() {
         mainCardLayout.show(containerPanel, "EXPLORE");
-        updateViewport();
-        updateStatus();
-        promptNavigation();
+        updateViewport(); updateStatus(); promptNavigation();
     }
 
     private void openRewardChest() {
-        Object[] opts = {"[1] Heal", "[2] Mana", "[3] Dmg Up"};
-        int c = JOptionPane.showOptionDialog(this, "Reward:", "Loot", 0, 3, null, opts, opts[0]);
-        if (c == 0) player.hp = player.maxHp;
-        else if (c == 1) player.mana = player.maxMana;
-        else player.tempDamage += 15;
+        Object[] opts = {"HEAL", "MANA", "DMG UP"};
+
+        int c = RiftDialog.showOptionDialog(this,
+                "You found a chest! Choose your reward:",
+                "VICTORY LOOT", opts);
+
+        if (c == 0) {
+            player.hp = player.maxHp;
+            if(battleLogPane != null) battleLogPane.setText("HP Fully Restored!");
+        }
+        else if (c == 1) {
+            player.mana = player.maxMana;
+            if(battleLogPane != null) battleLogPane.setText("Mana Fully Restored!");
+        }
+        else if (c == 2) {
+            player.tempDamage += 15;
+            if(battleLogPane != null) battleLogPane.setText("Damage Increased by 15!");
+        }
+
+        updateStatus();
     }
 
     private void updateStatus() {

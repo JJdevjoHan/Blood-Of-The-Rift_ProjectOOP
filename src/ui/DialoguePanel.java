@@ -14,9 +14,14 @@ class DialoguePanel extends JPanel {
     private Image bgImage;
 
     private String[] storyLines = {
-            "In sooth, a thousand years ago....",
-            "A mighty hero was chosen to save the Kingdom...",
-            "New heroes rise from the divided worlds..."
+            "A thousand years ago...",
+            "A mighty hero was chosen to save the Kingdom of Sethra from the wrath of gods",
+            "Betrayed by his own people, he was used as a scapegoat and sacrificed to seal the calamities",
+            "But the world still fell apart, a great rift tore reality into multiple realms",
+            "Although the champion did not die",
+            "Instead, he was cursed, left less than human, and forgotten in the shadows of the rift",
+            "Eight hundred years later, new heroes rise from the divided worlds...",
+            "Believing the fallen Hero to be the cause of the chaos, they set out to defeat him"
     };
 
     public DialoguePanel(MainFrame mainFrame) {
@@ -26,15 +31,15 @@ class DialoguePanel extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(20, 20, 20, 20));
         setBackground(Color.BLACK);
 
-        URL imgUrl = getClass().getResource("/images/backgroundpic/intro.png");
+        URL imgUrl = getClass().getResource("/images/backgroundpic/storyline.png");
         if (imgUrl != null) {
             bgImage = new ImageIcon(imgUrl).getImage();
         }
 
-        JPanel contentPane = new JPanel(new BorderLayout()) {
+        // 1. Main Background Panel
+        JPanel backgroundPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -43,32 +48,50 @@ class DialoguePanel extends JPanel {
                 }
             }
         };
-        contentPane.setOpaque(false);
-        contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        add(contentPane, BorderLayout.CENTER);
+        backgroundPanel.setOpaque(false);
+        add(backgroundPanel, BorderLayout.CENTER);
 
-        JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setOpaque(false);
-        contentPane.add(centerPanel, BorderLayout.CENTER);
+        // 2. Center Container
+        JPanel centerContainer = new JPanel(new GridBagLayout());
+        centerContainer.setOpaque(false);
+        backgroundPanel.add(centerContainer, BorderLayout.CENTER);
+
+        // 3. The Text Box Panel (FIXED TRANSPARENCY)
+        JPanel textBoxPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                // Manually draw the semi-transparent background
+                g.setColor(new Color(0, 0, 0, 180));
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paintComponent(g);
+            }
+        };
+        textBoxPanel.setOpaque(false); // Vital for the fix!
+        textBoxPanel.setBorder(new EmptyBorder(30, 40, 30, 40));
 
         storyPane = new JTextPane();
         storyPane.setEditable(false);
         storyPane.setOpaque(false);
         storyPane.setForeground(Color.WHITE);
-        storyPane.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 22));
+        storyPane.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 32));
 
+        // Center text alignment
         StyledDocument doc = storyPane.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
 
-        GridBagConstraints gbcStory = new GridBagConstraints();
-        gbcStory.gridx = 0; gbcStory.gridy = 0;
-        gbcStory.fill = GridBagConstraints.HORIZONTAL;
-        gbcStory.weightx = 1; gbcStory.weighty = 1;
-        gbcStory.insets = new Insets(20, 20, 20, 20);
-        centerPanel.add(storyPane, gbcStory);
+        textBoxPanel.add(storyPane, BorderLayout.CENTER);
 
+        // Add Constraints
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.weightx = 0.8;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(50, 50, 50, 50);
+        centerContainer.add(textBoxPanel, gbc);
+
+        // Timer Logic
         Timer timer = new Timer(4000, e -> {
             if (index < storyLines.length) {
                 storyPane.setText(storyLines[index]);

@@ -120,16 +120,14 @@ public class Home extends JPanel {
         ));
 
         dialogueArea = new JTextPane();
-        dialogueArea.setText("You wake up from a deep sleep. You look around your home for equipment...");
-        dialogueArea.setFont(new Font("Serif", Font.BOLD, 20));
+        dialogueArea.setText("You look around your home for equipment...");
+        dialogueArea.setFont(new Font("Serif", Font.BOLD, 28));
         dialogueArea.setForeground(Color.WHITE);
         dialogueArea.setOpaque(false);
         dialogueArea.setEditable(false);
 
-        StyledDocument doc = dialogueArea.getStyledDocument();
-        SimpleAttributeSet center = new SimpleAttributeSet();
-        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-        doc.setParagraphAttributes(0, doc.getLength(), center, false);
+        // Initial Center Text Logic
+        centerText();
 
         dialogueContainer.add(dialogueArea, BorderLayout.CENTER);
         bottomPanel.add(dialogueContainer);
@@ -155,37 +153,30 @@ public class Home extends JPanel {
 
     public void setPlayer(Character p) {
         this.player = p;
-        this.progressStep = 0; // Reset progress when entering again
+        this.progressStep = 0;
 
-        // Reset UI Buttons
         btnAction1.setText("WALK TO CHEST");
         btnAction2.setVisible(true);
         chestButton.setEnabled(false);
         if (chestClosedIcon != null) chestButton.setIcon(chestClosedIcon);
 
-        setDialogueText("You wake up from a deep sleep. You look around your home for equipment...");
+        setDialogueText("You look around your home for equipment...", 28);
 
-        // Load NPC Image
         String npcPath = "/images/playable/npc.png";
         npcIcon = loadScaledIcon(npcPath, 350, 400);
 
-        // Load Hero Image (With Safety Check)
         String heroPath = "/images/playable/" + player.className.toLowerCase() + ".png";
         heroIcon = loadScaledIcon(heroPath, 350, 400);
 
-        // Set Icon or Fallback Text
         if (npcIcon != null) {
             charPortraitLabel.setIcon(npcIcon);
             charPortraitLabel.setText("");
-        } else {
-            charPortraitLabel.setIcon(null);
-            charPortraitLabel.setText("<html><center>[ NPC ]</center></html>");
         }
     }
 
     private void handleProgress() {
         if (progressStep == 0) {
-            setDialogueText("You approach the old chest in the corner of the room.");
+            setDialogueText("You approach the old chest in the corner of the room.", 28);
             btnAction1.setText("OPEN CHEST");
             chestButton.setEnabled(true);
             progressStep = 1;
@@ -194,9 +185,26 @@ public class Home extends JPanel {
             openChest();
         }
         else if (progressStep == 2) {
-            int ch = JOptionPane.showConfirmDialog(this, "Leave home and start your journey?", "Depart", JOptionPane.YES_NO_OPTION);
+            // Use Custom RiftDialog
+            int ch = RiftDialog.showConfirmDialog(this,
+                    "You step outside, ready for your adventure...",
+                    "BEGIN JOURNEY");
+
             if (ch == JOptionPane.YES_OPTION) {
                 mainFrame.enterGrassyPlains(player);
+            } else {
+                // [NO] OPTION CHOSEN
+                String line1 = "You grip your new weapon, the weight of it suddenly feeling all too real.";
+                String line2 = "You pause, taking another moment to steady your nerves";
+
+                setDialogueText(line1 + "\n" + line2 + "\n" , 24);
+
+                // WAIT 3 SECONDS, THEN ASK AGAIN
+                Timer timer = new Timer(3000, e -> {
+                    handleProgress(); // Triggers this same method again
+                });
+                timer.setRepeats(false); // Run only once
+                timer.start();
             }
         }
     }
@@ -220,7 +228,6 @@ public class Home extends JPanel {
                 msg += "You obtained WAND & HAT."; break;
         }
 
-        // Show Hero Image
         if (heroIcon != null) {
             charPortraitLabel.setIcon(heroIcon);
             charPortraitLabel.setText("");
@@ -233,19 +240,23 @@ public class Home extends JPanel {
             chestButton.setIcon(chestOpenIcon);
         }
 
-        setDialogueText(msg);
+        setDialogueText(msg, 28);
         btnAction1.setText("LEAVE HOME");
         btnAction2.setVisible(false);
         progressStep = 2;
     }
 
     private void handleFlavorText() {
-        setDialogueText("Don't be bida2 okay? Go find your equipment before starting your journey.");
+        setDialogueText("Don't be bida2 okay? Go find your equipment before starting your journey.", 28);
     }
 
-    private void setDialogueText(String text) {
+    private void setDialogueText(String text, int fontSize) {
+        dialogueArea.setFont(new Font("Serif", Font.BOLD, fontSize));
         dialogueArea.setText(text);
-        // Re-apply center alignment
+        centerText();
+    }
+
+    private void centerText() {
         StyledDocument doc = dialogueArea.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
@@ -255,7 +266,6 @@ public class Home extends JPanel {
     private void loadImages() {
         chestClosedIcon = loadScaledIcon("/images/items/closeChest.png", 200, 200);
         chestOpenIcon = loadScaledIcon("/images/items/openChest.png", 200, 200);
-        // Add room bg if you have it
         URL roomUrl = getClass().getResource("/images/backgroundpic/home_room.png");
         if(roomUrl != null) roomBgImage = new ImageIcon(roomUrl).getImage();
     }

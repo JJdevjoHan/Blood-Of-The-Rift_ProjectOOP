@@ -30,7 +30,7 @@ public class Battle {
     }
 
     private void playerTurn() {
-        appendLog("Your turn. Choose an action:");
+        appendLog("It is your turn! Choose a skill.");
         String[] options = {"Attack","Spell","Flee"};
         int choice = JOptionPane.showOptionDialog(null, "Choose action:", "Battle",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,

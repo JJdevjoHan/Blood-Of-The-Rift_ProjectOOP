@@ -33,10 +33,6 @@ public abstract class World1Mob {
         return name + " uses a special attack! Deals " + damage + " damage. ";
     }
 
-    // ==========================================
-    //  NESTED CLASSES (MOVED INSIDE THE PARENT)
-    // ==========================================
-
     public static class Slime extends World1Mob {
         public Slime() {
             super("Slime", 20, 5);
