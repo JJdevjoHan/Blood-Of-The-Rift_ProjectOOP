@@ -82,20 +82,6 @@ class IntroPanel extends JPanel {
         gbcButtons.insets = new Insets(20, 10, 20, 10);
         centerPanel.add(buttonPanel, gbcButtons);
 
-        fadeIn();
-    }
-
-    private void fadeIn() {
-        new Thread(() -> {
-            try {
-                for (float i = 0f; i <= 1f; i += 0.02f) {
-                    setOpaque(false); 
-                    Thread.sleep(30);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 }
 
